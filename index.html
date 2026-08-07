@@ -1004,6 +1004,30 @@ function getItemEmoji(item) {
   return '📦';
 }
 
+function buildAcqLine(acqDate, daysSince) {
+  if (!acqDate) return '';
+  var since = daysSince !== null ? ' — <b>il y a ' + daysSince + ' jour(s)</b>' : '';
+  return '<div class="alert alert-info" style="margin-bottom:8px">📅 Acquis le <b>' + formatDate(acqDate) + '</b>' + since + '</div>';
+}
+
+function buildWinePairings(pairing) {
+  if (!pairing) return '';
+  var spans = pairing.pairs.slice(0,4).map(function(p) { return '<span class="wine-pairing">' + p + '</span>'; }).join('');
+  return '<div class="wine-pairings">' + spans + '</div>';
+}
+
+function buildExpiredLine(expDate, isExpired) {
+  if (!expDate) return '';
+  var alertClass = isExpired ? 'alert-danger' : 'alert-warn';
+  var expFormatted = formatDate(expDate);
+  if (isExpired) {
+    var dOver = Math.floor((Date.now() - new Date(expDate)) / (1000 * 60 * 60 * 24));
+    var plural = dOver > 1 ? 's' : '';
+    return '<div class="alert ' + alertClass + '" style="margin-bottom:8px">⚠️ EXPIRÉ le <b>' + expFormatted + '</b> — <b>il y a ' + dOver + ' jour' + plural + '</b></div>';
+  }
+  return '<div class="alert ' + alertClass + '" style="margin-bottom:8px">⏰ Expire le <b>' + expFormatted + '</b></div>';
+}
+
 // ============================================================
 // ITEM DETAIL
 // ============================================================
@@ -1035,8 +1059,8 @@ async function openItemDetail(id) {
 
     <div class="tags" style="margin-bottom:10px">${catNames} ${locNames}</div>
 
-    ${item.acqDate ? `<div class="alert alert-info" style="margin-bottom:8px">📅 Acquis le <b>${formatDate(item.acqDate)}</b>${daysSince!==null?` — il y a <b>${daysSince} jour(s)</b>`:''}</div>` : ''}
-    ${item.expDate ? (() => { const dOver = Math.floor((Date.now()-new Date(item.expDate))/(1000*60*60*24)); return `<div class="alert ${isExpired?'alert-danger':'alert-warn'}" style="margin-bottom:8px">${isExpired?`⚠️ EXPIRÉ le <b>${formatDate(item.expDate)}</b> — <b>il y a ${dOver} jour${dOver>1?'s':''}</b>`:`⏰ Expire le <b>${formatDate(item.expDate)}</b>`}</div>`; })() : ''}
+    ${buildAcqLine(item.acqDate, daysSince)}
+    ${buildExpiredLine(item.expDate, isExpired)}
     ${item.notes ? `<div class="card" style="margin-bottom:10px"><p style="font-size:14px">${item.notes}</p></div>` : ''}
     ${item.locPhoto ? `<div class="section-title" style="margin-top:0">📍 Lieu de rangement</div><img src="${item.locPhoto}" class="photo-preview" style="display:block;margin-bottom:12px">` : ''}
 
@@ -1277,7 +1301,7 @@ function renderWineList() {
           ${daysSince !== null ? `<div style="font-size:11px;color:#cc8888;margin-top:2px">Acquis il y a ${daysSince}j</div>` : ''}
         </div>
       </div>
-      ${pairing ? `<div class="wine-pairings">${pairing.pairs.slice(0,4).map(p=>`<span class="wine-pairing">${p}</span>`).join('')}</div>` : ''}
+      ${buildWinePairings(pairing)}
     </div>`;
   }).join('');
 }
