@@ -8,6 +8,7 @@
 <meta name="apple-mobile-web-app-title" content="Mon Inventaire">
 <meta name="theme-color" content="#1a1a2e">
 <title>Mon Inventaire</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
 <style>
   :root {
     --bg: #0f0f1a;
@@ -1959,42 +1960,44 @@ function processBarcodePhoto(input) {
 
   var img = new Image();
   img.onload = function() {
-    if ('BarcodeDetector' in window) {
-      var detector;
-      try {
-        detector = new BarcodeDetector({ formats: ['ean_13','ean_8','upc_a','upc_e','code_128','code_39','qr_code'] });
-      } catch(e) {
-        // BarcodeDetector disponible mais formats non supportés — essai sans formats
-        try { detector = new BarcodeDetector(); } catch(e2) { detector = null; }
-      }
-
-      if (detector) {
-        detector.detect(img).then(function(barcodes) {
-          URL.revokeObjectURL(url);
-          if (barcodes && barcodes.length > 0) {
-            var code = barcodes[0].rawValue;
-            setScannerStatus('success', '✅ Code détecté : ' + code + ' — Recherche du produit…');
-            handleScannedCode(code);
-          } else {
-            setScannerStatus('warn', '⚠️ Aucun code-barres détecté sur cette photo. Réessayez en vous approchant, ou utilisez la saisie manuelle.');
-            document.getElementById('scannerFoundBox').style.display = '';
-            document.getElementById('scannerFoundBox').className = 'alert alert-warn';
-            document.getElementById('scannerFoundBox').innerHTML = '<button class="btn btn-ghost btn-sm" onclick="closeModal(\'modalScanner\');openManualBarcode()" style="margin-top:8px">✏️ Saisir le code manuellement</button>';
-          }
-        }).catch(function(err) {
-          URL.revokeObjectURL(url);
-          setScannerStatus('warn', 'Erreur d\'analyse. Essayez la saisie manuelle.');
-        });
-        return;
-      }
-    }
-
-    // BarcodeDetector non disponible (iOS < 17)
+    // Convertir l'image en dataURL via canvas pour QuaggaJS
+    var canvas = document.getElementById('scannerCanvas');
+    canvas.width  = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+    canvas.getContext('2d').drawImage(img, 0, 0);
+    var dataUrl = canvas.toDataURL('image/jpeg', 0.9);
     URL.revokeObjectURL(url);
-    setScannerStatus('warn', 'La détection automatique n\'est pas disponible sur votre iOS. Utilisez la saisie manuelle.');
-    document.getElementById('scannerFoundBox').style.display = '';
-    document.getElementById('scannerFoundBox').className = 'alert alert-warn';
-    document.getElementById('scannerFoundBox').innerHTML = '<button class="btn btn-primary btn-block" onclick="closeModal(\'modalScanner\');openManualBarcode()" style="margin-top:8px">✏️ Saisir le code-barres manuellement</button>';
+
+    if (typeof Quagga !== 'undefined') {
+      // Décodage via QuaggaJS (marche sur tous les navigateurs)
+      Quagga.decodeSingle({
+        decoder: { readers: ['ean_reader','ean_8_reader','upc_reader','upc_e_reader','code_128_reader','code_39_reader'] },
+        locate: true,
+        src: dataUrl
+      }, function(result) {
+        if (result && result.codeResult && result.codeResult.code) {
+          var code = result.codeResult.code;
+          setScannerStatus('success', '✅ Code détecté : ' + code + ' — Recherche…');
+          handleScannedCode(code);
+        } else {
+          setScannerStatus('warn', '⚠️ Code-barres non détecté. Réessayez en tenant l\'iPhone bien droit, bien éclairé, à ~20 cm du code.');
+          var box = document.getElementById('scannerFoundBox');
+          box.style.display = '';
+          box.className = 'alert alert-warn';
+          box.innerHTML = '<div style="display:flex;gap:8px;margin-top:8px">'
+            + '<button class="btn btn-ghost btn-sm" style="flex:1" onclick="openScanner();closeModal(\'modalScanner\')">🔄 Réessayer</button>'
+            + '<button class="btn btn-primary btn-sm" style="flex:1" onclick="closeModal(\'modalScanner\');openManualBarcode()">✏️ Saisie manuelle</button>'
+            + '</div>';
+        }
+      });
+    } else {
+      // Quagga pas encore chargé (hors ligne) — saisie manuelle
+      setScannerStatus('warn', 'Bibliothèque non disponible hors connexion. Utilisez la saisie manuelle.');
+      var box = document.getElementById('scannerFoundBox');
+      box.style.display = '';
+      box.className = 'alert alert-warn';
+      box.innerHTML = '<button class="btn btn-primary btn-block" onclick="closeModal(\'modalScanner\');openManualBarcode()">✏️ Saisir le code manuellement</button>';
+    }
   };
 
   img.onerror = function() {
@@ -2040,8 +2043,12 @@ async function fetchOpenFoodFacts(barcode) {
     var data = await resp.json();
     if (data.status !== 1 || !data.product) return null;
     var p = data.product;
+    var name = p.product_name_fr || p.product_name_en || p.product_name || p.generic_name_fr || p.generic_name || p.abbreviated_product_name || '';
+    // Dernier recours : utiliser la marque + catégorie
+    if (!name && p.brands) name = p.brands;
+    if (!name) name = 'Produit ' + barcode;
     return {
-      name:     p.product_name_fr || p.product_name || p.generic_name_fr || p.generic_name || '',
+      name:     name,
       brand:    p.brands || '',
       quantity: p.quantity || '',
       category: p.categories_hierarchy ? p.categories_hierarchy[0] : '',
