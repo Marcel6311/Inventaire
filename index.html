@@ -6,278 +6,260 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Mon Inventaire">
-<meta name="theme-color" content="#1a1a2e">
+<meta name="theme-color" content="#111827">
 <title>Mon Inventaire</title>
 <style>
-  :root {
-    --bg: #0f0f1a;
-    --bg2: #1a1a2e;
-    --bg3: #16213e;
-    --card: #1e1e35;
-    --border: #2d2d4e;
-    --accent: #6c63ff;
-    --accent2: #ff6584;
-    --accent3: #43e97b;
-    --wine: #c0392b;
-    --text: #e8e8f0;
-    --text2: #9999bb;
-    --warn: #f39c12;
-    --danger: #e74c3c;
-    --success: #2ecc71;
-    --radius: 14px;
-    --shadow: 0 4px 24px rgba(0,0,0,0.4);
-    --nav-h: 70px;
-    --safe-bottom: env(safe-area-inset-bottom, 0px);
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  html, body { height: 100%; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; overflow: hidden; }
+:root {
+  --bg:#111827; --bg2:#1f2937; --bg3:#374151;
+  --card:#1f2937; --border:#374151;
+  --accent:#6366f1; --accent2:#f43f5e; --accent3:#10b981;
+  --wine:#991b1b; --wine2:#fca5a5;
+  --text:#f9fafb; --text2:#9ca3af;
+  --warn:#f59e0b; --danger:#ef4444; --success:#10b981;
+  --r:14px; --nav:68px; --safe:env(safe-area-inset-bottom,0px);
+  --top:env(safe-area-inset-top,0px);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;overflow:hidden}
+#app{display:flex;flex-direction:column;height:100%}
 
-  /* LAYOUT */
-  #app { display: flex; flex-direction: column; height: 100%; }
-  #header { background: var(--bg2); padding: 12px 16px 10px; padding-top: calc(env(safe-area-inset-top, 12px) + 8px); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; min-height: 56px; }
-  #header h1 { font-size: 18px; font-weight: 700; flex: 1; }
-  #header .badge { background: var(--accent2); color: white; border-radius: 20px; padding: 2px 8px; font-size: 12px; font-weight: 700; }
-  #content { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; padding-bottom: calc(var(--nav-h) + var(--safe-bottom) + 16px); }
-  #nav { position: fixed; bottom: 0; left: 0; right: 0; height: calc(var(--nav-h) + var(--safe-bottom)); background: var(--bg2); border-top: 1px solid var(--border); display: flex; padding-bottom: var(--safe-bottom); z-index: 100; }
-  .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; background: none; border: none; color: var(--text2); font-size: 10px; cursor: pointer; transition: color .2s; padding: 8px 0; }
-  .nav-btn.active { color: var(--accent); }
-  .nav-btn svg { width: 22px; height: 22px; }
+/* HEADER */
+#hdr{background:var(--bg2);padding:10px 16px 10px;padding-top:calc(var(--top) + 10px);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;min-height:52px}
+#hdrTitle{font-size:18px;font-weight:700;flex:1}
+.hdr-btn{background:var(--bg3);border:none;border-radius:9px;padding:7px 11px;color:var(--text2);cursor:pointer;font-size:15px}
+.alert-badge{background:var(--accent2);color:#fff;border-radius:20px;padding:2px 9px;font-size:12px;font-weight:700;cursor:pointer;display:none}
 
-  /* VIEWS */
-  .view { display: none; padding: 16px; }
-  .view.active { display: block; }
+/* CONTENT */
+#content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:calc(var(--nav) + var(--safe) + 12px)}
 
-  /* CARDS */
-  .card { background: var(--card); border-radius: var(--radius); padding: 14px; margin-bottom: 12px; border: 1px solid var(--border); }
-  .card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-  .card-header h3 { font-size: 15px; font-weight: 600; flex: 1; }
+/* VIEWS */
+.view{display:none;padding:14px}
+.view.active{display:block}
 
-  /* SEARCH */
-  .search-bar { display: flex; gap: 8px; margin-bottom: 14px; }
-  .search-bar input { flex: 1; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; color: var(--text); font-size: 15px; outline: none; }
-  .search-bar input:focus { border-color: var(--accent); }
-  .search-bar button { background: var(--accent); border: none; border-radius: 10px; padding: 10px 14px; color: white; cursor: pointer; font-size: 14px; }
+/* NAV */
+#nav{position:fixed;bottom:0;left:0;right:0;height:calc(var(--nav) + var(--safe));background:var(--bg2);border-top:1px solid var(--border);display:flex;padding-bottom:var(--safe);z-index:100}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:none;border:none;color:var(--text2);font-size:10px;cursor:pointer;padding:8px 0}
+.nb svg{width:22px;height:22px}
+.nb.on{color:var(--accent)}
 
-  /* ITEM ROW */
-  .item-row { display: flex; align-items: center; gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--border); }
-  .item-row:last-child { border-bottom: none; }
-  .item-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
-  .item-info { flex: 1; min-width: 0; }
-  .item-name { font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .item-meta { font-size: 12px; color: var(--text2); margin-top: 2px; }
-  .item-qty { text-align: right; }
-  .item-qty .qty { font-size: 18px; font-weight: 700; color: var(--accent); }
-  .item-qty .unit { font-size: 11px; color: var(--text2); }
-  .qty-low { color: var(--danger) !important; }
-  .qty-warn { color: var(--warn) !important; }
+/* CARDS */
+.card{background:var(--card);border-radius:var(--r);padding:14px;margin-bottom:12px;border:1px solid var(--border)}
 
-  /* TAGS */
-  .tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
-  .tag { background: var(--bg3); border-radius: 20px; padding: 2px 8px; font-size: 11px; color: var(--text2); border: 1px solid var(--border); }
-  .tag.wine { border-color: var(--wine); color: #e88; }
+/* SEARCH BAR */
+.sbar{display:flex;gap:8px;margin-bottom:12px}
+.sbar input{flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:15px;outline:none}
+.sbar input:focus{border-color:var(--accent)}
+.sbar button{background:var(--accent);border:none;border-radius:10px;padding:10px 14px;color:#fff;cursor:pointer;font-size:15px;font-weight:600}
 
-  /* BUTTONS */
-  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 12px 20px; border-radius: 10px; border: none; font-size: 15px; font-weight: 600; cursor: pointer; transition: opacity .2s, transform .1s; }
-  .btn:active { transform: scale(.97); opacity: .85; }
-  .btn-primary { background: var(--accent); color: white; }
-  .btn-success { background: var(--success); color: white; }
-  .btn-danger { background: var(--danger); color: white; }
-  .btn-ghost { background: var(--card); color: var(--text); border: 1px solid var(--border); }
-  .btn-wine { background: var(--wine); color: white; }
-  .btn-block { width: 100%; margin-bottom: 10px; }
-  .btn-sm { padding: 7px 14px; font-size: 13px; }
+/* ITEM ROW */
+.irow{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--border)}
+.irow:last-child{border-bottom:none}
+.iico{width:42px;height:42px;border-radius:11px;background:rgba(99,102,241,.15);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;cursor:pointer}
+.iinfo{flex:1;min-width:0;cursor:pointer}
+.iname{font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.imeta{font-size:12px;color:var(--text2);margin-top:2px}
+.tags{display:flex;flex-wrap:wrap;gap:3px;margin-top:3px}
+.tag{background:var(--bg3);border-radius:20px;padding:2px 7px;font-size:11px;color:var(--text2)}
+.iqty{text-align:right;min-width:44px}
+.iqty .n{font-size:20px;font-weight:800;color:var(--accent)}
+.iqty .u{font-size:11px;color:var(--text2)}
+.n.low{color:var(--danger)}
+.n.exp{color:var(--warn)}
+.del-btn{background:none;border:none;color:var(--text2);font-size:20px;cursor:pointer;padding:4px 2px;flex-shrink:0}
 
-  /* FORMS */
-  .form-group { margin-bottom: 14px; }
-  .form-group label { display: block; font-size: 13px; color: var(--text2); margin-bottom: 5px; font-weight: 500; }
-  .form-group input, .form-group select, .form-group textarea { width: 100%; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 11px 14px; color: var(--text); font-size: 15px; outline: none; appearance: none; }
-  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent); }
-  .form-group textarea { min-height: 80px; resize: vertical; }
-  .form-group select option { background: var(--bg2); }
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:12px 20px;border-radius:10px;border:none;font-size:15px;font-weight:600;cursor:pointer;transition:opacity .15s}
+.btn:active{opacity:.75}
+.btn-p{background:var(--accent);color:#fff}
+.btn-d{background:var(--danger);color:#fff}
+.btn-g{background:var(--bg3);color:var(--text);border:1px solid var(--border)}
+.btn-w{background:var(--wine);color:#fff}
+.btn-s{background:var(--success);color:#fff}
+.btn-sm{padding:7px 13px;font-size:13px}
+.btn-bl{width:100%;margin-bottom:10px}
 
-  /* MODAL */
-  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.75); z-index: 200; display: none; align-items: flex-end; }
-  .modal-overlay.open { display: flex; }
-  .modal { background: var(--bg2); border-radius: 20px 20px 0 0; width: 100%; max-height: 90vh; overflow-y: auto; padding: 20px 16px; padding-bottom: calc(20px + var(--safe-bottom)); }
-  .modal-header { display: flex; align-items: center; margin-bottom: 16px; }
-  .modal-header h2 { flex: 1; font-size: 18px; font-weight: 700; }
-  .modal-close { background: var(--card); border: none; border-radius: 8px; padding: 6px 12px; color: var(--text2); cursor: pointer; font-size: 14px; }
+/* FORMS */
+.fg{margin-bottom:13px}
+.fg label{display:block;font-size:13px;color:var(--text2);margin-bottom:4px;font-weight:500}
+.fg input,.fg select,.fg textarea{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:11px 13px;color:var(--text);font-size:15px;outline:none;appearance:none}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--accent)}
+.fg textarea{min-height:76px;resize:vertical}
+.fg select option{background:var(--bg2)}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 
-  /* ALERTS */
-  .alert { border-radius: 10px; padding: 12px 14px; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; font-size: 14px; }
-  .alert-danger { background: rgba(231,76,60,.15); border: 1px solid rgba(231,76,60,.3); color: #ff8070; }
-  .alert-warn { background: rgba(243,156,18,.15); border: 1px solid rgba(243,156,18,.3); color: #ffc060; }
-  .alert-info { background: rgba(108,99,255,.15); border: 1px solid rgba(108,99,255,.3); color: #a0a0ff; }
-  .alert-success { background: rgba(46,204,113,.15); border: 1px solid rgba(46,204,113,.3); color: #60e090; }
+/* CHIPS */
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.chip{border-radius:20px;padding:5px 13px;font-size:13px;border:1.5px solid;cursor:pointer;transition:all .15s}
+.chip.on{color:#fff!important}
 
-  /* STATS */
-  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
-  .stat-card { background: var(--card); border-radius: var(--radius); padding: 14px; text-align: center; border: 1px solid var(--border); }
-  .stat-num { font-size: 28px; font-weight: 800; color: var(--accent); }
-  .stat-label { font-size: 12px; color: var(--text2); margin-top: 2px; }
+/* MODAL */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:200;display:none;align-items:flex-end}
+.ov.open{display:flex}
+.modal{background:var(--bg2);border-radius:20px 20px 0 0;width:100%;max-height:92vh;overflow-y:auto;padding:20px 16px;padding-bottom:calc(20px + var(--safe))}
+.mhdr{display:flex;align-items:center;margin-bottom:16px}
+.mhdr h2{flex:1;font-size:18px;font-weight:700}
+.mclose{background:var(--bg3);border:none;border-radius:8px;padding:6px 12px;color:var(--text2);cursor:pointer;font-size:14px}
 
-  /* WINE */
-  .wine-card { background: linear-gradient(135deg, #2d0a0a, #4a1515); border: 1px solid #6b2020; border-radius: var(--radius); padding: 14px; margin-bottom: 12px; }
-  .wine-name { font-size: 16px; font-weight: 700; color: #ff9999; }
-  .wine-details { font-size: 13px; color: #cc8888; margin-top: 4px; }
-  .wine-pairings { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
-  .wine-pairing { background: rgba(192,57,43,.3); border: 1px solid rgba(192,57,43,.5); border-radius: 20px; padding: 3px 10px; font-size: 12px; color: #ff9999; }
-  .stars { color: #f1c40f; font-size: 14px; }
+/* ALERTS */
+.al{border-radius:10px;padding:11px 13px;margin-bottom:10px;display:flex;align-items:flex-start;gap:9px;font-size:14px}
+.al-d{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:#fca5a5}
+.al-w{background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);color:#fcd34d}
+.al-i{background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.3);color:#a5b4fc}
+.al-s{background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3);color:#6ee7b7}
 
-  /* PHOTO */
-  .photo-preview { width: 100%; height: 140px; object-fit: cover; border-radius: 10px; margin-top: 8px; cursor: pointer; }
-  .photo-placeholder { width: 100%; height: 120px; border: 2px dashed var(--border); border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; color: var(--text2); cursor: pointer; font-size: 13px; }
+/* STATS */
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.scard{background:var(--card);border-radius:var(--r);padding:14px;text-align:center;border:1px solid var(--border)}
+.snum{font-size:30px;font-weight:800;color:var(--accent)}
+.slbl{font-size:12px;color:var(--text2);margin-top:2px}
 
-  /* CATEGORY CHIPS */
-  .cat-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
-  .cat-chip { border-radius: 20px; padding: 5px 12px; font-size: 13px; border: 1.5px solid; cursor: pointer; transition: all .2s; }
-  .cat-chip.selected { color: white !important; }
+/* SECTION TITLE */
+.stitle{font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.7px;margin:14px 0 8px}
 
-  /* SHOPPING LIST */
-  .shop-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
-  .shop-item:last-child { border-bottom: none; }
-  .shop-check { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--border); cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .shop-check.checked { background: var(--success); border-color: var(--success); }
-  .shop-item.done .shop-name { text-decoration: line-through; color: var(--text2); }
+/* PHOTO */
+.photo-prev{width:100%;height:150px;object-fit:cover;border-radius:10px;margin-top:7px;cursor:pointer;display:none}
+.photo-ph{width:100%;height:110px;border:2px dashed var(--border);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:var(--text2);cursor:pointer;font-size:13px}
 
-  /* CALENDAR / DATES */
-  .date-item { padding: 10px 0; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
-  .date-badge { background: var(--accent); border-radius: 8px; padding: 4px 8px; font-size: 11px; font-weight: 700; white-space: nowrap; }
-  .date-badge.expired { background: var(--danger); }
-  .date-badge.soon { background: var(--warn); color: #000; }
+/* FILTER BAR */
+.fbar{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;margin-bottom:10px}
+.fbar::-webkit-scrollbar{display:none}
+.fc{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:5px 14px;font-size:13px;white-space:nowrap;cursor:pointer;color:var(--text2)}
+.fc.on{background:var(--accent);border-color:var(--accent);color:#fff}
 
-  /* FILTER BAR */
-  .filter-bar { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 10px; }
-  .filter-bar::-webkit-scrollbar { display: none; }
-  .filter-chip { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 5px 14px; font-size: 13px; white-space: nowrap; cursor: pointer; color: var(--text2); flex-shrink: 0; }
-  .filter-chip.active { background: var(--accent); border-color: var(--accent); color: white; }
+/* WINE */
+.wcard{background:linear-gradient(135deg,#1c0505,#3b0f0f);border:1px solid #7f1d1d;border-radius:var(--r);padding:14px;margin-bottom:11px;cursor:pointer}
+.wname{font-size:16px;font-weight:700;color:var(--wine2)}
+.wdet{font-size:13px;color:#f87171;margin-top:3px}
+.wpairs{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.wpair{background:rgba(153,27,27,.35);border:1px solid rgba(153,27,27,.6);border-radius:20px;padding:3px 9px;font-size:12px;color:var(--wine2)}
+.stars{color:#fbbf24;font-size:14px;letter-spacing:1px}
 
-  /* SECTION TITLE */
-  .section-title { font-size: 13px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: .8px; margin: 16px 0 8px; }
+/* SHOPPING */
+.shi{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.shi:last-child{border-bottom:none}
+.shck{width:24px;height:24px;border-radius:7px;border:2px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px;color:#fff}
+.shck.on{background:var(--success);border-color:var(--success)}
+.shi.done .shn{text-decoration:line-through;color:var(--text2)}
 
-  /* LOCATION MAP */
-  .location-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
-  .location-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px; cursor: pointer; text-align: center; transition: border-color .2s; }
-  .location-card:active { border-color: var(--accent); }
-  .location-card .loc-icon { font-size: 28px; margin-bottom: 4px; }
-  .location-card .loc-name { font-size: 13px; font-weight: 600; }
-  .location-card .loc-count { font-size: 11px; color: var(--text2); }
+/* PAGINATION */
+.pag{display:flex;align-items:center;justify-content:center;gap:10px;padding:10px 0;border-top:1px solid var(--border);margin-top:6px}
+.pag span{font-size:12px;color:var(--text2)}
 
-  /* EMPTY STATE */
-  .empty { text-align: center; padding: 40px 20px; color: var(--text2); }
-  .empty .emoji { font-size: 48px; margin-bottom: 12px; }
-  .empty p { font-size: 15px; }
+/* RATING */
+.rstar{font-size:28px;cursor:pointer;opacity:.35}
+.rstar.on{opacity:1}
 
-  /* HISTORY */
-  .history-bar { display: flex; align-items: flex-end; gap: 4px; height: 60px; margin-top: 8px; }
-  .history-bar .bar { flex: 1; background: var(--accent); border-radius: 4px 4px 0 0; opacity: .7; min-height: 4px; }
+/* PROGRESS */
+.pbar{height:5px;background:var(--border);border-radius:3px;overflow:hidden;margin-top:5px}
+.pfill{height:100%;border-radius:3px;transition:width .3s}
 
-  /* CONSUMPTION CHART */
-  .chart-wrap { overflow-x: auto; }
+/* EMPTY */
+.empty{text-align:center;padding:40px 20px;color:var(--text2)}
+.empty .ei{font-size:48px;margin-bottom:12px}
 
-  /* IMPORT/EXPORT */
-  .export-options { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+/* PRICE BLOCK */
+.pblock{display:flex;gap:14px;flex-wrap:wrap}
+.pval{flex:1;min-width:60px}
+.pval .pl{font-size:11px;color:var(--text2);margin-bottom:2px}
+.pval .pv{font-size:22px;font-weight:800}
 
-  /* BADGE COUNT */
-  .nav-badge { position: absolute; top: 4px; right: 14px; background: var(--accent2); color: white; border-radius: 20px; padding: 1px 5px; font-size: 9px; font-weight: 700; }
-  .nav-btn { position: relative; }
+/* LOCATION GRID */
+.lgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.lcard{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;text-align:center}
+.lcard:active{border-color:var(--accent)}
 
-  /* SWITCH */
-  .switch { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; }
-  .switch label { font-size: 14px; flex: 1; }
-  .toggle { width: 44px; height: 26px; background: var(--border); border-radius: 13px; cursor: pointer; position: relative; transition: background .2s; flex-shrink: 0; }
-  .toggle.on { background: var(--accent); }
-  .toggle::after { content:''; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; background: white; border-radius: 10px; transition: left .2s; }
-  .toggle.on::after { left: 21px; }
+/* SEARCH NAV */
+.snav{display:flex;align-items:center;gap:6px;padding:8px 0 12px;border-bottom:1px solid var(--border);margin-bottom:12px}
+.snav span{flex:1;text-align:center;font-size:12px;color:var(--text2)}
 
-  /* DARK OVERLAY for item detail */
-  .detail-photo { width: 100%; height: 200px; object-fit: cover; border-radius: 14px; margin-bottom: 12px; }
+/* HIGHLIGHT */
+mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inherit}
 
-  /* RATING STARS */
-  .rating-input { display: flex; gap: 6px; }
-  .rating-input span { font-size: 28px; cursor: pointer; opacity: .4; }
-  .rating-input span.active { opacity: 1; }
+/* EXPORT */
+.egrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 
-  /* BARCODE */
-  #barcodeVideo { width: 100%; border-radius: 10px; display: none; }
+/* SWITCH */
+.sw{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)}
+.sw:last-child{border-bottom:none}
+.sw label{font-size:14px}
+.tog{width:44px;height:26px;background:var(--border);border-radius:13px;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0}
+.tog.on{background:var(--accent)}
+.tog::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;background:#fff;border-radius:10px;transition:left .2s}
+.tog.on::after{left:21px}
 
-  /* PROGRESS */
-  .progress-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-top: 6px; }
-  .progress-fill { height: 100%; border-radius: 3px; transition: width .3s; }
-
-  /* LIST ACTIONS */
-  .list-actions { display: flex; gap: 8px; margin-bottom: 10px; }
-
-  /* NOTIFICATION DOT */
-  .notif-dot { width: 8px; height: 8px; background: var(--accent2); border-radius: 50%; display: inline-block; }
+/* DATE ITEM */
+.ditem{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);cursor:pointer}
+.ditem:last-child{border-bottom:none}
+.dbadge{border-radius:7px;padding:3px 8px;font-size:11px;font-weight:700;white-space:nowrap;background:var(--accent);color:#fff}
+.dbadge.exp{background:var(--danger)}
+.dbadge.soon{background:var(--warn);color:#000}
 </style>
 </head>
 <body>
 <div id="app">
-  <div id="header">
-    <h1 id="headerTitle">Mon Inventaire</h1>
-    <span id="alertBadge" class="badge" style="display:none;cursor:pointer" onclick="openAlertList()">0</span>
-    <button class="btn btn-ghost btn-sm" onclick="openSearch()" style="padding:7px 10px">🔍</button>
+  <div id="hdr">
+    <span id="hdrTitle" style="font-size:18px;font-weight:700;flex:1">Mon Inventaire</span>
+    <span id="alertBadge" class="alert-badge" onclick="openAlertList()">0</span>
+    <button class="hdr-btn" onclick="openSearch()">🔍</button>
   </div>
 
   <div id="content">
-    <!-- VIEW: ACCUEIL -->
-    <div class="view active" id="view-home">
-      <div class="stats-grid" id="statsGrid"></div>
-      <div class="section-title">⚠️ Alertes</div>
-      <div id="alertsContainer"></div>
-      <div class="section-title">📅 Expirations proches</div>
-      <div id="expiryContainer"></div>
-      <div class="section-title">📍 Par emplacement</div>
-      <div class="location-grid" id="locationGrid"></div>
-      <div class="section-title">🕒 Ajouts récents</div>
-      <div class="card" id="recentContainer"></div>
+
+    <!-- ACCUEIL -->
+    <div class="view active" id="v-home">
+      <div class="sgrid" id="statsGrid"></div>
+      <div class="stitle">⚠️ Alertes</div>
+      <div id="homeAlerts"></div>
+      <div class="stitle">⏰ Expirations dans 7 jours</div>
+      <div id="homeExpiry"></div>
+      <div class="stitle">📍 Par emplacement</div>
+      <div class="lgrid" id="homeLocs"></div>
+      <div class="stitle">🕒 Ajouts récents</div>
+      <div class="card" id="homeRecent"></div>
     </div>
 
-    <!-- VIEW: INVENTAIRE -->
-    <div class="view" id="view-inventory">
-      <div class="search-bar">
-        <input type="text" id="invSearch" placeholder="Rechercher un article..." oninput="filterInventory()">
-        <button onclick="openAddModal()">+</button>
+    <!-- INVENTAIRE -->
+    <div class="view" id="v-inv">
+      <div class="sbar">
+        <input type="text" id="invSearch" placeholder="Rechercher..." oninput="filterInv()">
+        <button onclick="openAddItem()">＋</button>
       </div>
-      <div class="filter-bar" id="filterBar"></div>
-      <div class="list-actions">
-        <button class="btn btn-ghost btn-sm" onclick="sortInventory('name')">A→Z</button>
-        <button class="btn btn-ghost btn-sm" onclick="sortInventory('qty')">Qté</button>
-        <button class="btn btn-ghost btn-sm" onclick="sortInventory('date')">Date</button>
-        <button class="btn btn-ghost btn-sm" onclick="sortInventory('expiry')">Expir.</button>
+      <div class="fbar" id="invFilters"></div>
+      <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
+        <button class="btn btn-g btn-sm" onclick="sortInv('name')">A→Z</button>
+        <button class="btn btn-g btn-sm" onclick="sortInv('qty')">Quantité</button>
+        <button class="btn btn-g btn-sm" onclick="sortInv('date')">Date</button>
+        <button class="btn btn-g btn-sm" onclick="sortInv('expiry')">Expiration</button>
       </div>
-      <div class="card" id="inventoryList"></div>
+      <div class="card" id="invList"></div>
     </div>
 
-    <!-- VIEW: VINS -->
-    <div class="view" id="view-wine">
-      <div class="search-bar">
-        <input type="text" id="wineSearch" placeholder="Cépage, région, millésime..." oninput="filterWines()">
-        <button onclick="openAddWineModal()">+</button>
+    <!-- VINS -->
+    <div class="view" id="v-wine">
+      <div class="sbar">
+        <input type="text" id="wSearch" placeholder="Cépage, région, millésime..." oninput="filterWines()">
+        <button onclick="openAddWine()">＋</button>
       </div>
-      <div class="filter-bar">
-        <div class="filter-chip active" onclick="setWineFilter('all',this)">Tous</div>
-        <div class="filter-chip" onclick="setWineFilter('rouge',this)">🍷 Rouge</div>
-        <div class="filter-chip" onclick="setWineFilter('blanc',this)">🥂 Blanc</div>
-        <div class="filter-chip" onclick="setWineFilter('rosé',this)">🌸 Rosé</div>
-        <div class="filter-chip" onclick="setWineFilter('champagne',this)">✨ Champagne</div>
-        <div class="filter-chip" onclick="setWineFilter('liqueur',this)">🥃 Liqueur</div>
+      <div class="fbar">
+        <div class="fc on" onclick="wFilter('all',this)">Tous</div>
+        <div class="fc" onclick="wFilter('rouge',this)">🍷 Rouge</div>
+        <div class="fc" onclick="wFilter('blanc',this)">🥂 Blanc</div>
+        <div class="fc" onclick="wFilter('rosé',this)">🌸 Rosé</div>
+        <div class="fc" onclick="wFilter('champagne',this)">✨ Champagne</div>
+        <div class="fc" onclick="wFilter('liqueur',this)">🥃 Liqueur</div>
       </div>
       <div id="wineList"></div>
-      <div class="section-title">🍽️ Accords mets-vins</div>
+      <div class="stitle">🍽️ Quel plat cuisinez-vous ?</div>
       <div class="card">
-        <div class="form-group">
-          <label>Quel plat cuisinez-vous ?</label>
-          <select id="foodSelect" onchange="suggestWines()">
+        <div class="fg">
+          <select id="foodSel" onchange="suggestWines()">
             <option value="">-- Choisir un plat --</option>
             <option value="viande_rouge">Viande rouge (bœuf, agneau)</option>
             <option value="viande_blanche">Volaille, porc</option>
             <option value="poisson">Poisson, fruits de mer</option>
             <option value="foie_gras">Foie gras</option>
             <option value="fromage">Fromage</option>
-            <option value="dessert_chocolat">Dessert au chocolat</option>
+            <option value="dessert_chocolat">Dessert chocolat</option>
             <option value="dessert_fruit">Dessert aux fruits</option>
             <option value="charcuterie">Charcuterie</option>
             <option value="risotto">Risotto, pâtes</option>
@@ -286,1856 +268,1578 @@
             <option value="aperitif">Apéritif</option>
           </select>
         </div>
-        <div id="wineSuggestions"></div>
+        <div id="wineSugg"></div>
       </div>
     </div>
 
-    <!-- VIEW: LISTE DE COURSES -->
-    <div class="view" id="view-shopping">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
-        <h2 style="flex:1;font-size:17px">Liste de courses</h2>
-        <button class="btn btn-ghost btn-sm" onclick="clearChecked()">Suppr. cochés</button>
-        <button class="btn btn-primary btn-sm" onclick="shareShoppingList()">Partager</button>
+    <!-- COURSES -->
+    <div class="view" id="v-shop">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+        <h2 style="flex:1;font-size:17px;font-weight:700">Liste de courses</h2>
+        <button class="btn btn-g btn-sm" onclick="clearCheckedShop()">Suppr. cochés</button>
+        <button class="btn btn-p btn-sm" onclick="shareShop()">Partager</button>
       </div>
-      <div class="alert alert-info" style="margin-bottom:14px">
-        <span>💡</span><span>Articles sous le seuil d'alerte ajoutés automatiquement.</span>
-      </div>
-      <div class="card" id="shoppingList"></div>
-      <div class="section-title">Ajouter manuellement</div>
-      <div class="card">
-        <div style="display:flex;gap:8px">
-          <input type="text" id="manualShopItem" placeholder="Article..." style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-size:14px;outline:none">
-          <button class="btn btn-primary btn-sm" onclick="addManualShopItem()">+</button>
-        </div>
+      <div class="al al-i" style="margin-bottom:12px">💡 Articles sous seuil d'alerte ajoutés automatiquement.</div>
+      <div class="card" id="shopList"></div>
+      <div class="stitle">Ajouter manuellement</div>
+      <div class="card" style="display:flex;gap:8px">
+        <input type="text" id="shopInput" placeholder="Article..." style="flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:9px 12px;color:var(--text);font-size:14px;outline:none">
+        <button class="btn btn-p btn-sm" onclick="addShopItem()">＋</button>
       </div>
     </div>
 
-    <!-- VIEW: PLUS -->
-    <div class="view" id="view-more">
-      <div class="section-title">📅 Dates & Échéances</div>
-      <div class="card" id="datesContainer"></div>
+    <!-- PLUS -->
+    <div class="view" id="v-more">
+      <div class="stitle">📅 Dates & Échéances</div>
+      <div class="card" id="datesList"></div>
 
-      <div class="section-title">📤 Exporter</div>
-      <div class="export-options">
-        <button class="btn btn-ghost" onclick="exportCSV()">📊 CSV/Excel</button>
-        <button class="btn btn-ghost" onclick="exportJSON()">💾 JSON</button>
-        <button class="btn btn-ghost" onclick="printInventory()">🖨️ Imprimer</button>
-        <button class="btn btn-ghost" onclick="exportPDFPage()">📄 PDF</button>
+      <div class="stitle">📤 Exporter</div>
+      <div class="egrid" style="margin-bottom:12px">
+        <button class="btn btn-g" onclick="expCSV()">📊 CSV</button>
+        <button class="btn btn-g" onclick="expJSON()">💾 JSON</button>
+        <button class="btn btn-g" onclick="doPrint()">🖨️ Imprimer</button>
+        <button class="btn btn-g" onclick="doPrint()">📄 PDF</button>
       </div>
 
-      <div class="section-title">📥 Importer</div>
+      <div class="stitle">📥 Importer</div>
       <div class="card">
-        <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON()">
-        <button class="btn btn-ghost btn-block" onclick="document.getElementById('importFile').click()">📁 Importer JSON</button>
+        <input type="file" id="impFile" accept=".json" style="display:none" onchange="doImport()">
+        <button class="btn btn-g btn-bl" onclick="document.getElementById('impFile').click()">📁 Importer JSON</button>
       </div>
 
-      <div class="section-title">⚙️ Catégories</div>
-      <div class="card" id="categoriesManager"></div>
-      <button class="btn btn-ghost btn-block" onclick="openAddCatModal()">+ Nouvelle catégorie</button>
+      <div class="stitle">⚙️ Catégories</div>
+      <div class="card" id="catList"></div>
+      <button class="btn btn-g btn-bl" onclick="openAddCat()">＋ Nouvelle catégorie</button>
 
-      <div class="section-title">🗄️ Emplacements</div>
-      <div class="card" id="locationsManager"></div>
-      <button class="btn btn-ghost btn-block" onclick="openAddLocModal()">+ Nouvel emplacement</button>
+      <div class="stitle">📍 Emplacements</div>
+      <div class="card" id="locList"></div>
+      <button class="btn btn-g btn-bl" onclick="openAddLoc()">＋ Nouvel emplacement</button>
 
-      <div class="section-title">⚙️ Paramètres</div>
+      <div class="stitle">⚙️ Paramètres</div>
       <div class="card">
-        <div class="switch">
-          <label>Mode sombre</label>
-          <div class="toggle on" id="darkToggle" onclick="toggleDark()"></div>
-        </div>
-        <div class="switch">
-          <label>Alertes activées</label>
-          <div class="toggle on" id="alertToggle" onclick="toggleAlerts()"></div>
-        </div>
-        <div class="switch">
-          <label>Confirmation suppression</label>
-          <div class="toggle on" id="confirmToggle" onclick="toggleConfirm()"></div>
-        </div>
+        <div class="sw"><label>Confirmation suppression</label><div class="tog on" id="tConfirm" onclick="togSet('confirm')"></div></div>
+        <div class="sw"><label>Alertes activées</label><div class="tog on" id="tAlerts" onclick="togSet('alerts')"></div></div>
       </div>
-
-      <div class="section-title">ℹ️ À propos</div>
-      <div class="card">
-        <p style="font-size:13px;color:var(--text2)">Mon Inventaire v2.0 — Données stockées localement sur votre appareil. Fonctionne hors ligne.</p>
-        <p style="font-size:11px;color:var(--text2);margin-top:6px">Capacité : jusqu'à 50 000+ articles</p>
-      </div>
+      <div class="stitle">ℹ️ Application</div>
+      <div class="card"><p style="font-size:13px;color:var(--text2)">Mon Inventaire — 100% hors ligne, données stockées sur votre appareil. Capacité : 50 000+ articles.</p></div>
     </div>
-  </div>
 
-  <!-- BOTTOM NAV -->
+  </div><!-- /content -->
+
   <nav id="nav">
-    <button class="nav-btn active" onclick="navigate('home',this)">
+    <button class="nb on" onclick="goTo('home',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
       Accueil
     </button>
-    <button class="nav-btn" onclick="navigate('inventory',this)">
+    <button class="nb" onclick="goTo('inv',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
       Inventaire
     </button>
-    <button class="nav-btn" onclick="navigate('wine',this)">
+    <button class="nb" onclick="goTo('wine',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 22h8M12 11v11M5 3h14l-1 8a6 6 0 01-12 0L5 3z"/></svg>
       Vins
     </button>
-    <button class="nav-btn" onclick="navigate('shopping',this)">
+    <button class="nb" onclick="goTo('shop',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 001.95-1.57l1.65-7.43H6"/></svg>
       Courses
     </button>
-    <button class="nav-btn" onclick="navigate('more',this)">
+    <button class="nb" onclick="goTo('more',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
       Plus
     </button>
   </nav>
 </div>
 
-<!-- MODAL: ADD/EDIT ITEM -->
-<div class="modal-overlay" id="modalItem">
+<!-- MODAL: ARTICLE -->
+<div class="ov" id="mItem">
   <div class="modal">
-    <div class="modal-header">
-      <h2 id="modalItemTitle">Ajouter un article</h2>
-      <button class="modal-close" onclick="closeModal('modalItem')">Fermer</button>
+    <div class="mhdr">
+      <h2 id="mItemTitle">Ajouter un article</h2>
+      <button class="mclose" onclick="closeM('mItem')">Fermer</button>
     </div>
-
+    <div id="dupWarn" style="display:none" class="al al-w">⚠️ Cet article existe déjà. Vous pouvez continuer quand même.</div>
     <div style="display:flex;gap:10px;align-items:flex-end">
-      <div class="form-group" style="width:70px;flex-shrink:0">
+      <div class="fg" style="width:68px;flex-shrink:0">
         <label>Icône</label>
-        <input type="text" id="iEmoji" placeholder="🥗" maxlength="2" style="text-align:center;font-size:24px;padding:8px">
+        <input type="text" id="iEmoji" placeholder="🥗" maxlength="2" style="text-align:center;font-size:22px;padding:8px">
       </div>
-      <div class="form-group" style="flex:1">
-        <label>Nom de l'article *</label>
-        <input type="text" id="iName" placeholder="Ex: Blanc de poulet">
+      <div class="fg" style="flex:1">
+        <label>Nom *</label>
+        <input type="text" id="iName" placeholder="Ex: Blanc de poulet" oninput="checkDup()">
       </div>
     </div>
-
-    <div class="form-row">
-      <div class="form-group">
-        <label>Quantité *</label>
-        <input type="number" id="iQty" value="1" min="0" step="0.1">
-      </div>
-      <div class="form-group">
-        <label>Unité</label>
+    <div class="frow">
+      <div class="fg"><label>Quantité *</label><input type="number" id="iQty" value="1" min="0" step="0.1"></div>
+      <div class="fg"><label>Unité</label>
         <select id="iUnit">
           <option>pièce(s)</option><option>kg</option><option>g</option><option>L</option>
           <option>cl</option><option>ml</option><option>bouteille(s)</option><option>boîte(s)</option>
-          <option>paquet(s)</option><option>portion(s)</option><option>sachet(s)</option>
-          <option>tranche(s)</option><option>dose(s)</option>
+          <option>paquet(s)</option><option>portion(s)</option><option>sachet(s)</option><option>tranche(s)</option>
         </select>
       </div>
     </div>
-
-    <div class="form-group">
-      <label>Catégories (plusieurs possibles)</label>
-      <div class="cat-chips" id="catChips"></div>
+    <div class="fg"><label>Catégories <small style="color:var(--text2)">(plusieurs possibles)</small></label>
+      <div class="chips" id="catChips"></div></div>
+    <div class="fg"><label>Emplacements <small style="color:var(--text2)">(plusieurs possibles)</small></label>
+      <div class="chips" id="locChips"></div></div>
+    <div class="frow">
+      <div class="fg"><label>Date d'acquisition</label><input type="date" id="iAcq"></div>
+      <div class="fg"><label>Date d'expiration</label><input type="date" id="iExp"></div>
     </div>
-
-    <div class="form-group">
-      <label>Emplacements (plusieurs possibles)</label>
-      <div class="cat-chips" id="locChips"></div>
-    </div>
-
-    <div class="form-row">
-      <div class="form-group">
-        <label>Date d'acquisition</label>
-        <input type="date" id="iAcqDate">
-      </div>
-      <div class="form-group">
-        <label>Date d'expiration</label>
-        <input type="date" id="iExpDate">
+    <div class="frow">
+      <div class="fg"><label>Alerte si qté ≤</label><input type="number" id="iAlert" value="1" min="0"></div>
+      <div class="fg"><label>Alertes</label>
+        <select id="iAlertOn"><option value="1">Activées</option><option value="0">Désactivées</option></select>
       </div>
     </div>
-
-    <div class="form-row">
-      <div class="form-group">
-        <label>Alerte si quantité ≤</label>
-        <input type="number" id="iAlertThreshold" value="1" min="0">
-      </div>
-      <div class="form-group">
-        <label>Alertes</label>
-        <select id="iAlertEnabled">
-          <option value="1">Activées</option>
-          <option value="0">Désactivées</option>
-        </select>
-      </div>
+    <div class="frow">
+      <div class="fg"><label>💰 Prix d'achat (€)</label><input type="number" id="iPold" placeholder="0.00" step="0.01" min="0" oninput="calcPrice()"></div>
+      <div class="fg"><label>🆕 Nouveau prix (€)</label><input type="number" id="iPnew" placeholder="0.00" step="0.01" min="0" oninput="calcPrice()"></div>
     </div>
-
-    <div class="form-row">
-      <div class="form-group">
-        <label>💰 Prix d'achat (€)</label>
-        <input type="number" id="iPriceOld" placeholder="0.00" step="0.01" min="0" oninput="calcPriceDiff()">
-      </div>
-      <div class="form-group">
-        <label>🆕 Nouveau prix (€)</label>
-        <input type="number" id="iPriceNew" placeholder="0.00" step="0.01" min="0" oninput="calcPriceDiff()">
-      </div>
-    </div>
-    <div id="iPriceDiff" style="display:none;margin-bottom:14px"></div>
-
-    <div class="form-group">
-      <label>Notes</label>
-      <textarea id="iNotes" placeholder="Remarques, recettes, origine..."></textarea>
-    </div>
-
-    <div class="form-group">
+    <div id="priceDiff" style="display:none;margin-bottom:12px"></div>
+    <div class="fg"><label>Notes</label><textarea id="iNotes" placeholder="Remarques, origine..."></textarea></div>
+    <div class="fg">
       <label>📷 Photo de l'article</label>
-      <input type="file" id="iPhotoFile" accept="image/*" capture="environment" style="display:none" onchange="handlePhoto('iPhotoFile','iPhotoPreview')">
-      <div onclick="document.getElementById('iPhotoFile').click()" id="iPhotoPlaceholder" class="photo-placeholder">📷 <span>Prendre une photo</span></div>
-      <img id="iPhotoPreview" class="photo-preview" style="display:none" onclick="document.getElementById('iPhotoFile').click()">
+      <input type="file" id="iPhotoF" accept="image/*" capture="environment" style="display:none" onchange="loadPhoto('iPhotoF','iPrev','iPph')">
+      <div id="iPph" class="photo-ph" onclick="document.getElementById('iPhotoF').click()"><span>📷</span><span>Prendre une photo</span></div>
+      <img id="iPrev" class="photo-prev" onclick="document.getElementById('iPhotoF').click()">
     </div>
-
-    <div class="form-group">
+    <div class="fg">
       <label>📍 Photo de l'emplacement</label>
-      <input type="file" id="iLocPhotoFile" accept="image/*" capture="environment" style="display:none" onchange="handlePhoto('iLocPhotoFile','iLocPhotoPreview')">
-      <div onclick="document.getElementById('iLocPhotoFile').click()" id="iLocPhotoPlaceholder" class="photo-placeholder">📍 <span>Photo du lieu de rangement</span></div>
-      <img id="iLocPhotoPreview" class="photo-preview" style="display:none" onclick="document.getElementById('iLocPhotoFile').click()">
+      <input type="file" id="iLocF" accept="image/*" capture="environment" style="display:none" onchange="loadPhoto('iLocF','iLprev','iLpph')">
+      <div id="iLpph" class="photo-ph" onclick="document.getElementById('iLocF').click()"><span>📍</span><span>Photo du rangement</span></div>
+      <img id="iLprev" class="photo-prev" onclick="document.getElementById('iLocF').click()">
     </div>
-
     <div style="display:flex;gap:8px;margin-top:4px">
-      <button class="btn btn-danger btn-sm" id="btnDeleteItem" style="display:none" onclick="deleteCurrentItem()">🗑️ Supprimer</button>
-      <button class="btn btn-primary" style="flex:1" onclick="saveItem()">💾 Enregistrer</button>
+      <button class="btn btn-d btn-sm" id="btnDelItem" style="display:none" onclick="delItem()">🗑 Supprimer</button>
+      <button class="btn btn-p" style="flex:1" onclick="saveItem()">💾 Enregistrer</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL: ADD WINE -->
-<div class="modal-overlay" id="modalWine">
+<!-- MODAL: DETAIL ARTICLE -->
+<div class="ov" id="mDetail">
   <div class="modal">
-    <div class="modal-header">
-      <h2 id="modalWineTitle">Ajouter un vin</h2>
-      <button class="modal-close" onclick="closeModal('modalWine')">Fermer</button>
+    <div class="mhdr">
+      <h2 id="detTitle">Détail</h2>
+      <button class="mclose" onclick="closeM('mDetail')">Fermer</button>
     </div>
+    <div id="detContent"></div>
+  </div>
+</div>
 
-    <div class="form-group">
-      <label>Type</label>
+<!-- MODAL: VIN -->
+<div class="ov" id="mWine">
+  <div class="modal">
+    <div class="mhdr">
+      <h2 id="mWineTitle">Ajouter un vin</h2>
+      <button class="mclose" onclick="closeM('mWine')">Fermer</button>
+    </div>
+    <div class="fg"><label>Type</label>
       <select id="wType">
-        <option value="rouge">🍷 Rouge</option>
-        <option value="blanc">🥂 Blanc</option>
-        <option value="rosé">🌸 Rosé</option>
-        <option value="champagne">✨ Champagne / Pétillant</option>
-        <option value="liqueur">🥃 Liqueur / Spiritueux</option>
-        <option value="autre">🍶 Autre</option>
+        <option value="rouge">🍷 Rouge</option><option value="blanc">🥂 Blanc</option>
+        <option value="rosé">🌸 Rosé</option><option value="champagne">✨ Champagne</option>
+        <option value="liqueur">🥃 Liqueur</option><option value="autre">🍶 Autre</option>
       </select>
     </div>
-
-    <div class="form-group">
-      <label>Nom / Appellation *</label>
-      <input type="text" id="wName" placeholder="Ex: Château Margaux, Sancerre...">
+    <div class="fg"><label>Nom / Appellation *</label><input type="text" id="wName" placeholder="Ex: Château Margaux"></div>
+    <div class="frow">
+      <div class="fg"><label>Producteur</label><input type="text" id="wProd" placeholder="Domaine..."></div>
+      <div class="fg"><label>Région</label><input type="text" id="wReg" placeholder="Bordeaux..."></div>
     </div>
-
-    <div class="form-row">
-      <div class="form-group">
-        <label>Producteur</label>
-        <input type="text" id="wProducer" placeholder="Domaine, château...">
-      </div>
-      <div class="form-group">
-        <label>Région</label>
-        <input type="text" id="wRegion" placeholder="Bordeaux, Bourgogne...">
-      </div>
+    <div class="frow">
+      <div class="fg"><label>Millésime</label><input type="number" id="wVint" placeholder="2020"></div>
+      <div class="fg"><label>Cépage</label><input type="text" id="wGrape" placeholder="Cabernet..."></div>
     </div>
-
-    <div class="form-row">
-      <div class="form-group">
-        <label>Millésime</label>
-        <input type="number" id="wVintage" placeholder="2020" min="1900" max="2099">
-      </div>
-      <div class="form-group">
-        <label>Cépage principal</label>
-        <input type="text" id="wGrape" placeholder="Cabernet, Pinot...">
+    <div class="frow">
+      <div class="fg"><label>Bouteilles</label><input type="number" id="wQty" value="1" min="0"></div>
+      <div class="fg"><label>Prix (€)</label><input type="number" id="wPrice" placeholder="0.00" step="0.01"></div>
+    </div>
+    <div class="fg"><label>Ma note</label>
+      <div style="display:flex;gap:6px" id="wStars">
+        <span class="rstar" onclick="setWineRating(1)">★</span>
+        <span class="rstar" onclick="setWineRating(2)">★</span>
+        <span class="rstar" onclick="setWineRating(3)">★</span>
+        <span class="rstar" onclick="setWineRating(4)">★</span>
+        <span class="rstar" onclick="setWineRating(5)">★</span>
       </div>
     </div>
-
-    <div class="form-row">
-      <div class="form-group">
-        <label>Nombre de bouteilles</label>
-        <input type="number" id="wQty" value="1" min="0">
-      </div>
-      <div class="form-group">
-        <label>Prix (€)</label>
-        <input type="number" id="wPrice" placeholder="0.00" step="0.01">
-      </div>
+    <div class="fg"><label>Notes de dégustation</label><textarea id="wTasting" placeholder="Arômes, goût..."></textarea></div>
+    <div class="fg"><label>Date d'acquisition</label><input type="date" id="wAcq"></div>
+    <div class="fg"><label>Emplacement</label><input type="text" id="wLoc" placeholder="Cave, étagère..."></div>
+    <div class="fg">
+      <label>📷 Photo</label>
+      <input type="file" id="wPhotoF" accept="image/*" capture="environment" style="display:none" onchange="loadPhoto('wPhotoF','wPrev','wPph')">
+      <div id="wPph" class="photo-ph" onclick="document.getElementById('wPhotoF').click()"><span>📷</span></div>
+      <img id="wPrev" class="photo-prev" onclick="document.getElementById('wPhotoF').click()">
     </div>
-
-    <div class="form-group">
-      <label>Ma note</label>
-      <div class="rating-input" id="ratingStars">
-        <span onclick="setRating(1)">★</span>
-        <span onclick="setRating(2)">★</span>
-        <span onclick="setRating(3)">★</span>
-        <span onclick="setRating(4)">★</span>
-        <span onclick="setRating(5)">★</span>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label>Notes de dégustation</label>
-      <textarea id="wTasting" placeholder="Arômes, goût, finale..."></textarea>
-    </div>
-
-    <div class="form-group">
-      <label>Date d'acquisition</label>
-      <input type="date" id="wAcqDate">
-    </div>
-
-    <div class="form-group">
-      <label>Emplacement (cave, frigo, etc.)</label>
-      <input type="text" id="wLocation" placeholder="Cave, étagère 2...">
-    </div>
-
-    <div class="form-group">
-      <label>📷 Photo de la bouteille</label>
-      <input type="file" id="wPhotoFile" accept="image/*" capture="environment" style="display:none" onchange="handlePhoto('wPhotoFile','wPhotoPreview')">
-      <div onclick="document.getElementById('wPhotoFile').click()" id="wPhotoPlaceholder" class="photo-placeholder">📷 <span>Prendre une photo</span></div>
-      <img id="wPhotoPreview" class="photo-preview" style="display:none" onclick="document.getElementById('wPhotoFile').click()">
-    </div>
-
     <div style="display:flex;gap:8px;margin-top:4px">
-      <button class="btn btn-danger btn-sm" id="btnDeleteWine" style="display:none" onclick="deleteCurrentWine()">🗑️ Supprimer</button>
-      <button class="btn btn-wine" style="flex:1" onclick="saveWine()">💾 Enregistrer</button>
+      <button class="btn btn-d btn-sm" id="btnDelWine" style="display:none" onclick="delWine()">🗑 Supprimer</button>
+      <button class="btn btn-w" style="flex:1" onclick="saveWine()">💾 Enregistrer</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL: ITEM DETAIL -->
-<div class="modal-overlay" id="modalDetail">
+<!-- MODAL: ALERTES -->
+<div class="ov" id="mAlerts">
   <div class="modal">
-    <div class="modal-header">
-      <h2 id="detailTitle">Détail</h2>
-      <button class="modal-close" onclick="closeModal('modalDetail')">Fermer</button>
-    </div>
-    <div id="detailContent"></div>
+    <div class="mhdr"><h2>🔴 Alertes</h2><button class="mclose" onclick="closeM('mAlerts')">Fermer</button></div>
+    <div id="alertContent"></div>
   </div>
 </div>
 
-<!-- MODAL: ADD CATEGORY -->
-<div class="modal-overlay" id="modalCat">
-  <div class="modal">
-    <div class="modal-header">
-      <h2>Nouvelle catégorie</h2>
-      <button class="modal-close" onclick="closeModal('modalCat')">Fermer</button>
-    </div>
-    <div class="form-group">
-      <label>Nom</label>
-      <input type="text" id="catName" placeholder="Ex: Congélateur, Épicerie...">
-    </div>
-    <div class="form-group">
-      <label>Emoji / Icône</label>
-      <input type="text" id="catIcon" placeholder="🧊" maxlength="2">
-    </div>
-    <div class="form-group">
-      <label>Couleur</label>
-      <input type="color" id="catColor" value="#6c63ff" style="height:40px;padding:2px 4px">
-    </div>
-    <button class="btn btn-primary btn-block" onclick="saveCategory()">Enregistrer</button>
-  </div>
-</div>
-
-<!-- MODAL: ADD LOCATION -->
-<div class="modal-overlay" id="modalLoc">
-  <div class="modal">
-    <div class="modal-header">
-      <h2>Nouvel emplacement</h2>
-      <button class="modal-close" onclick="closeModal('modalLoc')">Fermer</button>
-    </div>
-    <div class="form-group">
-      <label>Nom</label>
-      <input type="text" id="locName" placeholder="Ex: Congélateur, Placard 1...">
-    </div>
-    <div class="form-group">
-      <label>Emoji</label>
-      <input type="text" id="locIcon" placeholder="🧊" maxlength="2">
-    </div>
-    <button class="btn btn-primary btn-block" onclick="saveLocation()">Enregistrer</button>
-  </div>
-</div>
-
-<!-- MODAL: GLOBAL SEARCH -->
-<div class="modal-overlay" id="modalSearch">
+<!-- MODAL: RECHERCHE GLOBALE -->
+<div class="ov" id="mSearch">
   <div class="modal" style="max-height:95vh">
-    <div class="modal-header">
-      <h2>Recherche globale</h2>
-      <button class="modal-close" onclick="closeModal('modalSearch')">Fermer</button>
+    <div class="mhdr"><h2>🔍 Recherche</h2><button class="mclose" onclick="closeM('mSearch')">Fermer</button></div>
+    <div class="sbar" style="margin-bottom:12px">
+      <input type="text" id="gSearch" placeholder="Nom, catégorie, notes..." oninput="doSearch()" autofocus>
     </div>
-    <div class="search-bar" style="margin-bottom:12px">
-      <input type="text" id="globalSearch" placeholder="Nom, catégorie, emplacement, notes..." oninput="doGlobalSearch()" autofocus>
-    </div>
-    <div id="globalResults"></div>
+    <div id="gResults"></div>
+  </div>
+</div>
+
+<!-- MODAL: CATÉGORIE -->
+<div class="ov" id="mCat">
+  <div class="modal">
+    <div class="mhdr"><h2>Nouvelle catégorie</h2><button class="mclose" onclick="closeM('mCat')">Fermer</button></div>
+    <div class="fg"><label>Nom</label><input type="text" id="catName" placeholder="Ex: Congélateur"></div>
+    <div class="fg"><label>Emoji</label><input type="text" id="catEmoji" placeholder="🧊" maxlength="2"></div>
+    <div class="fg"><label>Couleur</label><input type="color" id="catColor" value="#6366f1" style="height:42px;padding:3px 5px"></div>
+    <button class="btn btn-p btn-bl" onclick="saveCat()">Enregistrer</button>
+  </div>
+</div>
+
+<!-- MODAL: EMPLACEMENT -->
+<div class="ov" id="mLoc">
+  <div class="modal">
+    <div class="mhdr"><h2>Nouvel emplacement</h2><button class="mclose" onclick="closeM('mLoc')">Fermer</button></div>
+    <div class="fg"><label>Nom</label><input type="text" id="locName" placeholder="Ex: Placard cuisine"></div>
+    <div class="fg"><label>Emoji</label><input type="text" id="locEmoji" placeholder="🚪" maxlength="2"></div>
+    <button class="btn btn-p btn-bl" onclick="saveLoc()">Enregistrer</button>
   </div>
 </div>
 
 <script>
-// ============================================================
-// DATABASE (IndexedDB)
-// ============================================================
-let db;
-const DB_NAME = 'MonInventaire';
-const DB_VERSION = 1;
+// =====================================================================
+// BASE DE DONNÉES — IndexedDB
+// =====================================================================
+var DB, DB_VER = 3;
 
-function initDB() {
-  return new Promise((resolve, reject) => {
-    const req = indexedDB.open(DB_NAME, DB_VERSION);
-    req.onupgradeneeded = e => {
-      const d = e.target.result;
-      if (!d.objectStoreNames.contains('items')) {
-        const s = d.createObjectStore('items', { keyPath: 'id' });
-        s.createIndex('name', 'name', { unique: false });
-        s.createIndex('categories', 'categories', { unique: false, multiEntry: true });
-      }
-      if (!d.objectStoreNames.contains('wines')) {
-        d.createObjectStore('wines', { keyPath: 'id' });
-      }
-      if (!d.objectStoreNames.contains('categories')) {
-        d.createObjectStore('categories', { keyPath: 'id' });
-      }
-      if (!d.objectStoreNames.contains('locations')) {
-        d.createObjectStore('locations', { keyPath: 'id' });
-      }
-      if (!d.objectStoreNames.contains('shopping')) {
-        d.createObjectStore('shopping', { keyPath: 'id' });
-      }
+function openDB() {
+  return new Promise(function(res, rej) {
+    var r = indexedDB.open('MonInventaire', DB_VER);
+    r.onupgradeneeded = function(e) {
+      var d = e.target.result;
+      // Supprimer les anciens stores si présents (ancienne version)
+      var oldStores = ['categories','locations','shopping'];
+      oldStores.forEach(function(s){ if(d.objectStoreNames.contains(s)) d.deleteObjectStore(s); });
+      // Créer les nouveaux stores
+      if (!d.objectStoreNames.contains('items'))    { var s = d.createObjectStore('items',{keyPath:'id'}); s.createIndex('name','name'); }
+      if (!d.objectStoreNames.contains('wines'))    d.createObjectStore('wines',{keyPath:'id'});
+      if (!d.objectStoreNames.contains('cats'))     d.createObjectStore('cats',{keyPath:'id'});
+      if (!d.objectStoreNames.contains('locs'))     d.createObjectStore('locs',{keyPath:'id'});
+      if (!d.objectStoreNames.contains('shop'))     d.createObjectStore('shop',{keyPath:'id'});
     };
-    req.onsuccess = e => { db = e.target.result; resolve(); };
-    req.onerror = () => reject(req.error);
+    r.onsuccess = function(e) { DB = e.target.result; res(); };
+    r.onerror   = function()  { rej(r.error); };
   });
 }
 
-function dbGetAll(store) {
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(store, 'readonly');
-    const req = tx.objectStore(store).getAll();
-    req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
+function all(store) {
+  return new Promise(function(res,rej) {
+    var tx = DB.transaction(store,'readonly');
+    var r  = tx.objectStore(store).getAll();
+    r.onsuccess = function() { res(r.result); };
+    r.onerror   = function() { rej(r.error); };
   });
 }
 
-function dbPut(store, obj) {
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(store, 'readwrite');
-    const req = tx.objectStore(store).put(obj);
-    req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
+function put(store, obj) {
+  return new Promise(function(res,rej) {
+    var tx = DB.transaction(store,'readwrite');
+    var r  = tx.objectStore(store).put(obj);
+    r.onsuccess = function() { res(); };
+    r.onerror   = function() { rej(r.error); };
   });
 }
 
-function dbDelete(store, id) {
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(store, 'readwrite');
-    const req = tx.objectStore(store).delete(id);
-    req.onsuccess = () => resolve();
-    req.onerror = () => reject(req.error);
+function del(store, id) {
+  return new Promise(function(res,rej) {
+    var tx = DB.transaction(store,'readwrite');
+    var r  = tx.objectStore(store).delete(id);
+    r.onsuccess = function() { res(); };
+    r.onerror   = function() { rej(r.error); };
   });
 }
 
 function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
 
-// ============================================================
-// STATE
-// ============================================================
-let allItems = [];
-let allWines = [];
-let allCategories = [];
-let allLocations = [];
-let allShopping = [];
-let currentItemId = null;
-let currentWineId = null;
-let currentWineRating = 0;
-let currentSort = 'name';
-let currentFilter = 'all';
-let currentWineFilter = 'all';
-let settings = { dark: true, alerts: true, confirm: true };
+// =====================================================================
+// ÉTAT GLOBAL
+// =====================================================================
+var items=[], wines=[], cats=[], locs=[], shopList=[];
+var curSort='name', curFilter='all', curWineFilter='all';
+var curPage=0, PAGE_SIZE=50;
+var editItemId=null, editWineId=null, wineRating=0;
+var srResults=[], srIdx=-1; // résultats de recherche pour navigation
+var cfg = { confirm:true, alerts:true };
 
-// ============================================================
-// WINE FOOD PAIRING DATABASE
-// ============================================================
-const WINE_PAIRINGS = {
-  rouge: {
-    label: 'Vin rouge',
-    pairs: ['Viande rouge', 'Agneau', 'Fromages affinés', 'Gibier', 'Charcuterie', 'Pizza', 'Pâtes bolognaise'],
-    avoid: ['Poisson cru', 'Fruits de mer']
-  },
-  blanc: {
-    label: 'Vin blanc',
-    pairs: ['Poisson', 'Fruits de mer', 'Volaille', 'Fromages de chèvre', 'Risotto', 'Légumes grillés', 'Sushi'],
-    avoid: ['Viande rouge grasse']
-  },
-  rosé: {
-    label: 'Vin rosé',
-    pairs: ['Charcuterie', 'Salades', 'Pizza', 'Grillades légères', 'Fromages frais', 'Tapas'],
-    avoid: []
-  },
-  champagne: {
-    label: 'Champagne / Pétillant',
-    pairs: ['Huîtres', 'Foie gras', 'Saumon fumé', 'Fromage', 'Fruits de mer', 'Apéritif'],
-    avoid: []
-  },
-  liqueur: {
-    label: 'Liqueur / Spiritueux',
-    pairs: ['Dessert au chocolat', 'Café', 'Glace', 'Cigare'],
-    avoid: []
-  }
-};
-
-const FOOD_WINE_MAP = {
-  viande_rouge: ['rouge'],
-  viande_blanche: ['blanc', 'rosé'],
-  poisson: ['blanc'],
-  foie_gras: ['champagne', 'blanc'],
-  fromage: ['rouge', 'blanc', 'champagne'],
-  dessert_chocolat: ['liqueur', 'rouge'],
-  dessert_fruit: ['blanc', 'champagne'],
-  charcuterie: ['rouge', 'rosé'],
-  risotto: ['blanc'],
-  sushi: ['blanc'],
-  gibier: ['rouge'],
-  aperitif: ['champagne', 'rosé', 'blanc']
-};
-
-// ============================================================
-// NAVIGATION
-// ============================================================
-function navigate(view, btn) {
-  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('view-' + view).classList.add('active');
-  if (btn) btn.classList.add('active');
-  const titles = { home: 'Mon Inventaire', inventory: 'Inventaire', wine: 'Cave à vins', shopping: 'Liste de courses', more: 'Plus' };
-  document.getElementById('headerTitle').textContent = titles[view] || 'Mon Inventaire';
-  if (view === 'home') renderHome();
-  if (view === 'inventory') renderInventory();
-  if (view === 'wine') renderWines();
-  if (view === 'shopping') renderShopping();
-  if (view === 'more') renderMore();
+// =====================================================================
+// NAVIGATION PRINCIPALE
+// =====================================================================
+function goTo(v, btn) {
+  document.querySelectorAll('.view').forEach(function(el) { el.classList.remove('active'); });
+  document.querySelectorAll('.nb').forEach(function(el)   { el.classList.remove('on'); });
+  document.getElementById('v-'+v).classList.add('active');
+  if (btn) btn.classList.add('on');
+  var titles = {home:'Mon Inventaire',inv:'Inventaire',wine:'Cave à vins',shop:'Liste de courses',more:'Plus'};
+  document.getElementById('hdrTitle').textContent = titles[v] || 'Mon Inventaire';
+  if (v==='home') renderHome();
+  if (v==='inv')  renderInv();
+  if (v==='wine') renderWineView();
+  if (v==='shop') renderShop();
+  if (v==='more') renderMore();
 }
 
-// ============================================================
-// HOME VIEW
-// ============================================================
+// =====================================================================
+// MODALS
+// =====================================================================
+function openM(id)  { document.getElementById(id).classList.add('open'); }
+function closeM(id) { document.getElementById(id).classList.remove('open'); }
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.ov').forEach(function(ov) {
+    ov.addEventListener('click', function(e) { if (e.target===ov) closeM(ov.id); });
+  });
+});
+
+// =====================================================================
+// ACCUEIL
+// =====================================================================
 async function renderHome() {
-  allItems = await dbGetAll('items');
-  allWines = await dbGetAll('wines');
+  items = await all('items');
+  wines = await all('wines');
+  locs  = await all('locs');
 
-  const total = allItems.length + allWines.length;
-  const alerts = allItems.filter(i => i.alertEnabled && i.qty <= i.alertThreshold);
-  const today = new Date(); today.setHours(0,0,0,0);
-  const in7 = new Date(today); in7.setDate(in7.getDate() + 7);
-  const expiringSoon = allItems.filter(i => i.expDate && new Date(i.expDate) <= in7 && new Date(i.expDate) >= today);
-  const expired = allItems.filter(i => i.expDate && new Date(i.expDate) < today);
+  var today = new Date(); today.setHours(0,0,0,0);
+  var in7   = new Date(today); in7.setDate(in7.getDate()+7);
+  var expired   = items.filter(function(i) { return i.expDate && new Date(i.expDate) < today; });
+  var lowStock  = items.filter(function(i) { return i.alertOn && i.qty <= i.alertTh; });
+  var soonExp   = items.filter(function(i) { return i.expDate && new Date(i.expDate)>=today && new Date(i.expDate)<=in7; });
 
-  // Update badge
-  const badgeCount = alerts.length + expired.length;
-  const badge = document.getElementById('alertBadge');
-  badge.textContent = badgeCount;
-  badge.style.display = badgeCount > 0 ? '' : 'none';
+  // Badge
+  var badgeN = expired.length + lowStock.length;
+  var badge = document.getElementById('alertBadge');
+  badge.textContent = badgeN;
+  badge.style.display = badgeN > 0 ? '' : 'none';
 
   // Stats
-  document.getElementById('statsGrid').innerHTML = `
-    <div class="stat-card"><div class="stat-num">${total}</div><div class="stat-label">Articles</div></div>
-    <div class="stat-card"><div class="stat-num" style="color:var(--accent2)">${alerts.length}</div><div class="stat-label">Alertes stock</div></div>
-    <div class="stat-card"><div class="stat-num" style="color:var(--wine)">${allWines.length}</div><div class="stat-label">Bouteilles</div></div>
-    <div class="stat-card"><div class="stat-num" style="color:var(--warn)">${expired.length}</div><div class="stat-label">Expirés</div></div>
-  `;
+  document.getElementById('statsGrid').innerHTML =
+    scard(items.length + wines.length, 'Articles', 'var(--accent)') +
+    scard(lowStock.length,             'Stock faible', 'var(--accent2)') +
+    scard(wines.length,                'Bouteilles', 'var(--wine2)') +
+    scard(expired.length,              'Expirés', 'var(--warn)');
 
-  // Alerts
-  const ac = document.getElementById('alertsContainer');
-  if (alerts.length === 0 && expired.length === 0) {
-    ac.innerHTML = '<div class="alert alert-success"><span>✅</span><span>Aucune alerte de stock.</span></div>';
+  // Alertes
+  var ha = document.getElementById('homeAlerts');
+  if (lowStock.length===0 && expired.length===0) {
+    ha.innerHTML = alBox('s','✅ Aucune alerte de stock.');
   } else {
-    ac.innerHTML = '';
-    expired.forEach(i => {
-      const daysOver = Math.floor((Date.now() - new Date(i.expDate)) / (1000*60*60*24));
-      ac.innerHTML += `<div class="alert alert-danger" onclick="openEditModal('${i.id}')" style="cursor:pointer">⚠️ <b>${i.name}</b> — expiré le ${formatDate(i.expDate)} <b>(il y a ${daysOver} jour${daysOver>1?'s':''})</b></div>`;
+    var h = '';
+    expired.forEach(function(i) {
+      var d = Math.floor((Date.now()-new Date(i.expDate))/(864e5));
+      h += '<div class="al al-d" style="cursor:pointer" onclick="openDetail(\''+i.id+'\')">⚠️ <b>'+i.name+'</b> — expiré le '+fDate(i.expDate)+' <b>(il y a '+d+' jour'+(d>1?'s':'')+')</b></div>';
     });
-    alerts.forEach(i => {
-      ac.innerHTML += `<div class="alert alert-warn" onclick="openEditModal('${i.id}')" style="cursor:pointer">📦 <b>${i.name}</b> — stock faible (${i.qty} ${i.unit})</div>`;
+    lowStock.forEach(function(i) {
+      h += '<div class="al al-w" style="cursor:pointer" onclick="openDetail(\''+i.id+'\')">📦 <b>'+i.name+'</b> — stock faible ('+i.qty+' '+i.unit+')</div>';
     });
+    ha.innerHTML = h;
   }
 
-  // Expiring soon
-  const ec = document.getElementById('expiryContainer');
-  if (expiringSoon.length === 0) {
-    ec.innerHTML = '<div class="alert alert-info"><span>📅</span><span>Aucune expiration dans les 7 jours.</span></div>';
+  // Expirations proches
+  var he = document.getElementById('homeExpiry');
+  if (soonExp.length===0) {
+    he.innerHTML = alBox('i','📅 Aucune expiration dans les 7 jours.');
   } else {
-    ec.innerHTML = expiringSoon.map(i => `
-      <div class="date-item" onclick="openEditModal('${i.id}')" style="cursor:pointer">
-        <span class="date-badge soon">⏰ ${formatDate(i.expDate)}</span>
-        <span>${i.name} — ${i.qty} ${i.unit}</span>
-      </div>`).join('');
-  }
-
-  // Locations
-  allLocations = await dbGetAll('locations');
-  const locGrid = document.getElementById('locationGrid');
-  if (allLocations.length === 0) {
-    locGrid.innerHTML = '<p style="color:var(--text2);font-size:13px;grid-column:1/-1">Aucun emplacement configuré.</p>';
-  } else {
-    locGrid.innerHTML = allLocations.map(loc => {
-      const count = allItems.filter(i => i.locations && i.locations.includes(loc.id)).length;
-      return `<div class="location-card" onclick="filterByLocation('${loc.id}')">
-        <div class="loc-icon">${loc.icon || '📦'}</div>
-        <div class="loc-name">${loc.name}</div>
-        <div class="loc-count">${count} article(s)</div>
-      </div>`;
+    he.innerHTML = soonExp.map(function(i) {
+      return '<div class="ditem" onclick="openDetail(\''+i.id+'\')" style="cursor:pointer">'
+        +'<span class="dbadge soon">'+fDate(i.expDate)+'</span>'
+        +'<span>'+i.name+' — '+i.qty+' '+i.unit+'</span></div>';
     }).join('');
   }
 
-  // Recent
-  const sorted = [...allItems].sort((a,b) => (b.createdAt||0)-(a.createdAt||0)).slice(0, 5);
-  const rc = document.getElementById('recentContainer');
-  if (sorted.length === 0) {
-    rc.innerHTML = '<div class="empty"><div class="emoji">📦</div><p>Aucun article. Commencez par en ajouter un !</p></div>';
+  // Emplacements
+  var hl = document.getElementById('homeLocs');
+  if (locs.length===0) {
+    hl.innerHTML = '<p style="color:var(--text2);font-size:13px;grid-column:1/-1">Aucun emplacement. Créez-en dans "Plus".</p>';
   } else {
-    rc.innerHTML = sorted.map(i => renderItemRow(i)).join('');
+    hl.innerHTML = locs.map(function(l) {
+      var c = items.filter(function(i) { return i.locs && i.locs.includes(l.id); }).length;
+      return '<div class="lcard" onclick="filterByLoc(\''+l.id+'\')">'
+        +'<div style="font-size:28px;margin-bottom:3px">'+(l.emoji||'📍')+'</div>'
+        +'<div style="font-size:13px;font-weight:600">'+l.name+'</div>'
+        +'<div style="font-size:11px;color:var(--text2)">'+c+' article(s)</div></div>';
+    }).join('');
+  }
+
+  // Récents
+  var sorted = items.slice().sort(function(a,b) { return (b.createdAt||0)-(a.createdAt||0); }).slice(0,6);
+  var hr = document.getElementById('homeRecent');
+  if (sorted.length===0) {
+    hr.innerHTML = '<div class="empty"><div class="ei">📦</div><p>Aucun article. Commencez par en ajouter un !</p></div>';
+  } else {
+    cats = await all('cats');
+    hr.innerHTML = sorted.map(function(i) { return itemRow(i, false); }).join('');
   }
 }
 
-function filterByLocation(locId) {
-  currentFilter = locId;
-  navigate('inventory', document.querySelectorAll('.nav-btn')[1]);
+function scard(n,lbl,color) {
+  return '<div class="scard"><div class="snum" style="color:'+color+'">'+n+'</div><div class="slbl">'+lbl+'</div></div>';
+}
+function alBox(t,msg) { return '<div class="al al-'+t+'">'+msg+'</div>'; }
+function filterByLoc(id) { curFilter=id; goTo('inv',document.querySelectorAll('.nb')[1]); }
+
+// =====================================================================
+// INVENTAIRE
+// =====================================================================
+async function renderInv() {
+  items = await all('items');
+  cats  = await all('cats');
+  locs  = await all('locs');
+  curPage = 0;
+  renderFilters();
+  renderInvList();
 }
 
-// ============================================================
-// INVENTORY VIEW
-// ============================================================
-async function renderInventory() {
-  allItems = await dbGetAll('items');
-  allCategories = await dbGetAll('categories');
-  allLocations = await dbGetAll('locations');
-  renderFilterBar();
-  renderInventoryList();
-}
-
-function renderFilterBar() {
-  const bar = document.getElementById('filterBar');
-  bar.innerHTML = `<div class="filter-chip ${currentFilter==='all'?'active':''}" onclick="setFilter('all',this)">Tous (${allItems.length})</div>`;
-  allCategories.forEach(cat => {
-    const count = allItems.filter(i => i.categories && i.categories.includes(cat.id)).length;
-    bar.innerHTML += `<div class="filter-chip ${currentFilter===cat.id?'active':''}" onclick="setFilter('${cat.id}',this)">${cat.icon||''} ${cat.name} (${count})</div>`;
+function renderFilters() {
+  var bar = document.getElementById('invFilters');
+  var h = '<div class="fc '+(curFilter==='all'?'on':'')+'" onclick="setFilter(\'all\',this)">Tous ('+items.length+')</div>';
+  cats.forEach(function(c) {
+    var n = items.filter(function(i) { return i.cats && i.cats.includes(c.id); }).length;
+    h += '<div class="fc '+(curFilter===c.id?'on':'')+'" onclick="setFilter(\''+c.id+'\',this)">'+(c.emoji||'')+ ' '+c.name+' ('+n+')</div>';
   });
-  allLocations.forEach(loc => {
-    const count = allItems.filter(i => i.locations && i.locations.includes(loc.id)).length;
-    bar.innerHTML += `<div class="filter-chip ${currentFilter===loc.id?'active':''}" onclick="setFilter('${loc.id}',this)">${loc.icon||''} ${loc.name} (${count})</div>`;
+  locs.forEach(function(l) {
+    var n = items.filter(function(i) { return i.locs && i.locs.includes(l.id); }).length;
+    h += '<div class="fc '+(curFilter===l.id?'on':'')+'" onclick="setFilter(\''+l.id+'\',this)">'+(l.emoji||'')+ ' '+l.name+' ('+n+')</div>';
   });
+  bar.innerHTML = h;
 }
 
 function setFilter(f, el) {
-  currentFilter = f;
-  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-  if (el) el.classList.add('active');
-  renderInventoryList();
+  curFilter = f;
+  document.querySelectorAll('#invFilters .fc').forEach(function(e) { e.classList.remove('on'); });
+  if (el) el.classList.add('on');
+  curPage = 0;
+  renderInvList();
 }
 
-function filterInventory() { renderInventoryList(); }
+function sortInv(s) { curSort=s; curPage=0; renderInvList(); }
+function filterInv() { curPage=0; renderInvList(); }
 
-function sortInventory(field) {
-  currentSort = field;
-  renderInventoryList();
-}
+function renderInvList() {
+  var q = (document.getElementById('invSearch').value||'').toLowerCase();
+  var list = items.slice();
 
-function renderInventoryList() {
-  const search = (document.getElementById('invSearch').value || '').toLowerCase();
-  let items = [...allItems];
-
-  // Filter
-  if (currentFilter !== 'all') {
-    items = items.filter(i =>
-      (i.categories && i.categories.includes(currentFilter)) ||
-      (i.locations && i.locations.includes(currentFilter))
-    );
+  if (curFilter !== 'all') {
+    list = list.filter(function(i) {
+      return (i.cats && i.cats.includes(curFilter)) || (i.locs && i.locs.includes(curFilter));
+    });
+  }
+  if (q) {
+    list = list.filter(function(i) {
+      return i.name.toLowerCase().includes(q) || (i.notes||'').toLowerCase().includes(q);
+    });
   }
 
-  // Search
-  if (search) {
-    items = items.filter(i =>
-      i.name.toLowerCase().includes(search) ||
-      (i.notes && i.notes.toLowerCase().includes(search)) ||
-      (i.categories && i.categories.some(c => {
-        const cat = allCategories.find(x => x.id === c);
-        return cat && cat.name.toLowerCase().includes(search);
-      }))
-    );
-  }
-
-  // Sort
-  items.sort((a, b) => {
-    if (currentSort === 'name') return a.name.localeCompare(b.name, 'fr');
-    if (currentSort === 'qty') return b.qty - a.qty;
-    if (currentSort === 'date') return (b.createdAt||0) - (a.createdAt||0);
-    if (currentSort === 'expiry') {
+  list.sort(function(a,b) {
+    if (curSort==='name')   return a.name.localeCompare(b.name,'fr');
+    if (curSort==='qty')    return b.qty - a.qty;
+    if (curSort==='date')   return (b.createdAt||0)-(a.createdAt||0);
+    if (curSort==='expiry') {
       if (!a.expDate) return 1; if (!b.expDate) return -1;
-      return new Date(a.expDate) - new Date(b.expDate);
+      return new Date(a.expDate)-new Date(b.expDate);
     }
     return 0;
   });
 
-  const container = document.getElementById('inventoryList');
-  if (items.length === 0) {
-    container.innerHTML = '<div class="empty"><div class="emoji">🔍</div><p>Aucun article trouvé.</p></div>';
-    return;
+  var box = document.getElementById('invList');
+  if (list.length===0) { box.innerHTML='<div class="empty"><div class="ei">🔍</div><p>Aucun article trouvé.</p></div>'; return; }
+
+  var pages = Math.ceil(list.length/PAGE_SIZE);
+  if (curPage>=pages) curPage=0;
+  var page = list.slice(curPage*PAGE_SIZE, (curPage+1)*PAGE_SIZE);
+
+  var h = page.map(function(i) { return itemRow(i,true); }).join('');
+
+  if (pages>1) {
+    h += '<div class="pag">'
+      +'<button class="btn btn-g btn-sm" onclick="flipPage(-1)"'+(curPage===0?' disabled':'')+'>◀ Préc.</button>'
+      +'<span>'+(curPage+1)+' / '+pages+' <small>('+list.length+' art.)</small></span>'
+      +'<button class="btn btn-g btn-sm" onclick="flipPage(1)"'+(curPage===pages-1?' disabled':'')+'>Suiv. ▶</button>'
+      +'</div>';
   }
-
-  // Pagination — 50 articles par page pour tenir 50 000 sans ralentir
-  const PAGE = 50;
-  const totalPages = Math.ceil(items.length / PAGE);
-  if (currentPage >= totalPages) currentPage = 0;
-  const pageItems = items.slice(currentPage * PAGE, (currentPage + 1) * PAGE);
-
-  var pagNav = '';
-  if (totalPages > 1) {
-    pagNav = '<div style="display:flex;align-items:center;justify-content:center;gap:12px;padding:10px 0;border-top:1px solid var(--border);margin-top:8px">'
-      + '<button class="btn btn-ghost btn-sm" onclick="changePage(-1)" ' + (currentPage===0?'disabled':'') + '>◀ Préc.</button>'
-      + '<span style="font-size:13px;color:var(--text2)">' + (currentPage+1) + ' / ' + totalPages + ' (' + items.length + ' articles)</span>'
-      + '<button class="btn btn-ghost btn-sm" onclick="changePage(1)" ' + (currentPage===totalPages-1?'disabled':'') + '>Suiv. ▶</button>'
-      + '</div>';
-  }
-
-  container.innerHTML = pageItems.map(function(i) { return renderItemRow(i); }).join('') + pagNav;
+  box.innerHTML = h;
 }
 
-var currentPage = 0;
-function changePage(dir) {
-  currentPage += dir;
-  renderInventoryList();
+function flipPage(d) {
+  curPage += d;
+  renderInvList();
   document.getElementById('content').scrollTop = 0;
 }
 
-function renderItemRow(item) {
-  const today = new Date(); today.setHours(0,0,0,0);
-  const isExpired = item.expDate && new Date(item.expDate) < today;
-  const isLow = item.alertEnabled && item.qty <= item.alertThreshold;
-  const qtyClass = isExpired ? 'qty-warn' : isLow ? 'qty-low' : '';
-
-  const catNames = (item.categories || []).map(cid => {
-    const c = allCategories.find(x => x.id === cid);
-    return c ? `<span class="tag">${c.icon||''} ${c.name}</span>` : '';
+// =====================================================================
+// RENDU D'UNE LIGNE D'ARTICLE
+// =====================================================================
+function itemRow(item, showDel) {
+  var today = new Date(); today.setHours(0,0,0,0);
+  var isExp = item.expDate && new Date(item.expDate) < today;
+  var isLow = item.alertOn && item.qty <= item.alertTh;
+  var qcls  = isExp ? 'exp' : isLow ? 'low' : '';
+  var daysSince = item.acqDate ? Math.floor((Date.now()-new Date(item.acqDate))/864e5) : null;
+  var meta = [];
+  if (daysSince!==null) meta.push(daysSince+'j');
+  if (item.expDate)     meta.push('Exp: '+fDate(item.expDate));
+  if (isExp)            meta.push('⚠️ EXPIRÉ');
+  var catTags = (item.cats||[]).map(function(id) {
+    var c = cats.find(function(x) { return x.id===id; });
+    return c ? '<span class="tag">'+(c.emoji||'')+ ' '+c.name+'</span>' : '';
   }).join('');
 
-  const daysSince = item.acqDate ? Math.floor((Date.now() - new Date(item.acqDate))/(1000*60*60*24)) : null;
-  const meta = [
-    daysSince !== null ? `${daysSince}j` : '',
-    item.expDate ? `Exp: ${formatDate(item.expDate)}` : '',
-    isExpired ? '⚠️ EXPIRÉ' : ''
-  ].filter(Boolean).join(' · ');
+  var delbtn = showDel
+    ? '<button class="del-btn" onclick="quickDel(\''+item.id+'\',event)" title="Supprimer">🗑</button>'
+    : '';
 
-  return '<div class="item-row">'
-    + '<div class="item-icon" style="background:rgba(108,99,255,.15);cursor:pointer" onclick="openItemDetail(\'' + item.id + '\')">' + getItemEmoji(item) + '</div>'
-    + '<div class="item-info" style="cursor:pointer" onclick="openItemDetail(\'' + item.id + '\')">'
-    + '<div class="item-name">' + item.name + '</div>'
-    + '<div class="item-meta">' + meta + '</div>'
-    + '<div class="tags">' + catNames + '</div>'
-    + '</div>'
-    + '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">'
-    + '<div class="item-qty" style="cursor:pointer" onclick="openItemDetail(\'' + item.id + '\')">'
-    + '<div class="qty ' + qtyClass + '">' + item.qty + '</div>'
-    + '<div class="unit">' + item.unit + '</div>'
-    + '</div>'
-    + '<button onclick="quickDelete(\'' + item.id + '\',event)" style="background:none;border:none;color:var(--text2);font-size:18px;cursor:pointer;padding:2px 4px;line-height:1" title="Supprimer">🗑</button>'
-    + '</div>'
-    + '</div>';
+  return '<div class="irow">'
+    +'<div class="iico" onclick="openDetail(\''+item.id+'\')">'+ itemEmoji(item)+'</div>'
+    +'<div class="iinfo" onclick="openDetail(\''+item.id+'\')">'
+    +'<div class="iname">'+item.name+'</div>'
+    +'<div class="imeta">'+meta.join(' · ')+'</div>'
+    +'<div class="tags">'+catTags+'</div>'
+    +'</div>'
+    +'<div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px">'
+    +'<div class="iqty" onclick="openDetail(\''+item.id+'\')" style="cursor:pointer">'
+    +'<div class="n '+qcls+'">'+item.qty+'</div>'
+    +'<div class="u">'+item.unit+'</div>'
+    +'</div>'
+    +delbtn
+    +'</div>'
+    +'</div>';
 }
 
-function getItemEmoji(item) {
+// =====================================================================
+// EMOJI AUTOMATIQUE
+// =====================================================================
+function itemEmoji(item) {
   if (item.emoji) return item.emoji;
-  var n = item.name.toLowerCase();
-  // Viandes
-  if (n.includes('poulet') || n.includes('volaille') || n.includes('dinde')) return '🍗';
-  if (n.includes('jambon')) return '🍖';
-  if (n.includes('bœuf') || n.includes('boeuf') || n.includes('steak') || n.includes('entrecôte') || n.includes('entrecote')) return '🥩';
-  if (n.includes('porc') || n.includes('côte') || n.includes('lardons') || n.includes('bacon')) return '🥓';
-  if (n.includes('agneau') || n.includes('veau')) return '🍖';
-  if (n.includes('saucisse') || n.includes('saucisson') || n.includes('merguez')) return '🌭';
-  if (n.includes('charcuterie') || n.includes('salami') || n.includes('chorizo')) return '🍖';
-  // Poissons
-  if (n.includes('saumon')) return '🐟';
-  if (n.includes('thon')) return '🐠';
-  if (n.includes('crevette') || n.includes('fruits de mer')) return '🦐';
-  if (n.includes('moule') || n.includes('huître')) return '🦪';
-  if (n.includes('poisson')) return '🐟';
-  // Produits laitiers
-  if (n.includes('lait')) return '🥛';
-  if (n.includes('beurre')) return '🧈';
-  if (n.includes('fromage') || n.includes('gruyère') || n.includes('emmental') || n.includes('camembert') || n.includes('brie')) return '🧀';
-  if (n.includes('yaourt') || n.includes('yogourt')) return '🥛';
-  if (n.includes('crème') || n.includes('creme')) return '🥛';
-  if (n.includes('œuf') || n.includes('oeuf') || n.includes('oeufs')) return '🥚';
-  // Légumes
-  if (n.includes('salade') || n.includes('laitue') || n.includes('roquette')) return '🥗';
-  if (n.includes('tomate')) return '🍅';
-  if (n.includes('carotte')) return '🥕';
-  if (n.includes('oignon')) return '🧅';
-  if (n.includes('ail')) return '🧄';
-  if (n.includes('pomme de terre') || n.includes('patate')) return '🥔';
-  if (n.includes('courgette') || n.includes('concombre')) return '🥒';
-  if (n.includes('poivron')) return '🫑';
-  if (n.includes('épinard') || n.includes('brocoli') || n.includes('chou')) return '🥦';
-  if (n.includes('champignon')) return '🍄';
-  if (n.includes('avocat')) return '🥑';
-  if (n.includes('maïs')) return '🌽';
-  if (n.includes('légume')) return '🥦';
-  // Fruits
-  if (n.includes('pomme')) return '🍎';
-  if (n.includes('banane')) return '🍌';
-  if (n.includes('orange') || n.includes('clémentine') || n.includes('mandarine')) return '🍊';
-  if (n.includes('citron')) return '🍋';
-  if (n.includes('fraise')) return '🍓';
-  if (n.includes('raisin')) return '🍇';
-  if (n.includes('pêche') || n.includes('abricot')) return '🍑';
-  if (n.includes('cerise')) return '🍒';
-  if (n.includes('ananas')) return '🍍';
-  if (n.includes('mangue') || n.includes('mango')) return '🥭';
-  if (n.includes('pastèque') || n.includes('melon')) return '🍉';
-  if (n.includes('fruit')) return '🍎';
-  // Boissons
-  if (n.includes('eau')) return '💧';
-  if (n.includes('café')) return '☕';
-  if (n.includes('thé') || n.includes('infusion')) return '🍵';
-  if (n.includes('jus')) return '🧃';
-  if (n.includes('soda') || n.includes('coca') || n.includes('pepsi') || n.includes('limonade')) return '🥤';
-  if (n.includes('bière')) return '🍺';
-  if (n.includes('vin')) return '🍷';
-  if (n.includes('champagne') || n.includes('prosecco')) return '🥂';
-  if (n.includes('whisky') || n.includes('rhum') || n.includes('vodka') || n.includes('gin')) return '🥃';
-  if (n.includes('water') || n.includes('focus')) return '🥤';
-  if (n.includes('boisson') || n.includes('sirop')) return '🥤';
-  // Épicerie / Cuisine
-  if (n.includes('pain') || n.includes('baguette') || n.includes('brioche')) return '🍞';
-  if (n.includes('pâtes') || n.includes('spaghetti') || n.includes('rigatoni')) return '🍝';
-  if (n.includes('riz')) return '🍚';
-  if (n.includes('farine')) return '🌾';
-  if (n.includes('sucre')) return '🍬';
-  if (n.includes('sel') || n.includes('poivre') || n.includes('épice')) return '🧂';
-  if (n.includes('huile')) return '🫒';
-  if (n.includes('vinaigre')) return '🍶';
-  if (n.includes('moutarde') || n.includes('ketchup') || n.includes('mayonnaise')) return '🧴';
-  if (n.includes('confiture') || n.includes('miel')) return '🍯';
-  if (n.includes('chocolat') || n.includes('nutella')) return '🍫';
-  if (n.includes('gâteau') || n.includes('cake') || n.includes('tarte') || n.includes('biscuit') || n.includes('cookie')) return '🍪';
-  if (n.includes('céréale')) return '🥣';
-  if (n.includes('conserve') || n.includes('bocal')) return '🥫';
-  if (n.includes('soupe') || n.includes('bouillon')) return '🍲';
-  if (n.includes('pizza')) return '🍕';
-  if (n.includes('sandwich') || n.includes('toast')) return '🥪';
-  // Hygiène / Maison
-  if (n.includes('shampooing') || n.includes('shampoo') || n.includes('savon') || n.includes('gel douche')) return '🧴';
-  if (n.includes('dentifrice') || n.includes('brosse')) return '🪥';
-  if (n.includes('lessive') || n.includes('détergent') || n.includes('nettoyant')) return '🧹';
-  if (n.includes('papier toilette') || n.includes('papier wc')) return '🧻';
-  if (n.includes('médicament') || n.includes('comprimé') || n.includes('sirop')) return '💊';
+  var n = (item.name||'').toLowerCase();
+  var map = [
+    [['jambon','charcuterie','salami','chorizo','saucisson'],'🍖'],
+    [['saucisse','merguez','hot dog'],'🌭'],
+    [['poulet','volaille','dinde'],'🍗'],
+    [['bœuf','boeuf','steak','entrecôte','entrecote','veau','agneau'],'🥩'],
+    [['lardons','bacon','porc','côte de porc'],'🥓'],
+    [['saumon'],'🐟'],['thon','🐠'],
+    [['crevette','fruits de mer'],'🦐'],
+    [['moule','huître'],'🦪'],
+    [['poisson'],'🐟'],
+    [['lait'],'🥛'],
+    [['beurre'],'🧈'],
+    [['fromage','gruyère','emmental','camembert','brie','gouda'],'🧀'],
+    [['yaourt','yogourt'],'🥛'],
+    [['crème','creme'],'🥛'],
+    [['œuf','oeuf'],'🥚'],
+    [['salade','laitue','roquette','endive'],'🥗'],
+    [['tomate'],'🍅'],
+    [['carotte'],'🥕'],
+    [['oignon'],'🧅'],
+    [['ail'],'🧄'],
+    [['pomme de terre','patate'],'🥔'],
+    [['courgette','concombre'],'🥒'],
+    [['poivron'],'🫑'],
+    [['épinard','brocoli','chou'],'🥦'],
+    [['champignon'],'🍄'],
+    [['avocat'],'🥑'],
+    [['maïs'],'🌽'],
+    [['légume'],'🥦'],
+    [['pomme'],'🍎'],
+    [['banane'],'🍌'],
+    [['orange','clémentine','mandarine'],'🍊'],
+    [['citron'],'🍋'],
+    [['fraise'],'🍓'],
+    [['raisin'],'🍇'],
+    [['pêche','abricot'],'🍑'],
+    [['cerise'],'🍒'],
+    [['ananas'],'🍍'],
+    [['mangue','mango'],'🥭'],
+    [['pastèque','melon'],'🍉'],
+    [['fruit'],'🍎'],
+    [['eau'],'💧'],
+    [['café'],'☕'],
+    [['thé','infusion'],'🍵'],
+    [['jus'],'🧃'],
+    [['soda','coca','pepsi','limonade','water','focus'],'🥤'],
+    [['bière'],'🍺'],
+    [['vin'],'🍷'],
+    [['champagne','prosecco'],'🥂'],
+    [['whisky','rhum','vodka','gin','cognac'],'🥃'],
+    [['boisson','sirop'],'🥤'],
+    [['pain','baguette','brioche'],'🍞'],
+    [['pâtes','spaghetti','tagliatelle','rigatoni'],'🍝'],
+    [['riz'],'🍚'],
+    [['farine'],'🌾'],
+    [['sucre'],'🍬'],
+    [['sel','poivre','épice'],'🧂'],
+    [['huile'],'🫒'],
+    [['vinaigre'],'🍶'],
+    [['moutarde','ketchup','mayonnaise'],'🧴'],
+    [['confiture','miel'],'🍯'],
+    [['chocolat','nutella'],'🍫'],
+    [['gâteau','cake','tarte','biscuit','cookie'],'🍪'],
+    [['céréale'],'🥣'],
+    [['conserve','bocal'],'🥫'],
+    [['soupe','bouillon'],'🍲'],
+    [['pizza'],'🍕'],
+    [['sandwich','toast'],'🥪'],
+    [['shampooing','shampoo','savon','gel douche'],'🧴'],
+    [['dentifrice','brosse'],'🪥'],
+    [['lessive','détergent','nettoyant'],'🧹'],
+    [['papier toilette','papier wc'],'🧻'],
+    [['médicament','comprimé'],'💊']
+  ];
+  for (var i=0;i<map.length;i++) {
+    var keys = Array.isArray(map[i][0]) ? map[i][0] : [map[i][0]];
+    for (var j=0;j<keys.length;j++) { if (n.includes(keys[j])) return map[i][1]; }
+  }
   return '📦';
 }
 
-function calcPriceDiff() {
-  var pOld = parseFloat(document.getElementById('iPriceOld').value);
-  var pNew = parseFloat(document.getElementById('iPriceNew').value);
-  var box = document.getElementById('iPriceDiff');
-  if (!pOld || !pNew || isNaN(pOld) || isNaN(pNew)) { box.style.display = 'none'; return; }
-  var diff = pNew - pOld;
-  var pct = ((diff / pOld) * 100).toFixed(1);
-  var isUp = diff > 0;
-  var color = isUp ? 'var(--danger)' : 'var(--success)';
-  var arrow = isUp ? '📈' : '📉';
-  var sign = isUp ? '+' : '';
-  box.style.display = '';
-  box.innerHTML = '<div class="alert" style="background:rgba(0,0,0,.2);border:1px solid ' + color + ';color:' + color + '">'
-    + arrow + ' Différence : <b>' + sign + diff.toFixed(2) + ' €</b> — <b>' + sign + pct + ' %</b>'
-    + (isUp ? ' ↑ plus cher' : ' ↓ moins cher')
-    + '</div>';
-}
+// =====================================================================
+// DÉTAIL ARTICLE
+// =====================================================================
+async function openDetail(id, fromSearch) {
+  var item = items.find(function(i) { return i.id===id; });
+  if (!item) { items = await all('items'); item = items.find(function(i) { return i.id===id; }); }
+  if (!item) return;
 
-function buildPriceBlock(priceOld, priceNew) {
-  if (!priceOld && !priceNew) return '';
-  var html = '<div class="card" style="margin-bottom:10px">';
-  html += '<div style="font-size:13px;color:var(--text2);margin-bottom:8px;font-weight:600">💰 PRIX</div>';
-  html += '<div style="display:flex;gap:12px;flex-wrap:wrap">';
-  if (priceOld) html += '<div><div style="font-size:11px;color:var(--text2)">Prix d\'achat</div><div style="font-size:20px;font-weight:700">' + priceOld.toFixed(2) + ' €</div></div>';
-  if (priceNew) html += '<div><div style="font-size:11px;color:var(--text2)">Nouveau prix</div><div style="font-size:20px;font-weight:700">' + priceNew.toFixed(2) + ' €</div></div>';
-  if (priceOld && priceNew) {
-    var diff = priceNew - priceOld;
-    var pct = ((diff / priceOld) * 100).toFixed(1);
-    var isUp = diff > 0;
-    var color = isUp ? 'var(--danger)' : 'var(--success)';
-    var sign = isUp ? '+' : '';
-    html += '<div style="border-left:2px solid var(--border);padding-left:12px"><div style="font-size:11px;color:var(--text2)">Évolution</div>';
-    html += '<div style="font-size:20px;font-weight:700;color:' + color + '">' + sign + diff.toFixed(2) + ' €</div>';
-    html += '<div style="font-size:13px;font-weight:600;color:' + color + '">' + sign + pct + ' %</div></div>';
+  var today = new Date(); today.setHours(0,0,0,0);
+  var isExp = item.expDate && new Date(item.expDate) < today;
+  var daysSince = item.acqDate ? Math.floor((Date.now()-new Date(item.acqDate))/864e5) : null;
+  var catNames = (item.cats||[]).map(function(id) { var c=cats.find(function(x){return x.id===id;}); return c?'<span class="tag">'+(c.emoji||'')+' '+c.name+'</span>':''; }).join('');
+  var locNames = (item.locs||[]).map(function(id) { var l=locs.find(function(x){return x.id===id;}); return l?'<span class="tag">📍 '+l.name+'</span>':''; }).join('');
+
+  var pct   = item.alertTh>0 ? Math.min(100,item.qty/(item.alertTh*3)*100) : 100;
+  var pclr  = item.qty<=item.alertTh ? 'var(--danger)' : item.qty<=item.alertTh*2 ? 'var(--warn)' : 'var(--success)';
+
+  var navHtml = '';
+  if (fromSearch && srResults.length>1) {
+    navHtml = '<div class="snav">'
+      +'<button class="btn btn-g btn-sm" onclick="closeM(\'mDetail\');openM(\'mSearch\')">← Résultats</button>'
+      +'<button class="btn btn-g btn-sm" onclick="goSR('+(srIdx-1)+')"'+(srIdx===0?' disabled':'')+'>◀</button>'
+      +'<span>'+(srIdx+1)+' / '+srResults.length+'</span>'
+      +'<button class="btn btn-g btn-sm" onclick="goSR('+(srIdx+1)+')"'+(srIdx===srResults.length-1?' disabled':'')+'>▶</button>'
+      +'</div>';
   }
-  html += '</div></div>';
-  return html;
-}
 
-function buildAcqLine(acqDate, daysSince) {
-  if (!acqDate) return '';
-  var since = daysSince !== null ? ' — <b>il y a ' + daysSince + ' jour(s)</b>' : '';
-  return '<div class="alert alert-info" style="margin-bottom:8px">📅 Acquis le <b>' + formatDate(acqDate) + '</b>' + since + '</div>';
-}
+  var photoHtml = item.photo ? '<img src="'+item.photo+'" style="width:100%;height:200px;object-fit:cover;border-radius:12px;margin-bottom:12px">' : '';
+  var locPhotoHtml = item.locPhoto ? '<div class="stitle" style="margin-top:0">📍 Lieu de rangement</div><img src="'+item.locPhoto+'" style="width:100%;border-radius:10px;margin-bottom:12px">' : '';
 
-function buildWinePairings(pairing) {
-  if (!pairing) return '';
-  var spans = pairing.pairs.slice(0,4).map(function(p) { return '<span class="wine-pairing">' + p + '</span>'; }).join('');
-  return '<div class="wine-pairings">' + spans + '</div>';
-}
-
-function buildExpiredLine(expDate, isExpired) {
-  if (!expDate) return '';
-  var alertClass = isExpired ? 'alert-danger' : 'alert-warn';
-  var expFormatted = formatDate(expDate);
-  if (isExpired) {
-    var dOver = Math.floor((Date.now() - new Date(expDate)) / (1000 * 60 * 60 * 24));
-    var plural = dOver > 1 ? 's' : '';
-    return '<div class="alert ' + alertClass + '" style="margin-bottom:8px">⚠️ EXPIRÉ le <b>' + expFormatted + '</b> — <b>il y a ' + dOver + ' jour' + plural + '</b></div>';
+  var priceHtml = '';
+  if (item.priceOld || item.priceNew) {
+    priceHtml = '<div class="card" style="margin-bottom:10px"><div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px">💰 PRIX</div><div class="pblock">';
+    if (item.priceOld) priceHtml += '<div class="pval"><div class="pl">Prix d\'achat</div><div class="pv">'+item.priceOld.toFixed(2)+' €</div></div>';
+    if (item.priceNew) priceHtml += '<div class="pval"><div class="pl">Nouveau prix</div><div class="pv">'+item.priceNew.toFixed(2)+' €</div></div>';
+    if (item.priceOld && item.priceNew) {
+      var diff = item.priceNew - item.priceOld;
+      var pct2 = ((diff/item.priceOld)*100).toFixed(1);
+      var sign = diff>0?'+':'';
+      var clr2 = diff>0?'var(--danger)':'var(--success)';
+      priceHtml += '<div class="pval" style="border-left:2px solid var(--border);padding-left:12px">'
+        +'<div class="pl">Évolution</div>'
+        +'<div class="pv" style="color:'+clr2+'">'+sign+diff.toFixed(2)+' €</div>'
+        +'<div style="font-size:13px;font-weight:700;color:'+clr2+'">'+sign+pct2+' %</div>'
+        +'</div>';
+    }
+    priceHtml += '</div></div>';
   }
-  return '<div class="alert ' + alertClass + '" style="margin-bottom:8px">⏰ Expire le <b>' + expFormatted + '</b></div>';
-}
 
-// ============================================================
-// ITEM DETAIL
-// ============================================================
-async function openItemDetail(id, fromSearch) {
-  const item = allItems.find(i => i.id === id);
-  if (!item) return;
-
-  const today = new Date(); today.setHours(0,0,0,0);
-  const daysSince = item.acqDate ? Math.floor((Date.now() - new Date(item.acqDate))/(1000*60*60*24)) : null;
-  const isExpired = item.expDate && new Date(item.expDate) < today;
-  const catNames = (item.categories || []).map(cid => { const c = allCategories.find(x=>x.id===cid); return c?`<span class="tag">${c.icon||''} ${c.name}</span>`:''; }).join('');
-  const locNames = (item.locations || []).map(lid => { const l = allLocations.find(x=>x.id===lid); return l?`<span class="tag">📍 ${l.name}</span>`:''; }).join('');
-
-  // Progress bar for qty vs threshold
-  const pct = item.alertThreshold > 0 ? Math.min(100, (item.qty / (item.alertThreshold * 3)) * 100) : 100;
-  const pColor = item.qty <= item.alertThreshold ? 'var(--danger)' : item.qty <= item.alertThreshold * 2 ? 'var(--warn)' : 'var(--success)';
-
-  document.getElementById('detailTitle').textContent = item.name;
-  // Supprimer nav précédente
-  var oldNav = document.getElementById('searchNav');
-  if (oldNav) oldNav.remove();
-  document.getElementById('detailContent').innerHTML = `
-    ${item.photo ? `<img src="${item.photo}" class="detail-photo">` : ''}
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
-      <div style="font-size:48px">${getItemEmoji(item)}</div>
-      <div>
-        <div style="font-size:28px;font-weight:800;color:var(--accent)">${item.qty} <span style="font-size:16px;color:var(--text2)">${item.unit}</span></div>
-        <div style="font-size:12px;color:var(--text2)">Seuil d'alerte : ${item.alertThreshold} ${item.unit}</div>
-        <div class="progress-bar" style="width:120px"><div class="progress-fill" style="width:${pct}%;background:${pColor}"></div></div>
-      </div>
-    </div>
-
-    <div class="tags" style="margin-bottom:10px">${catNames} ${locNames}</div>
-
-    ${buildAcqLine(item.acqDate, daysSince)}
-    ${buildExpiredLine(item.expDate, isExpired)}
-    ${buildPriceBlock(item.priceOld, item.priceNew)}
-    ${item.notes ? '<div class="card" style="margin-bottom:10px"><p style="font-size:14px">' + item.notes + '</p></div>' : ''}
-    ${item.locPhoto ? `<div class="section-title" style="margin-top:0">📍 Lieu de rangement</div><img src="${item.locPhoto}" class="photo-preview" style="display:block;margin-bottom:12px">` : ''}
-
-    <div style="display:flex;gap:8px">
-      <button class="btn btn-ghost" style="flex:1" onclick="adjustQty('${item.id}',-1)">− Retirer</button>
-      <button class="btn btn-success" style="flex:1" onclick="adjustQty('${item.id}',1)">+ Ajouter</button>
-    </div>
-    <div style="display:flex;gap:8px;margin-top:8px">
-      <button class="btn btn-ghost btn-sm" style="flex:1" onclick="openEditModal('${item.id}');closeModal('modalDetail')">✏️ Modifier</button>
-      <button class="btn btn-danger btn-sm" style="flex:1" onclick="confirmDelete('${item.id}')">🗑️ Supprimer</button>
-    </div>
-  `;
-  openModal('modalDetail');
-  if (fromSearch) injectSearchNav();
-}
-
-async function adjustQty(id, delta) {
-  const item = allItems.find(i => i.id === id);
-  if (!item) return;
-  item.qty = Math.max(0, parseFloat(item.qty) + delta);
-  item.updatedAt = Date.now();
-  // Add to consumption history
-  if (!item.consumptionHistory) item.consumptionHistory = [];
-  item.consumptionHistory.push({ date: new Date().toISOString().slice(0,10), qty: delta });
-  await dbPut('items', item);
-  allItems = await dbGetAll('items');
-  openItemDetail(id);
-  refreshAlertBadge();
-}
-
-async function quickDelete(id, evt) {
-  evt.stopPropagation();
-  var item = allItems.find(function(i) { return i.id === id; });
-  if (!item) return;
-  if (settings.confirm && !confirm('Supprimer "' + item.name + '" ?')) return;
-  await dbDelete('items', id);
-  allItems = await dbGetAll('items');
-  renderInventoryList();
-  refreshAlertBadge();
-}
-
-async function confirmDelete(id) {
-  const item = allItems.find(i => i.id === id);
-  if (!item) return;
-  if (settings.confirm && !confirm(`Supprimer "${item.name}" ?`)) return;
-  await dbDelete('items', id);
-  closeModal('modalDetail');
-  allItems = await dbGetAll('items');
-  renderInventoryList();
-  renderHome();
-}
-
-// ============================================================
-// ADD / EDIT ITEM
-// ============================================================
-async function openAddModal() {
-  currentItemId = null;
-  document.getElementById('modalItemTitle').textContent = 'Ajouter un article';
-  document.getElementById('btnDeleteItem').style.display = 'none';
-  document.getElementById('iName').value = '';
-  document.getElementById('iQty').value = 1;
-  document.getElementById('iUnit').value = 'pièce(s)';
-  document.getElementById('iNotes').value = '';
-  document.getElementById('iAcqDate').value = new Date().toISOString().slice(0,10);
-  document.getElementById('iExpDate').value = '';
-  document.getElementById('iAlertThreshold').value = 1;
-  document.getElementById('iAlertEnabled').value = '1';
-  document.getElementById('iEmoji').value = '';
-  document.getElementById('iPriceOld').value = '';
-  document.getElementById('iPriceNew').value = '';
-  document.getElementById('iPriceDiff').style.display = 'none';
-  resetPhoto('iPhotoFile','iPhotoPreview','iPhotoPlaceholder');
-  resetPhoto('iLocPhotoFile','iLocPhotoPreview','iLocPhotoPlaceholder');
-  await renderCatChips([]);
-  await renderLocChips([]);
-  openModal('modalItem');
-}
-
-async function openEditModal(id) {
-  const item = allItems.find(i => i.id === id) || (await dbGetAll('items')).find(i => i.id === id);
-  if (!item) return;
-  currentItemId = id;
-  document.getElementById('modalItemTitle').textContent = 'Modifier l\'article';
-  document.getElementById('btnDeleteItem').style.display = '';
-  document.getElementById('iName').value = item.name;
-  document.getElementById('iQty').value = item.qty;
-  document.getElementById('iUnit').value = item.unit;
-  document.getElementById('iNotes').value = item.notes || '';
-  document.getElementById('iAcqDate').value = item.acqDate || '';
-  document.getElementById('iExpDate').value = item.expDate || '';
-  document.getElementById('iAlertThreshold').value = item.alertThreshold ?? 1;
-  document.getElementById('iAlertEnabled').value = item.alertEnabled ? '1' : '0';
-  document.getElementById('iEmoji').value = item.emoji || '';
-  document.getElementById('iPriceOld').value = item.priceOld || '';
-  document.getElementById('iPriceNew').value = item.priceNew || '';
-  calcPriceDiff();
-
-  if (item.photo) { document.getElementById('iPhotoPreview').src = item.photo; document.getElementById('iPhotoPreview').style.display=''; document.getElementById('iPhotoPlaceholder').style.display='none'; } else resetPhoto('iPhotoFile','iPhotoPreview','iPhotoPlaceholder');
-  if (item.locPhoto) { document.getElementById('iLocPhotoPreview').src = item.locPhoto; document.getElementById('iLocPhotoPreview').style.display=''; document.getElementById('iLocPhotoPlaceholder').style.display='none'; } else resetPhoto('iLocPhotoFile','iLocPhotoPreview','iLocPhotoPlaceholder');
-
-  await renderCatChips(item.categories || []);
-  await renderLocChips(item.locations || []);
-  openModal('modalItem');
-}
-
-async function renderCatChips(selected) {
-  allCategories = await dbGetAll('categories');
-  const container = document.getElementById('catChips');
-  container.innerHTML = allCategories.map(cat => `
-    <div class="cat-chip ${selected.includes(cat.id)?'selected':''}"
-         style="border-color:${cat.color||'#6c63ff'};color:${selected.includes(cat.id)?'white':(cat.color||'#6c63ff')};background:${selected.includes(cat.id)?(cat.color||'#6c63ff'):'transparent'}"
-         onclick="toggleCatChip(this,'${cat.id}','${cat.color||'#6c63ff'}')">
-      ${cat.icon||''} ${cat.name}
-    </div>`).join('');
-  if (allCategories.length === 0) container.innerHTML = '<span style="color:var(--text2);font-size:13px">Aucune catégorie. Créez-en dans "Plus".</span>';
-}
-
-function toggleCatChip(el, id, color) {
-  el.classList.toggle('selected');
-  if (el.classList.contains('selected')) { el.style.background = color; el.style.color = 'white'; }
-  else { el.style.background = 'transparent'; el.style.color = color; }
-}
-
-async function renderLocChips(selected) {
-  allLocations = await dbGetAll('locations');
-  const container = document.getElementById('locChips');
-  container.innerHTML = allLocations.map(loc => `
-    <div class="cat-chip ${selected.includes(loc.id)?'selected':''}"
-         style="border-color:#43e97b;color:${selected.includes(loc.id)?'white':'#43e97b'};background:${selected.includes(loc.id)?'#43e97b':'transparent'}"
-         onclick="toggleLocChip(this,'${loc.id}')">
-      ${loc.icon||''} ${loc.name}
-    </div>`).join('');
-  if (allLocations.length === 0) container.innerHTML = '<span style="color:var(--text2);font-size:13px">Aucun emplacement. Créez-en dans "Plus".</span>';
-}
-
-function toggleLocChip(el, id) {
-  el.classList.toggle('selected');
-  if (el.classList.contains('selected')) { el.style.background = '#43e97b'; el.style.color = 'white'; }
-  else { el.style.background = 'transparent'; el.style.color = '#43e97b'; }
-}
-
-async function saveItem() {
-  const name = document.getElementById('iName').value.trim();
-  if (!name) { alert('Le nom est obligatoire.'); return; }
-  const qty = parseFloat(document.getElementById('iQty').value) || 0;
-
-  // Check duplicate
-  if (!currentItemId) {
-    const existing = allItems.find(i => i.name.toLowerCase() === name.toLowerCase());
-    if (existing) {
-      if (!confirm(`"${name}" existe déjà (${existing.qty} ${existing.unit}). Continuer quand même ?`)) return;
+  var notesHtml = item.notes ? '<div class="card" style="margin-bottom:10px"><p style="font-size:14px">'+item.notes+'</p></div>' : '';
+  var acqHtml   = item.acqDate ? '<div class="al al-i" style="margin-bottom:8px">📅 Acquis le <b>'+fDate(item.acqDate)+'</b>'+(daysSince!==null?' — il y a <b>'+daysSince+' jour(s)</b>':'')+'</div>' : '';
+  var expHtml   = '';
+  if (item.expDate) {
+    if (isExp) {
+      var dOver = Math.floor((Date.now()-new Date(item.expDate))/864e5);
+      expHtml = '<div class="al al-d" style="margin-bottom:8px">⚠️ EXPIRÉ le <b>'+fDate(item.expDate)+'</b> — il y a <b>'+dOver+' jour'+(dOver>1?'s':'')+'</b></div>';
+    } else {
+      expHtml = '<div class="al al-w" style="margin-bottom:8px">⏰ Expire le <b>'+fDate(item.expDate)+'</b></div>';
     }
   }
 
-  const selectedCats = [...document.querySelectorAll('#catChips .cat-chip.selected')].map(el => {
-    const m = el.getAttribute('onclick').match(/'([^']+)'/);
-    return m ? m[1] : null;
-  }).filter(Boolean);
+  document.getElementById('detTitle').textContent = item.name;
+  document.getElementById('detContent').innerHTML = navHtml
+    + photoHtml
+    + '<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">'
+    + '<div style="font-size:48px">'+itemEmoji(item)+'</div>'
+    + '<div><div style="font-size:30px;font-weight:800;color:var(--accent)">'+item.qty+' <span style="font-size:16px;color:var(--text2)">'+item.unit+'</span></div>'
+    + '<div style="font-size:12px;color:var(--text2)">Seuil: '+item.alertTh+' '+item.unit+'</div>'
+    + '<div class="pbar" style="width:120px"><div class="pfill" style="width:'+pct+'%;background:'+pclr+'"></div></div>'
+    + '</div></div>'
+    + '<div class="tags" style="margin-bottom:10px">'+catNames+' '+locNames+'</div>'
+    + acqHtml + expHtml + priceHtml + notesHtml + locPhotoHtml
+    + '<div style="display:flex;gap:8px">'
+    + '<button class="btn btn-g" style="flex:1" onclick="adjQty(\''+item.id+'\',-1)">− Retirer</button>'
+    + '<button class="btn btn-s" style="flex:1" onclick="adjQty(\''+item.id+'\',1)">+ Ajouter</button>'
+    + '</div>'
+    + '<div style="display:flex;gap:8px;margin-top:8px">'
+    + '<button class="btn btn-g btn-sm" style="flex:1" onclick="closeM(\'mDetail\');openEditItem(\''+item.id+'\')">✏️ Modifier</button>'
+    + '<button class="btn btn-d btn-sm" style="flex:1" onclick="delFromDetail(\''+item.id+'\')">🗑 Supprimer</button>'
+    + '</div>';
 
-  const selectedLocs = [...document.querySelectorAll('#locChips .cat-chip.selected')].map(el => {
-    const m = el.getAttribute('onclick').match(/'([^']+)'/);
-    return m ? m[1] : null;
-  }).filter(Boolean);
+  openM('mDetail');
+}
 
-  const photo = document.getElementById('iPhotoPreview').style.display !== 'none' ? document.getElementById('iPhotoPreview').src : null;
-  const locPhoto = document.getElementById('iLocPhotoPreview').style.display !== 'none' ? document.getElementById('iLocPhotoPreview').src : null;
+function goSR(idx) {
+  if (idx<0||idx>=srResults.length) return;
+  srIdx = idx;
+  var r = srResults[idx];
+  openDetail(r.id, true);
+}
 
-  const item = {
-    id: currentItemId || uid(),
-    name,
-    qty,
-    unit: document.getElementById('iUnit').value,
-    categories: selectedCats,
-    locations: selectedLocs,
-    acqDate: document.getElementById('iAcqDate').value || null,
-    expDate: document.getElementById('iExpDate').value || null,
-    alertThreshold: parseFloat(document.getElementById('iAlertThreshold').value) || 0,
-    alertEnabled: document.getElementById('iAlertEnabled').value === '1',
-    emoji: document.getElementById('iEmoji').value.trim() || null,
-    notes: document.getElementById('iNotes').value.trim(),
-    priceOld: parseFloat(document.getElementById('iPriceOld').value) || null,
-    priceNew: parseFloat(document.getElementById('iPriceNew').value) || null,
-    photo: photo && photo.startsWith('data:') ? photo : (currentItemId ? (allItems.find(i=>i.id===currentItemId)||{}).photo : null),
-    locPhoto: locPhoto && locPhoto.startsWith('data:') ? locPhoto : (currentItemId ? (allItems.find(i=>i.id===currentItemId)||{}).locPhoto : null),
-    createdAt: currentItemId ? ((allItems.find(i=>i.id===currentItemId)||{}).createdAt || Date.now()) : Date.now(),
-    updatedAt: Date.now(),
-    consumptionHistory: currentItemId ? ((allItems.find(i=>i.id===currentItemId)||{}).consumptionHistory || []) : []
+async function adjQty(id, d) {
+  var item = items.find(function(i){return i.id===id;});
+  if (!item) return;
+  item.qty = Math.max(0, parseFloat(item.qty)+d);
+  item.updatedAt = Date.now();
+  await put('items', item);
+  openDetail(id, srResults.length>0);
+  refreshBadge();
+}
+
+async function delFromDetail(id) {
+  var item = items.find(function(i){return i.id===id;});
+  if (!item) return;
+  if (cfg.confirm && !confirm('Supprimer "'+item.name+'" ?')) return;
+  await del('items', id);
+  closeM('mDetail');
+  items = await all('items');
+  renderInvList();
+  refreshBadge();
+}
+
+async function quickDel(id, evt) {
+  evt.stopPropagation();
+  var item = items.find(function(i){return i.id===id;});
+  if (!item) return;
+  if (cfg.confirm && !confirm('Supprimer "'+item.name+'" ?')) return;
+  await del('items', id);
+  items = await all('items');
+  renderInvList();
+  refreshBadge();
+}
+
+// =====================================================================
+// FORMULAIRE ARTICLE
+// =====================================================================
+async function openAddItem() {
+  editItemId = null;
+  document.getElementById('mItemTitle').textContent = 'Ajouter un article';
+  document.getElementById('btnDelItem').style.display = 'none';
+  document.getElementById('dupWarn').style.display = 'none';
+  document.getElementById('iName').value='';
+  document.getElementById('iEmoji').value='';
+  document.getElementById('iQty').value=1;
+  document.getElementById('iUnit').value='pièce(s)';
+  document.getElementById('iNotes').value='';
+  document.getElementById('iAcq').value=new Date().toISOString().slice(0,10);
+  document.getElementById('iExp').value='';
+  document.getElementById('iAlert').value=1;
+  document.getElementById('iAlertOn').value='1';
+  document.getElementById('iPold').value='';
+  document.getElementById('iPnew').value='';
+  document.getElementById('priceDiff').style.display='none';
+  resetPhoto('iPhotoF','iPrev','iPph');
+  resetPhoto('iLocF','iLprev','iLpph');
+  cats = await all('cats'); locs = await all('locs');
+  buildChips('catChips', cats, [], 'var(--accent)');
+  buildChips('locChips', locs, [], 'var(--accent3)');
+  openM('mItem');
+}
+
+async function openEditItem(id) {
+  var item = items.find(function(i){return i.id===id;});
+  if (!item) { items=await all('items'); item=items.find(function(i){return i.id===id;}); }
+  if (!item) return;
+  editItemId = id;
+  document.getElementById('mItemTitle').textContent = 'Modifier';
+  document.getElementById('btnDelItem').style.display = '';
+  document.getElementById('dupWarn').style.display = 'none';
+  document.getElementById('iName').value    = item.name;
+  document.getElementById('iEmoji').value   = item.emoji||'';
+  document.getElementById('iQty').value     = item.qty;
+  document.getElementById('iUnit').value    = item.unit;
+  document.getElementById('iNotes').value   = item.notes||'';
+  document.getElementById('iAcq').value     = item.acqDate||'';
+  document.getElementById('iExp').value     = item.expDate||'';
+  document.getElementById('iAlert').value   = item.alertTh!=null?item.alertTh:1;
+  document.getElementById('iAlertOn').value = item.alertOn?'1':'0';
+  document.getElementById('iPold').value    = item.priceOld||'';
+  document.getElementById('iPnew').value    = item.priceNew||'';
+  calcPrice();
+  if (item.photo)    { document.getElementById('iPrev').src=item.photo; document.getElementById('iPrev').style.display=''; document.getElementById('iPph').style.display='none'; }
+  else resetPhoto('iPhotoF','iPrev','iPph');
+  if (item.locPhoto) { document.getElementById('iLprev').src=item.locPhoto; document.getElementById('iLprev').style.display=''; document.getElementById('iLpph').style.display='none'; }
+  else resetPhoto('iLocF','iLprev','iLpph');
+  cats = await all('cats'); locs = await all('locs');
+  buildChips('catChips', cats, item.cats||[], 'var(--accent)');
+  buildChips('locChips', locs, item.locs||[], 'var(--accent3)');
+  openM('mItem');
+}
+
+function buildChips(containerId, list, selected, color) {
+  var box = document.getElementById(containerId);
+  if (list.length===0) { box.innerHTML='<span style="color:var(--text2);font-size:13px">Aucun élément. Créez-en dans "Plus".</span>'; return; }
+  box.innerHTML = list.map(function(item) {
+    var on = selected.includes(item.id);
+    var c  = item.color || color;
+    return '<div class="chip '+(on?'on':'')+'" style="border-color:'+c+';color:'+(on?'#fff':c)+';background:'+(on?c:'transparent')+'" onclick="toggleChip(this,\''+c+'\')">'+(item.emoji||'')+' '+item.name+'</div>';
+  }).join('');
+}
+
+function toggleChip(el, color) {
+  el.classList.toggle('on');
+  if (el.classList.contains('on')) { el.style.background=color; el.style.color='#fff'; }
+  else { el.style.background='transparent'; el.style.color=color; }
+}
+
+// Vérification doublon en temps réel
+async function checkDup() {
+  var name = document.getElementById('iName').value.trim().toLowerCase();
+  if (!name || editItemId) { document.getElementById('dupWarn').style.display='none'; return; }
+  var all_ = await all('items');
+  var dup = all_.find(function(i) { return i.name.toLowerCase()===name; });
+  document.getElementById('dupWarn').style.display = dup ? '' : 'none';
+}
+
+async function saveItem() {
+  var name = document.getElementById('iName').value.trim();
+  if (!name) { alert('Le nom est obligatoire.'); return; }
+
+  // Doublon — signal mais ne bloque pas
+  if (!editItemId) {
+    var allI = await all('items');
+    var dup = allI.find(function(i) { return i.name.toLowerCase()===name.toLowerCase(); });
+    if (dup) {
+      var ok = confirm('"'+name+'" existe déjà ('+dup.qty+' '+dup.unit+'). Voulez-vous quand même créer un nouvel article ?');
+      if (!ok) return;
+    }
+  }
+
+  var selCats = getSelectedChips('catChips');
+  var selLocs = getSelectedChips('locChips');
+  var photo    = getPhoto('iPrev');
+  var locPhoto = getPhoto('iLprev');
+
+  var obj = {
+    id:        editItemId || uid(),
+    name:      name,
+    emoji:     document.getElementById('iEmoji').value.trim() || null,
+    qty:       parseFloat(document.getElementById('iQty').value)||0,
+    unit:      document.getElementById('iUnit').value,
+    cats:      selCats,
+    locs:      selLocs,
+    acqDate:   document.getElementById('iAcq').value||null,
+    expDate:   document.getElementById('iExp').value||null,
+    alertTh:   parseFloat(document.getElementById('iAlert').value)||0,
+    alertOn:   document.getElementById('iAlertOn').value==='1',
+    priceOld:  parseFloat(document.getElementById('iPold').value)||null,
+    priceNew:  parseFloat(document.getElementById('iPnew').value)||null,
+    notes:     document.getElementById('iNotes').value.trim(),
+    photo:     photo,
+    locPhoto:  locPhoto,
+    createdAt: editItemId ? ((items.find(function(i){return i.id===editItemId;})||{}).createdAt||Date.now()) : Date.now(),
+    updatedAt: Date.now()
   };
 
-  await dbPut('items', item);
-  closeModal('modalItem');
-  allItems = await dbGetAll('items');
-  renderInventoryList();
-  refreshAlertBadge();
+  await put('items', obj);
+  closeM('mItem');
+  items = await all('items');
+  renderInvList();
+  refreshBadge();
 }
 
-async function deleteCurrentItem() {
-  if (!currentItemId) return;
-  const item = allItems.find(i => i.id === currentItemId);
-  if (settings.confirm && !confirm(`Supprimer "${item?.name}" ?`)) return;
-  await dbDelete('items', currentItemId);
-  closeModal('modalItem');
-  allItems = await dbGetAll('items');
-  renderInventoryList();
-  refreshAlertBadge();
+async function delItem() {
+  if (!editItemId) return;
+  var item = items.find(function(i){return i.id===editItemId;});
+  if (cfg.confirm && !confirm('Supprimer "'+item.name+'" ?')) return;
+  await del('items', editItemId);
+  closeM('mItem');
+  items = await all('items');
+  renderInvList();
+  refreshBadge();
 }
 
-// ============================================================
-// WINES VIEW
-// ============================================================
-async function renderWines() {
-  allWines = await dbGetAll('wines');
+function getSelectedChips(containerId) {
+  var ids = [];
+  document.querySelectorAll('#'+containerId+' .chip.on').forEach(function(el) {
+    var onclick = el.getAttribute('onclick');
+    // Le texte du chip contient le nom — on récupère l'id depuis la liste
+    var name = el.textContent.trim();
+    var store = containerId==='catChips' ? cats : locs;
+    var found = store.find(function(c) { return ((c.emoji||'')+' '+c.name).trim()===name || c.name===name; });
+    if (found) ids.push(found.id);
+  });
+  return ids;
+}
+
+function getPhoto(previewId) {
+  var img = document.getElementById(previewId);
+  return img.style.display!=='none' && img.src && img.src.startsWith('data:') ? img.src : null;
+}
+
+// =====================================================================
+// PRIX — CALCUL DIFFÉRENCE
+// =====================================================================
+function calcPrice() {
+  var po = parseFloat(document.getElementById('iPold').value);
+  var pn = parseFloat(document.getElementById('iPnew').value);
+  var box = document.getElementById('priceDiff');
+  if (!po || !pn || isNaN(po) || isNaN(pn)) { box.style.display='none'; return; }
+  var diff = pn-po;
+  var pct  = ((diff/po)*100).toFixed(1);
+  var up   = diff>0;
+  var clr  = up?'var(--danger)':'var(--success)';
+  var sign = up?'+':'';
+  box.style.display = '';
+  box.innerHTML = '<div class="al" style="background:rgba(0,0,0,.2);border:1px solid '+clr+';color:'+clr+'">'
+    +(up?'📈':'📉')+' Différence : <b>'+sign+diff.toFixed(2)+' €</b> — <b>'+sign+pct+' %</b>'+(up?' ↑ plus cher':' ↓ moins cher')+'</div>';
+}
+
+// =====================================================================
+// VINS
+// =====================================================================
+async function renderWineView() {
+  wines = await all('wines');
   renderWineList();
 }
 
-function setWineFilter(f, el) {
-  currentWineFilter = f;
-  document.querySelectorAll('#view-wine .filter-chip').forEach(c => c.classList.remove('active'));
-  if (el) el.classList.add('active');
+function wFilter(f, el) {
+  curWineFilter = f;
+  document.querySelectorAll('#v-wine .fbar .fc').forEach(function(e) { e.classList.remove('on'); });
+  if (el) el.classList.add('on');
   renderWineList();
 }
 
 function filterWines() { renderWineList(); }
 
 function renderWineList() {
-  const search = (document.getElementById('wineSearch').value || '').toLowerCase();
-  let wines = [...allWines];
-  if (currentWineFilter !== 'all') wines = wines.filter(w => w.type === currentWineFilter);
-  if (search) wines = wines.filter(w =>
-    w.name.toLowerCase().includes(search) ||
-    (w.producer||'').toLowerCase().includes(search) ||
-    (w.region||'').toLowerCase().includes(search) ||
-    (w.grape||'').toLowerCase().includes(search) ||
-    (w.vintage||'').toString().includes(search)
-  );
+  var q = (document.getElementById('wSearch').value||'').toLowerCase();
+  var list = wines.slice();
+  if (curWineFilter!=='all') list = list.filter(function(w) { return w.type===curWineFilter; });
+  if (q) list = list.filter(function(w) {
+    return w.name.toLowerCase().includes(q)||
+      (w.producer||'').toLowerCase().includes(q)||
+      (w.region||'').toLowerCase().includes(q)||
+      (w.grape||'').toLowerCase().includes(q)||
+      String(w.vintage||'').includes(q);
+  });
 
-  const container = document.getElementById('wineList');
-  if (wines.length === 0) {
-    container.innerHTML = '<div class="empty"><div class="emoji">🍷</div><p>Aucun vin trouvé.</p></div>';
-    return;
-  }
+  var box = document.getElementById('wineList');
+  if (list.length===0) { box.innerHTML='<div class="empty"><div class="ei">🍷</div><p>Aucun vin trouvé.</p></div>'; return; }
 
-  const typeEmoji = { rouge: '🍷', blanc: '🥂', rosé: '🌸', champagne: '✨', liqueur: '🥃', autre: '🍶' };
-  container.innerHTML = wines.map(w => {
-    const pairing = WINE_PAIRINGS[w.type];
-    const stars = '★'.repeat(w.rating||0) + '☆'.repeat(5-(w.rating||0));
-    const daysSince = w.acqDate ? Math.floor((Date.now()-new Date(w.acqDate))/(1000*60*60*24)) : null;
-    return `<div class="wine-card" onclick="openEditWineModal('${w.id}')">
-      ${w.photo ? `<img src="${w.photo}" style="width:100%;height:120px;object-fit:cover;border-radius:8px;margin-bottom:8px">` : ''}
-      <div style="display:flex;align-items:flex-start;gap:10px">
-        <div style="font-size:32px">${typeEmoji[w.type]||'🍷'}</div>
-        <div style="flex:1">
-          <div class="wine-name">${w.name}</div>
-          <div class="wine-details">${[w.producer, w.region, w.vintage].filter(Boolean).join(' · ')}</div>
-          ${w.grape ? `<div class="wine-details">${w.grape}</div>` : ''}
-          <div style="display:flex;align-items:center;gap:10px;margin-top:4px">
-            <div class="stars">${stars}</div>
-            <div style="font-size:13px;color:#cc8888">${w.qty} bouteille(s)</div>
-            ${w.price ? `<div style="font-size:13px;color:#cc8888">${w.price}€</div>` : ''}
-          </div>
-          ${daysSince !== null ? `<div style="font-size:11px;color:#cc8888;margin-top:2px">Acquis il y a ${daysSince}j</div>` : ''}
-        </div>
-      </div>
-      ${buildWinePairings(pairing)}
-    </div>`;
+  var emoji = {rouge:'🍷',blanc:'🥂',rosé:'🌸',champagne:'✨',liqueur:'🥃',autre:'🍶'};
+  box.innerHTML = list.map(function(w) {
+    var stars = '★'.repeat(w.rating||0)+'☆'.repeat(5-(w.rating||0));
+    var ds = w.acqDate ? Math.floor((Date.now()-new Date(w.acqDate))/864e5) : null;
+    var pairs = (WINE_PAIRS[w.type]||{}).pairs||[];
+    var pairHtml = pairs.slice(0,4).map(function(p) { return '<span class="wpair">'+p+'</span>'; }).join('');
+    return '<div class="wcard" onclick="openEditWine(\''+w.id+'\')">'
+      +(w.photo?'<img src="'+w.photo+'" style="width:100%;height:110px;object-fit:cover;border-radius:9px;margin-bottom:8px">':'')
+      +'<div style="display:flex;gap:10px"><div style="font-size:30px">'+(emoji[w.type]||'🍷')+'</div><div style="flex:1">'
+      +'<div class="wname">'+w.name+'</div>'
+      +'<div class="wdet">'+[w.producer,w.region,w.vintage].filter(Boolean).join(' · ')+'</div>'
+      +(w.grape?'<div class="wdet">'+w.grape+'</div>':'')
+      +'<div style="display:flex;align-items:center;gap:10px;margin-top:4px">'
+      +'<div class="stars">'+stars+'</div>'
+      +'<div style="font-size:13px;color:#f87171">'+w.qty+' btl'+(w.price?' · '+w.price+'€':'')+'</div>'
+      +'</div>'
+      +(ds!==null?'<div style="font-size:11px;color:#f87171;margin-top:2px">il y a '+ds+'j</div>':'')
+      +'</div></div>'
+      +(pairHtml?'<div class="wpairs">'+pairHtml+'</div>':'')
+      +'</div>';
   }).join('');
 }
 
+var WINE_PAIRS = {
+  rouge:     {pairs:['Viande rouge','Agneau','Fromages affinés','Gibier','Charcuterie']},
+  blanc:     {pairs:['Poisson','Fruits de mer','Volaille','Fromage de chèvre','Risotto','Sushi']},
+  rosé:      {pairs:['Charcuterie','Salades','Pizza','Grillades','Tapas']},
+  champagne: {pairs:['Huîtres','Foie gras','Saumon fumé','Fromage','Apéritif']},
+  liqueur:   {pairs:['Dessert chocolat','Café','Glace']}
+};
+var FOOD_WINE = {
+  viande_rouge:['rouge'], viande_blanche:['blanc','rosé'], poisson:['blanc'],
+  foie_gras:['champagne','blanc'], fromage:['rouge','blanc','champagne'],
+  dessert_chocolat:['liqueur','rouge'], dessert_fruit:['blanc','champagne'],
+  charcuterie:['rouge','rosé'], risotto:['blanc'], sushi:['blanc'],
+  gibier:['rouge'], aperitif:['champagne','rosé','blanc']
+};
+
 function suggestWines() {
-  const food = document.getElementById('foodSelect').value;
-  const container = document.getElementById('wineSuggestions');
-  if (!food) { container.innerHTML = ''; return; }
-
-  const preferredTypes = FOOD_WINE_MAP[food] || [];
-  const matches = allWines.filter(w => preferredTypes.includes(w.type) && w.qty > 0);
-
-  if (matches.length === 0) {
-    container.innerHTML = `<div class="alert alert-warn" style="margin-top:8px">Aucun vin disponible dans votre cave pour ce plat. Types recommandés : ${preferredTypes.join(', ')}.</div>`;
+  var food = document.getElementById('foodSel').value;
+  var box  = document.getElementById('wineSugg');
+  if (!food) { box.innerHTML=''; return; }
+  var types = FOOD_WINE[food]||[];
+  var matches = wines.filter(function(w) { return types.includes(w.type) && w.qty>0; });
+  var emoji = {rouge:'🍷',blanc:'🥂',rosé:'🌸',champagne:'✨',liqueur:'🥃',autre:'🍶'};
+  if (matches.length===0) {
+    box.innerHTML='<div class="al al-w" style="margin-top:8px">Aucun vin disponible pour ce plat. Types recommandés : '+types.join(', ')+'.</div>';
     return;
   }
-
-  const typeEmoji = { rouge: '🍷', blanc: '🥂', rosé: '🌸', champagne: '✨', liqueur: '🥃', autre: '🍶' };
-  container.innerHTML = `<div class="section-title" style="margin-top:8px">Suggestions de votre cave</div>` + matches.map(w =>
-    `<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)">
-      <span style="font-size:20px">${typeEmoji[w.type]||'🍷'}</span>
-      <div style="flex:1">
-        <div style="font-size:14px;font-weight:600;color:#ff9999">${w.name}</div>
-        <div style="font-size:12px;color:#cc8888">${[w.vintage, w.region].filter(Boolean).join(' · ')} — ${w.qty} btl</div>
-      </div>
-    </div>`
-  ).join('');
+  box.innerHTML='<div class="stitle" style="margin-top:8px">Suggestions de votre cave</div>'
+    +matches.map(function(w) {
+      return '<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)">'
+        +'<span style="font-size:20px">'+(emoji[w.type]||'🍷')+'</span>'
+        +'<div><div style="font-size:14px;font-weight:600;color:var(--wine2)">'+w.name+'</div>'
+        +'<div style="font-size:12px;color:#f87171">'+[w.vintage,w.region].filter(Boolean).join(' · ')+' — '+w.qty+' btl</div></div>'
+        +'</div>';
+    }).join('');
 }
 
-// ============================================================
-// ADD / EDIT WINE
-// ============================================================
-function openAddWineModal() {
-  currentWineId = null;
-  currentWineRating = 0;
-  document.getElementById('modalWineTitle').textContent = 'Ajouter un vin';
-  document.getElementById('btnDeleteWine').style.display = 'none';
-  ['wName','wProducer','wRegion','wGrape','wTasting','wLocation'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('wType').value = 'rouge';
-  document.getElementById('wQty').value = 1;
-  document.getElementById('wPrice').value = '';
-  document.getElementById('wVintage').value = '';
-  document.getElementById('wAcqDate').value = new Date().toISOString().slice(0,10);
-  updateStars(0);
-  resetPhoto('wPhotoFile','wPhotoPreview','wPhotoPlaceholder');
-  openModal('modalWine');
+async function openAddWine() {
+  editWineId=null; wineRating=0;
+  document.getElementById('mWineTitle').textContent='Ajouter un vin';
+  document.getElementById('btnDelWine').style.display='none';
+  ['wName','wProd','wReg','wGrape','wTasting','wLoc'].forEach(function(id){document.getElementById(id).value='';});
+  document.getElementById('wType').value='rouge';
+  document.getElementById('wQty').value=1;
+  document.getElementById('wPrice').value='';
+  document.getElementById('wVint').value='';
+  document.getElementById('wAcq').value=new Date().toISOString().slice(0,10);
+  updateWineStars(0);
+  resetPhoto('wPhotoF','wPrev','wPph');
+  openM('mWine');
 }
 
-async function openEditWineModal(id) {
-  const wine = allWines.find(w => w.id === id);
-  if (!wine) return;
-  currentWineId = id;
-  currentWineRating = wine.rating || 0;
-  document.getElementById('modalWineTitle').textContent = 'Modifier le vin';
-  document.getElementById('btnDeleteWine').style.display = '';
-  document.getElementById('wType').value = wine.type || 'rouge';
-  document.getElementById('wName').value = wine.name || '';
-  document.getElementById('wProducer').value = wine.producer || '';
-  document.getElementById('wRegion').value = wine.region || '';
-  document.getElementById('wGrape').value = wine.grape || '';
-  document.getElementById('wVintage').value = wine.vintage || '';
-  document.getElementById('wQty').value = wine.qty || 1;
-  document.getElementById('wPrice').value = wine.price || '';
-  document.getElementById('wTasting').value = wine.tasting || '';
-  document.getElementById('wAcqDate').value = wine.acqDate || '';
-  document.getElementById('wLocation').value = wine.location || '';
-  updateStars(wine.rating || 0);
-  if (wine.photo) { document.getElementById('wPhotoPreview').src = wine.photo; document.getElementById('wPhotoPreview').style.display=''; document.getElementById('wPhotoPlaceholder').style.display='none'; }
-  else resetPhoto('wPhotoFile','wPhotoPreview','wPhotoPlaceholder');
-  openModal('modalWine');
+async function openEditWine(id) {
+  var w = wines.find(function(x){return x.id===id;});
+  if (!w) return;
+  editWineId=id; wineRating=w.rating||0;
+  document.getElementById('mWineTitle').textContent='Modifier';
+  document.getElementById('btnDelWine').style.display='';
+  document.getElementById('wType').value   = w.type||'rouge';
+  document.getElementById('wName').value   = w.name||'';
+  document.getElementById('wProd').value   = w.producer||'';
+  document.getElementById('wReg').value    = w.region||'';
+  document.getElementById('wGrape').value  = w.grape||'';
+  document.getElementById('wVint').value   = w.vintage||'';
+  document.getElementById('wQty').value    = w.qty||1;
+  document.getElementById('wPrice').value  = w.price||'';
+  document.getElementById('wTasting').value= w.tasting||'';
+  document.getElementById('wAcq').value    = w.acqDate||'';
+  document.getElementById('wLoc').value    = w.location||'';
+  updateWineStars(w.rating||0);
+  if (w.photo) { document.getElementById('wPrev').src=w.photo; document.getElementById('wPrev').style.display=''; document.getElementById('wPph').style.display='none'; }
+  else resetPhoto('wPhotoF','wPrev','wPph');
+  openM('mWine');
 }
 
-function setRating(n) { currentWineRating = n; updateStars(n); }
-function updateStars(n) {
-  const stars = document.querySelectorAll('#ratingStars span');
-  stars.forEach((s,i) => s.classList.toggle('active', i < n));
+function setWineRating(n) { wineRating=n; updateWineStars(n); }
+function updateWineStars(n) {
+  document.querySelectorAll('#wStars .rstar').forEach(function(s,i) { s.classList.toggle('on',i<n); });
 }
 
 async function saveWine() {
-  const name = document.getElementById('wName').value.trim();
+  var name = document.getElementById('wName').value.trim();
   if (!name) { alert('Le nom est obligatoire.'); return; }
-  const photo = document.getElementById('wPhotoPreview').style.display !== 'none' ? document.getElementById('wPhotoPreview').src : null;
-  const wine = {
-    id: currentWineId || uid(),
-    type: document.getElementById('wType').value,
-    name,
-    producer: document.getElementById('wProducer').value.trim(),
-    region: document.getElementById('wRegion').value.trim(),
-    grape: document.getElementById('wGrape').value.trim(),
-    vintage: parseInt(document.getElementById('wVintage').value) || null,
-    qty: parseInt(document.getElementById('wQty').value) || 0,
-    price: parseFloat(document.getElementById('wPrice').value) || null,
-    rating: currentWineRating,
-    tasting: document.getElementById('wTasting').value.trim(),
-    acqDate: document.getElementById('wAcqDate').value || null,
-    location: document.getElementById('wLocation').value.trim(),
-    photo: photo && photo.startsWith('data:') ? photo : (currentWineId ? (allWines.find(w=>w.id===currentWineId)||{}).photo : null),
-    createdAt: currentWineId ? ((allWines.find(w=>w.id===currentWineId)||{}).createdAt || Date.now()) : Date.now(),
-    updatedAt: Date.now()
+  var photo = getPhoto('wPrev');
+  var obj = {
+    id: editWineId||uid(), type:document.getElementById('wType').value,
+    name:name, producer:document.getElementById('wProd').value.trim(),
+    region:document.getElementById('wReg').value.trim(), grape:document.getElementById('wGrape').value.trim(),
+    vintage:parseInt(document.getElementById('wVint').value)||null,
+    qty:parseInt(document.getElementById('wQty').value)||0,
+    price:parseFloat(document.getElementById('wPrice').value)||null,
+    rating:wineRating, tasting:document.getElementById('wTasting').value.trim(),
+    acqDate:document.getElementById('wAcq').value||null, location:document.getElementById('wLoc').value.trim(),
+    photo:photo, createdAt:editWineId?((wines.find(function(w){return w.id===editWineId;})||{}).createdAt||Date.now()):Date.now(),
+    updatedAt:Date.now()
   };
-  await dbPut('wines', wine);
-  closeModal('modalWine');
-  allWines = await dbGetAll('wines');
+  await put('wines',obj);
+  closeM('mWine');
+  wines = await all('wines');
   renderWineList();
 }
 
-async function deleteCurrentWine() {
-  if (!currentWineId) return;
-  const wine = allWines.find(w => w.id === currentWineId);
-  if (settings.confirm && !confirm(`Supprimer "${wine?.name}" ?`)) return;
-  await dbDelete('wines', currentWineId);
-  closeModal('modalWine');
-  allWines = await dbGetAll('wines');
+async function delWine() {
+  if (!editWineId) return;
+  var w = wines.find(function(x){return x.id===editWineId;});
+  if (cfg.confirm && !confirm('Supprimer "'+w.name+'" ?')) return;
+  await del('wines',editWineId);
+  closeM('mWine');
+  wines = await all('wines');
   renderWineList();
 }
 
-// ============================================================
-// SHOPPING LIST
-// ============================================================
-async function renderShopping() {
-  allItems = await dbGetAll('items');
-  allShopping = await dbGetAll('shopping');
+// =====================================================================
+// LISTE DE COURSES
+// =====================================================================
+async function renderShop() {
+  items    = await all('items');
+  shopList = await all('shop');
 
-  // Auto-add items below threshold
-  const autoItems = allItems.filter(i => i.alertEnabled && i.qty <= i.alertThreshold);
-  const container = document.getElementById('shoppingList');
+  var autoItems = items.filter(function(i) { return i.alertOn && i.qty<=i.alertTh; });
+  var box = document.getElementById('shopList');
+  var all_ = shopList.slice();
 
-  const allShopItems = [...allShopping];
-
-  // Add auto-items not already in list
-  autoItems.forEach(item => {
-    if (!allShopItems.find(s => s.ref === item.id)) {
-      allShopItems.push({ id: 'auto_'+item.id, ref: item.id, name: item.name + ' (' + item.unit + ')', auto: true, checked: false });
+  autoItems.forEach(function(item) {
+    if (!all_.find(function(s) { return s.ref===item.id; })) {
+      all_.push({id:'auto_'+item.id, ref:item.id, name:item.name+' ('+item.unit+')', auto:true, checked:false});
     }
   });
 
-  if (allShopItems.length === 0) {
-    container.innerHTML = '<div class="empty"><div class="emoji">🛒</div><p>Liste vide. Tout est en stock !</p></div>';
-    return;
+  if (all_.length===0) { box.innerHTML='<div class="empty"><div class="ei">🛒</div><p>Liste vide — tout est en stock !</p></div>'; return; }
+
+  box.innerHTML = all_.map(function(s) {
+    return '<div class="shi '+(s.checked?'done':'')+'">'
+      +'<div class="shck '+(s.checked?'on':'')+'" onclick="toggleShop(\''+s.id+'\')">'+(s.checked?'✓':'')+'</div>'
+      +'<span class="shn" style="flex:1;font-size:14px">'+(s.auto?'🔴 ':'')+s.name+'</span>'
+      +(!s.auto?'<button onclick="removeShop(\''+s.id+'\')" style="background:none;border:none;color:var(--text2);font-size:18px;cursor:pointer">×</button>':'')
+      +'</div>';
+  }).join('');
+}
+
+async function toggleShop(id) {
+  var s = shopList.find(function(x){return x.id===id;});
+  if (s) { s.checked=!s.checked; await put('shop',s); }
+  else {
+    var autoId = id.replace('auto_','');
+    var orig = items.find(function(i){return i.id===autoId;});
+    if (orig) { var ns={id:uid(),ref:autoId,name:orig.name+' ('+orig.unit+')',auto:false,checked:true}; await put('shop',ns); }
   }
-
-  container.innerHTML = allShopItems.map(s => `
-    <div class="shop-item ${s.checked?'done':''}" id="si_${s.id}">
-      <div class="shop-check ${s.checked?'checked':''}" onclick="toggleShopItem('${s.id}')">
-        ${s.checked ? '✓' : ''}
-      </div>
-      <span class="shop-name" style="flex:1;font-size:14px">${s.auto?'🔴 ':''} ${s.name}</span>
-      ${!s.auto ? `<button onclick="removeShopItem('${s.id}')" style="background:none;border:none;color:var(--text2);font-size:16px;cursor:pointer">×</button>` : ''}
-    </div>
-  `).join('');
+  await renderShop();
 }
 
-async function toggleShopItem(id) {
-  const item = allShopping.find(s => s.id === id);
-  if (item) {
-    item.checked = !item.checked;
-    await dbPut('shopping', item);
-    await renderShopping();
-  } else {
-    // Auto item — add to manual list as checked
-    const autoId = id.replace('auto_','');
-    const orig = allItems.find(i => i.id === autoId);
-    if (orig) {
-      const newItem = { id: uid(), ref: autoId, name: orig.name + ' (' + orig.unit + ')', auto: false, checked: true };
-      await dbPut('shopping', newItem);
-      await renderShopping();
-    }
-  }
+async function removeShop(id) { await del('shop',id); await renderShop(); }
+
+async function addShopItem() {
+  var v = document.getElementById('shopInput').value.trim();
+  if (!v) return;
+  await put('shop',{id:uid(),ref:null,name:v,auto:false,checked:false});
+  document.getElementById('shopInput').value='';
+  await renderShop();
 }
 
-async function removeShopItem(id) {
-  await dbDelete('shopping', id);
-  await renderShopping();
+async function clearCheckedShop() {
+  var checked = (await all('shop')).filter(function(s){return s.checked;});
+  for (var i=0;i<checked.length;i++) await del('shop',checked[i].id);
+  await renderShop();
 }
 
-async function addManualShopItem() {
-  const val = document.getElementById('manualShopItem').value.trim();
-  if (!val) return;
-  await dbPut('shopping', { id: uid(), ref: null, name: val, auto: false, checked: false });
-  document.getElementById('manualShopItem').value = '';
-  await renderShopping();
+function shareShop() {
+  var names = [];
+  document.querySelectorAll('.shn').forEach(function(el) { names.push('• '+el.textContent.trim()); });
+  var txt = '🛒 Liste de courses\n\n'+names.join('\n');
+  if (navigator.share) navigator.share({title:'Liste de courses',text:txt});
+  else if (navigator.clipboard) navigator.clipboard.writeText(txt).then(function(){alert('Liste copiée !');});
 }
 
-async function clearChecked() {
-  const checked = (await dbGetAll('shopping')).filter(s => s.checked);
-  for (const s of checked) await dbDelete('shopping', s.id);
-  await renderShopping();
-}
-
-function shareShoppingList() {
-  const items = [...document.querySelectorAll('.shop-name')].map(el => el.textContent.trim());
-  const text = '🛒 Liste de courses\n\n' + items.map(i => '• ' + i).join('\n');
-  if (navigator.share) { navigator.share({ title: 'Liste de courses', text }); }
-  else if (navigator.clipboard) { navigator.clipboard.writeText(text); alert('Liste copiée !'); }
-}
-
-// ============================================================
-// MORE VIEW (Dates, Export, Categories, Locations)
-// ============================================================
+// =====================================================================
+// PLUS — dates, export, catégories, emplacements
+// =====================================================================
 async function renderMore() {
-  allItems = await dbGetAll('items');
-  allCategories = await dbGetAll('categories');
-  allLocations = await dbGetAll('locations');
+  items = await all('items');
+  cats  = await all('cats');
+  locs  = await all('locs');
 
-  // Dates
-  const today = new Date(); today.setHours(0,0,0,0);
-  const withDates = allItems.filter(i => i.expDate).sort((a,b) => new Date(a.expDate)-new Date(b.expDate));
-  const dc = document.getElementById('datesContainer');
-  if (withDates.length === 0) {
-    dc.innerHTML = '<p style="color:var(--text2);font-size:13px">Aucun article avec date d\'expiration.</p>';
-  } else {
-    dc.innerHTML = withDates.map(i => {
-      const d = new Date(i.expDate);
-      const isExp = d < today;
-      const in7 = new Date(today); in7.setDate(in7.getDate()+7);
-      const isSoon = !isExp && d <= in7;
-      const daysSince = i.acqDate ? Math.floor((Date.now()-new Date(i.acqDate))/(1000*60*60*24)) : null;
-      return `<div class="date-item" onclick="openEditModal('${i.id}')" style="cursor:pointer">
-        <div>
-          <span class="date-badge ${isExp?'expired':isSoon?'soon':''}">${isExp?'EXPIRÉ':isSoon?'BIENTÔT':formatDate(i.expDate)}</span>
-          ${daysSince!==null?`<div style="font-size:10px;color:var(--text2);margin-top:2px">Acquis il y a ${daysSince}j</div>`:''}
-        </div>
-        <div style="flex:1">
-          <div style="font-size:14px;font-weight:600">${i.name}</div>
-          <div style="font-size:12px;color:var(--text2)">${i.qty} ${i.unit}</div>
-        </div>
-      </div>`;
+  var today = new Date(); today.setHours(0,0,0,0);
+  var in7   = new Date(today); in7.setDate(in7.getDate()+7);
+  var withDates = items.filter(function(i){return i.expDate;}).sort(function(a,b){return new Date(a.expDate)-new Date(b.expDate);});
+
+  var dl = document.getElementById('datesList');
+  if (withDates.length===0) { dl.innerHTML='<p style="color:var(--text2);font-size:13px">Aucun article avec date d\'expiration.</p>'; }
+  else {
+    dl.innerHTML = withDates.map(function(i) {
+      var d = new Date(i.expDate);
+      var isExp  = d<today;
+      var isSoon = !isExp && d<=in7;
+      var dSince = i.acqDate ? Math.floor((Date.now()-new Date(i.acqDate))/864e5) : null;
+      var dOver  = isExp ? Math.floor((Date.now()-d)/864e5) : null;
+      return '<div class="ditem" onclick="openEditItem(\''+i.id+'\')">'
+        +'<div><span class="dbadge '+(isExp?'exp':isSoon?'soon':'')+'">'+(isExp?'EXPIRÉ':isSoon?'BIENTÔT':fDate(i.expDate))+'</span>'
+        +(isExp?'<div style="font-size:10px;color:var(--text2);margin-top:2px">il y a '+dOver+'j</div>':'')
+        +(dSince!==null?'<div style="font-size:10px;color:var(--text2)">Acquis il y a '+dSince+'j</div>':'')
+        +'</div>'
+        +'<div><div style="font-size:14px;font-weight:600">'+i.name+'</div>'
+        +'<div style="font-size:12px;color:var(--text2)">'+i.qty+' '+i.unit+'</div></div>'
+        +'</div>';
     }).join('');
   }
 
-  // Categories manager
-  const cm = document.getElementById('categoriesManager');
-  if (allCategories.length === 0) {
-    cm.innerHTML = '<p style="color:var(--text2);font-size:13px">Aucune catégorie.</p>';
-  } else {
-    cm.innerHTML = allCategories.map(cat => `
-      <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)">
-        <span style="font-size:20px">${cat.icon||'📁'}</span>
-        <span style="flex:1;font-weight:500">${cat.name}</span>
-        <button class="btn btn-danger btn-sm" onclick="deleteCategory('${cat.id}')">🗑️</button>
-      </div>`).join('');
-  }
+  // Catégories
+  var cl = document.getElementById('catList');
+  cl.innerHTML = cats.length===0 ? '<p style="color:var(--text2);font-size:13px">Aucune catégorie.</p>'
+    : cats.map(function(c) {
+        return '<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)">'
+          +'<span style="font-size:20px">'+(c.emoji||'📁')+'</span>'
+          +'<span style="flex:1;font-weight:500">'+c.name+'</span>'
+          +'<button class="btn btn-d btn-sm" onclick="delCat(\''+c.id+'\')">🗑</button>'
+          +'</div>';
+      }).join('');
 
-  // Locations manager
-  const lm = document.getElementById('locationsManager');
-  if (allLocations.length === 0) {
-    lm.innerHTML = '<p style="color:var(--text2);font-size:13px">Aucun emplacement.</p>';
-  } else {
-    lm.innerHTML = allLocations.map(loc => `
-      <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)">
-        <span style="font-size:20px">${loc.icon||'📍'}</span>
-        <span style="flex:1;font-weight:500">${loc.name}</span>
-        <button class="btn btn-danger btn-sm" onclick="deleteLocation('${loc.id}')">🗑️</button>
-      </div>`).join('');
-  }
+  // Emplacements
+  var ll = document.getElementById('locList');
+  ll.innerHTML = locs.length===0 ? '<p style="color:var(--text2);font-size:13px">Aucun emplacement.</p>'
+    : locs.map(function(l) {
+        return '<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)">'
+          +'<span style="font-size:20px">'+(l.emoji||'📍')+'</span>'
+          +'<span style="flex:1;font-weight:500">'+l.name+'</span>'
+          +'<button class="btn btn-d btn-sm" onclick="delLoc(\''+l.id+'\')">🗑</button>'
+          +'</div>';
+      }).join('');
 }
 
-// CATEGORIES
-function openAddCatModal() { openModal('modalCat'); document.getElementById('catName').value=''; document.getElementById('catIcon').value=''; }
-async function saveCategory() {
-  const name = document.getElementById('catName').value.trim();
+function openAddCat() { document.getElementById('catName').value=''; document.getElementById('catEmoji').value=''; openM('mCat'); }
+async function saveCat() {
+  var name=document.getElementById('catName').value.trim();
   if (!name) return;
-  await dbPut('categories', { id: uid(), name, icon: document.getElementById('catIcon').value||'📁', color: document.getElementById('catColor').value });
-  closeModal('modalCat');
-  renderMore();
+  await put('cats',{id:uid(),name:name,emoji:document.getElementById('catEmoji').value||'📁',color:document.getElementById('catColor').value});
+  closeM('mCat'); renderMore();
 }
-async function deleteCategory(id) {
-  if (!confirm('Supprimer cette catégorie ?')) return;
-  await dbDelete('categories', id);
-  renderMore();
-}
+async function delCat(id) { if (!confirm('Supprimer cette catégorie ?')) return; await del('cats',id); renderMore(); }
 
-// LOCATIONS
-function openAddLocModal() { openModal('modalLoc'); document.getElementById('locName').value=''; document.getElementById('locIcon').value=''; }
-async function saveLocation() {
-  const name = document.getElementById('locName').value.trim();
+function openAddLoc() { document.getElementById('locName').value=''; document.getElementById('locEmoji').value=''; openM('mLoc'); }
+async function saveLoc() {
+  var name=document.getElementById('locName').value.trim();
   if (!name) return;
-  await dbPut('locations', { id: uid(), name, icon: document.getElementById('locIcon').value||'📍' });
-  closeModal('modalLoc');
-  renderMore();
+  await put('locs',{id:uid(),name:name,emoji:document.getElementById('locEmoji').value||'📍'});
+  closeM('mLoc'); renderMore();
 }
-async function deleteLocation(id) {
-  if (!confirm('Supprimer cet emplacement ?')) return;
-  await dbDelete('locations', id);
-  renderMore();
-}
+async function delLoc(id) { if (!confirm('Supprimer cet emplacement ?')) return; await del('locs',id); renderMore(); }
 
-// ============================================================
+// =====================================================================
 // EXPORT / IMPORT
-// ============================================================
-async function exportCSV() {
-  const items = await dbGetAll('items');
-  const wines = await dbGetAll('wines');
-  const cats = await dbGetAll('categories');
-  const locs = await dbGetAll('locations');
-
-  const getCatNames = ids => (ids||[]).map(id => (cats.find(c=>c.id===id)||{}).name||'').filter(Boolean).join('; ');
-  const getLocNames = ids => (ids||[]).map(id => (locs.find(l=>l.id===id)||{}).name||'').filter(Boolean).join('; ');
-
-  let csv = 'Type,Nom,Quantité,Unité,Catégories,Emplacements,Date acquisition,Date expiration,Alerte seuil,Notes\n';
-  items.forEach(i => {
-    csv += `"article","${i.name}","${i.qty}","${i.unit}","${getCatNames(i.categories)}","${getLocNames(i.locations)}","${i.acqDate||''}","${i.expDate||''}","${i.alertThreshold||0}","${(i.notes||'').replace(/"/g,'""')}"\n`;
-  });
-  wines.forEach(w => {
-    csv += `"vin","${w.name}","${w.qty}","bouteille(s)","${w.type}","${w.location||''}","${w.acqDate||''}","","","${w.vintage||''} ${w.producer||''}"\n`;
-  });
-
-  download('inventaire.csv', csv, 'text/csv');
+// =====================================================================
+async function expCSV() {
+  var allI = await all('items'); var allW = await all('wines');
+  var allC = await all('cats');  var allL = await all('locs');
+  var getCats = function(ids) { return (ids||[]).map(function(id){var c=allC.find(function(x){return x.id===id;});return c?c.name:'';}).filter(Boolean).join('; '); };
+  var getLocs = function(ids) { return (ids||[]).map(function(id){var l=allL.find(function(x){return x.id===id;});return l?l.name:'';}).filter(Boolean).join('; '); };
+  var csv='Type,Nom,Quantité,Unité,Catégories,Emplacements,Acquisition,Expiration,Seuil alerte,Notes\n';
+  allI.forEach(function(i){ csv+='"article","'+i.name+'","'+i.qty+'","'+i.unit+'","'+getCats(i.cats)+'","'+getLocs(i.locs)+'","'+(i.acqDate||'')+'","'+(i.expDate||'')+'","'+(i.alertTh||0)+'","'+(i.notes||'').replace(/"/g,'""')+'"\n'; });
+  allW.forEach(function(w){ csv+='"vin","'+w.name+'","'+w.qty+'","bouteille(s)","'+w.type+'","'+(w.location||'')+'","'+(w.acqDate||'')+'","","","'+(w.vintage||'')+' '+(w.producer||'')+'"\n'; });
+  dlFile('inventaire.csv',csv,'text/csv');
 }
 
-async function exportJSON() {
-  const data = {
-    items: await dbGetAll('items'),
-    wines: await dbGetAll('wines'),
-    categories: await dbGetAll('categories'),
-    locations: await dbGetAll('locations'),
-    exportedAt: new Date().toISOString()
-  };
-  download('inventaire.json', JSON.stringify(data, null, 2), 'application/json');
+async function expJSON() {
+  var data={items:await all('items'),wines:await all('wines'),cats:await all('cats'),locs:await all('locs'),exportedAt:new Date().toISOString()};
+  dlFile('inventaire.json',JSON.stringify(data,null,2),'application/json');
 }
 
-function printInventory() {
-  const win = window.open('', '_blank');
-  const rows = allItems.map(i => `<tr><td>${i.name}</td><td>${i.qty} ${i.unit}</td><td>${i.acqDate||''}</td><td>${i.expDate||''}</td><td>${i.notes||''}</td></tr>`).join('');
-  win.document.write(`<html><head><title>Inventaire</title><style>body{font-family:sans-serif;padding:20px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:6px;font-size:13px}th{background:#f0f0f0}</style></head><body><h1>Mon Inventaire — ${new Date().toLocaleDateString('fr-FR')}</h1><table><thead><tr><th>Article</th><th>Quantité</th><th>Acquisition</th><th>Expiration</th><th>Notes</th></tr></thead><tbody>${rows}</tbody></table><h2>Vins (${allWines.length} bouteilles)</h2></body></html>`);
-  win.print();
-}
-
-function exportPDFPage() {
-  alert('Pour créer un PDF : utilisez "Imprimer" puis sélectionnez "Enregistrer en PDF" comme imprimante.');
-  printInventory();
-}
-
-function importJSON() {
-  const file = document.getElementById('importFile').files[0];
+async function doImport() {
+  var file=document.getElementById('impFile').files[0];
   if (!file) return;
-  const reader = new FileReader();
-  reader.onload = async e => {
+  var reader=new FileReader();
+  reader.onload=async function(e) {
     try {
-      const data = JSON.parse(e.target.result);
-      if (data.items) for (const i of data.items) await dbPut('items', i);
-      if (data.wines) for (const w of data.wines) await dbPut('wines', w);
-      if (data.categories) for (const c of data.categories) await dbPut('categories', c);
-      if (data.locations) for (const l of data.locations) await dbPut('locations', l);
-      alert('Importation réussie !');
+      var d=JSON.parse(e.target.result);
+      var nItems=0,nWines=0,nCats=0,nLocs=0;
+
+      // Articles — compatibilité ancienne/nouvelle version
+      var itemsData = d.items||[];
+      for(var i=0;i<itemsData.length;i++) {
+        var it = itemsData[i];
+        // Ancienne version utilisait 'categories' et 'locations' dans l'article
+        if (!it.cats  && it.categories) it.cats = it.categories;
+        if (!it.locs  && it.locations)  it.locs = it.locations;
+        if (!it.id) it.id = uid();
+        await put('items',it); nItems++;
+      }
+
+      // Vins
+      var winesData = d.wines||[];
+      for(var i=0;i<winesData.length;i++) { if(!winesData[i].id) winesData[i].id=uid(); await put('wines',winesData[i]); nWines++; }
+
+      // Catégories — ancienne clé 'categories', nouvelle clé 'cats'
+      var catsData = d.cats||d.categories||[];
+      for(var i=0;i<catsData.length;i++) { if(!catsData[i].id) catsData[i].id=uid(); await put('cats',catsData[i]); nCats++; }
+
+      // Emplacements — ancienne clé 'locations', nouvelle clé 'locs'
+      var locsData = d.locs||d.locations||[];
+      for(var i=0;i<locsData.length;i++) { if(!locsData[i].id) locsData[i].id=uid(); await put('locs',locsData[i]); nLocs++; }
+
+      alert('Importation réussie !\n\n• '+nItems+' article(s)\n• '+nWines+' vin(s)\n• '+nCats+' catégorie(s)\n• '+nLocs+' emplacement(s)');
+      items = await all('items'); cats = await all('cats'); locs = await all('locs');
       renderMore();
-    } catch(err) { alert('Erreur lors de l\'importation : ' + err.message); }
+      refreshBadge();
+    } catch(err) { alert('Erreur d\'importation : '+err.message); }
   };
   reader.readAsText(file);
 }
 
-function download(filename, content, type) {
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([content], {type}));
-  a.download = filename;
-  a.click();
+async function doPrint() {
+  var allI=await all('items'); var allW=await all('wines');
+  var rows=allI.map(function(i){ return '<tr><td>'+i.name+'</td><td>'+i.qty+' '+i.unit+'</td><td>'+(i.acqDate||'')+'</td><td>'+(i.expDate||'')+'</td><td>'+(i.notes||'')+'</td></tr>'; }).join('');
+  var win=window.open('','_blank');
+  win.document.write('<html><head><title>Inventaire</title><style>body{font-family:sans-serif;padding:20px}table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid #ccc;padding:5px}th{background:#eee}</style></head><body>'
+    +'<h1>Mon Inventaire — '+new Date().toLocaleDateString('fr-FR')+'</h1>'
+    +'<p>'+allI.length+' articles, '+allW.length+' bouteilles</p>'
+    +'<table><thead><tr><th>Article</th><th>Quantité</th><th>Acquisition</th><th>Expiration</th><th>Notes</th></tr></thead><tbody>'+rows+'</tbody></table>'
+    +'</body></html>');
+  win.print();
 }
 
-// ============================================================
-// GLOBAL SEARCH
-// ============================================================
-async function openAlertList() {
-  const items = await dbGetAll('items');
-  const today = new Date(); today.setHours(0,0,0,0);
-  const in7 = new Date(today); in7.setDate(in7.getDate() + 7);
-
-  const expired = items.filter(i => i.expDate && new Date(i.expDate) < today);
-  const lowStock = items.filter(i => i.alertEnabled && i.qty <= i.alertThreshold);
-  const expiringSoon = items.filter(i => i.expDate && new Date(i.expDate) >= today && new Date(i.expDate) <= in7);
-
-  let html = '';
-
-  if (expired.length > 0) {
-    html += `<div class="section-title">⚠️ Expirés (${expired.length})</div><div class="card">`;
-    html += expired.map(i => {
-      const daysOver = Math.floor((today - new Date(i.expDate)) / (1000*60*60*24));
-      return `
-      <div class="item-row" onclick="closeModal('modalDetail');openEditModal('${i.id}')">
-        <div class="item-icon" style="background:rgba(231,76,60,.15)">${getItemEmoji(i)}</div>
-        <div class="item-info">
-          <div class="item-name">${i.name}</div>
-          <div class="item-meta" style="color:var(--danger)">Expiré le ${formatDate(i.expDate)} <b>(il y a ${daysOver} jour${daysOver>1?'s':''})</b></div>
-        </div>
-        <div class="item-qty"><div class="qty qty-warn">${i.qty}</div><div class="unit">${i.unit}</div></div>
-      </div>`;
-    }).join('');
-    html += '</div>';
-  }
-
-  if (lowStock.length > 0) {
-    html += `<div class="section-title">📦 Stock faible (${lowStock.length})</div><div class="card">`;
-    html += lowStock.map(i => `
-      <div class="item-row" onclick="closeModal('modalDetail');openEditModal('${i.id}')">
-        <div class="item-icon" style="background:rgba(243,156,18,.15)">${getItemEmoji(i)}</div>
-        <div class="item-info">
-          <div class="item-name">${i.name}</div>
-          <div class="item-meta" style="color:var(--warn)">Seuil : ${i.alertThreshold} ${i.unit}</div>
-        </div>
-        <div class="item-qty"><div class="qty qty-low">${i.qty}</div><div class="unit">${i.unit}</div></div>
-      </div>`).join('');
-    html += '</div>';
-  }
-
-  if (expiringSoon.length > 0) {
-    html += `<div class="section-title">⏰ Expirent dans 7 jours (${expiringSoon.length})</div><div class="card">`;
-    html += expiringSoon.map(i => `
-      <div class="item-row" onclick="closeModal('modalDetail');openEditModal('${i.id}')">
-        <div class="item-icon" style="background:rgba(108,99,255,.15)">${getItemEmoji(i)}</div>
-        <div class="item-info">
-          <div class="item-name">${i.name}</div>
-          <div class="item-meta" style="color:var(--warn)">Expire le ${formatDate(i.expDate)}</div>
-        </div>
-        <div class="item-qty"><div class="qty">${i.qty}</div><div class="unit">${i.unit}</div></div>
-      </div>`).join('');
-    html += '</div>';
-  }
-
-  if (!html) html = '<div class="alert alert-success"><span>✅</span><span>Tout est en ordre !</span></div>';
-
-  document.getElementById('detailTitle').textContent = '🔴 Alertes';
-  document.getElementById('detailContent').innerHTML = html;
-  openModal('modalDetail');
+function dlFile(name,content,type) {
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([content],{type:type}));
+  a.download=name; a.click();
 }
 
-function openSearch() { openModal('modalSearch'); document.getElementById('globalSearch').value=''; document.getElementById('globalResults').innerHTML=''; setTimeout(()=>document.getElementById('globalSearch').focus(),300); }
+// =====================================================================
+// RECHERCHE GLOBALE — avec navigation prev/next
+// =====================================================================
+function openSearch() {
+  openM('mSearch');
+  document.getElementById('gSearch').value='';
+  document.getElementById('gResults').innerHTML='';
+  srResults=[]; srIdx=-1;
+  setTimeout(function(){document.getElementById('gSearch').focus();},300);
+}
 
-var searchResults = [];   // liste d'ids pour navigation prev/next
-var searchResultIdx = -1; // index courant dans les résultats
+async function doSearch() {
+  var q = document.getElementById('gSearch').value.toLowerCase().trim();
+  var box = document.getElementById('gResults');
+  if (q.length<1) { box.innerHTML=''; srResults=[]; return; }
 
-async function doGlobalSearch() {
-  var q = document.getElementById('globalSearch').value.toLowerCase().trim();
-  var container = document.getElementById('globalResults');
-  if (q.length < 1) { container.innerHTML = ''; searchResults = []; return; }
+  var allI = await all('items');
+  var allC = await all('cats');
+  var allW = await all('wines');
+  cats = allC;
 
-  var items = (await dbGetAll('items')).filter(function(i) {
+  var matchItems = allI.filter(function(i) {
     return i.name.toLowerCase().includes(q) || (i.notes||'').toLowerCase().includes(q);
   });
-  var wines = (await dbGetAll('wines')).filter(function(w) {
-    return w.name.toLowerCase().includes(q) || (w.producer||'').toLowerCase().includes(q) || (w.region||'').toLowerCase().includes(q);
+  var matchWines = allW.filter(function(w) {
+    return w.name.toLowerCase().includes(q)||(w.producer||'').toLowerCase().includes(q)||(w.region||'').toLowerCase().includes(q);
   });
 
-  // Mémoriser les ids pour navigation
-  searchResults = items.map(function(i) { return {type:'item', id:i.id}; })
-    .concat(wines.map(function(w) { return {type:'wine', id:w.id}; }));
+  srResults = matchItems.map(function(i){return {type:'item',id:i.id};})
+    .concat(matchWines.map(function(w){return {type:'wine',id:w.id};}));
 
-  if (searchResults.length === 0) {
-    container.innerHTML = '<div class="empty" style="padding:20px"><div class="emoji">🔍</div><p>Aucun résultat pour "' + q + '"</p></div>';
+  if (srResults.length===0) {
+    box.innerHTML='<div class="empty" style="padding:20px"><div class="ei">🔍</div><p>Aucun résultat pour "'+q+'"</p></div>';
     return;
   }
 
-  var html = '';
-  if (items.length > 0) {
-    html += '<div class="section-title">' + items.length + ' article(s)</div><div class="card">';
-    items.forEach(function(i, idx) {
-      html += '<div class="item-row" onclick="openSearchResult(' + idx + ')">'
-        + '<div style="font-size:24px">' + getItemEmoji(i) + '</div>'
-        + '<div class="item-info"><div class="item-name">' + highlight(i.name, q) + '</div>'
-        + '<div class="item-meta">' + i.qty + ' ' + i.unit + '</div></div>'
-        + '<button onclick="event.stopPropagation();quickDeleteFromSearch(\'' + i.id + '\')" style="background:none;border:none;color:var(--text2);font-size:18px;cursor:pointer;padding:4px">🗑</button>'
-        + '</div>';
+  var h='';
+  if (matchItems.length>0) {
+    h+='<div class="stitle">'+matchItems.length+' article(s)</div><div class="card">';
+    matchItems.forEach(function(i,idx) {
+      h+='<div class="irow">'
+        +'<div class="iico" onclick="openSR('+idx+')">'+(i.emoji||itemEmoji(i))+'</div>'
+        +'<div class="iinfo" onclick="openSR('+idx+')">'
+        +'<div class="iname">'+hlText(i.name,q)+'</div>'
+        +'<div class="imeta">'+i.qty+' '+i.unit+'</div>'
+        +'</div>'
+        +'<button class="del-btn" onclick="delFromSearch(\''+i.id+'\',event)">🗑</button>'
+        +'</div>';
     });
-    html += '</div>';
+    h+='</div>';
   }
-  if (wines.length > 0) {
-    html += '<div class="section-title">' + wines.length + ' vin(s)</div>';
-    wines.forEach(function(w, idx) {
-      html += '<div class="wine-card" onclick="openSearchResult(' + (items.length + idx) + ')">'
-        + '<div class="wine-name">' + highlight(w.name, q) + '</div>'
-        + '<div class="wine-details">' + [w.vintage, w.producer, w.region].filter(Boolean).join(' · ') + '</div>'
-        + '</div>';
+  if (matchWines.length>0) {
+    var emoji={rouge:'🍷',blanc:'🥂',rosé:'🌸',champagne:'✨',liqueur:'🥃',autre:'🍶'};
+    h+='<div class="stitle">'+matchWines.length+' vin(s)</div>';
+    matchWines.forEach(function(w,idx) {
+      h+='<div class="wcard" onclick="openSR('+(matchItems.length+idx)+')">'
+        +'<div class="wname">'+hlText(w.name,q)+'</div>'
+        +'<div class="wdet">'+[w.vintage,w.producer,w.region].filter(Boolean).join(' · ')+'</div>'
+        +'</div>';
     });
   }
-  container.innerHTML = html;
+  box.innerHTML = h;
 }
 
-function openSearchResult(idx) {
-  searchResultIdx = idx;
-  var r = searchResults[idx];
+function openSR(idx) {
+  srIdx = idx;
+  var r = srResults[idx];
   if (!r) return;
-  // Injecter nav prev/next dans le modal détail avant d'ouvrir
-  if (r.type === 'item') {
-    openItemDetail(r.id, true);
-  } else {
-    closeModal('modalSearch');
-    navigate('wine', null);
-    openEditWineModal(r.id);
-  }
+  if (r.type==='item') openDetail(r.id, true);
+  else { closeM('mSearch'); goTo('wine', document.querySelectorAll('.nb')[2]); openEditWine(r.id); }
 }
 
-function injectSearchNav() {
-  var total = searchResults.length;
-  if (total <= 1) return;
-  var nav = document.createElement('div');
-  nav.id = 'searchNav';
-  nav.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:12px';
-  nav.innerHTML = '<button class="btn btn-ghost btn-sm" onclick="closeModal(\'modalDetail\');openModal(\'modalSearch\')" style="flex:0">← Retour</button>'
-    + '<button class="btn btn-ghost btn-sm" onclick="openSearchResult(' + (searchResultIdx-1) + ')" ' + (searchResultIdx===0?'disabled':'') + '>◀</button>'
-    + '<span style="flex:1;text-align:center;font-size:12px;color:var(--text2)">' + (searchResultIdx+1) + ' / ' + total + '</span>'
-    + '<button class="btn btn-ghost btn-sm" onclick="openSearchResult(' + (searchResultIdx+1) + ')" ' + (searchResultIdx===total-1?'disabled':'') + '>▶</button>';
-  var content = document.getElementById('detailContent');
-  content.parentNode.insertBefore(nav, content);
-}
-
-async function quickDeleteFromSearch(id) {
-  var item = allItems.find(function(i) { return i.id === id; });
+async function delFromSearch(id, evt) {
+  evt.stopPropagation();
+  var allI = await all('items');
+  var item = allI.find(function(i){return i.id===id;});
   if (!item) return;
-  if (settings.confirm && !confirm('Supprimer "' + item.name + '" ?')) return;
-  await dbDelete('items', id);
-  allItems = await dbGetAll('items');
-  refreshAlertBadge();
-  doGlobalSearch(); // rafraîchir les résultats
+  if (cfg.confirm && !confirm('Supprimer "'+item.name+'" ?')) return;
+  await del('items',id);
+  items = await all('items');
+  refreshBadge();
+  doSearch();
 }
 
-function highlight(text, q) {
-  const idx = text.toLowerCase().indexOf(q);
-  if (idx === -1) return text;
-  return text.slice(0,idx) + '<mark style="background:rgba(108,99,255,.4);border-radius:3px;padding:0 2px">' + text.slice(idx, idx+q.length) + '</mark>' + text.slice(idx+q.length);
+function hlText(txt, q) {
+  var idx=txt.toLowerCase().indexOf(q);
+  if (idx===-1) return txt;
+  return txt.slice(0,idx)+'<mark>'+txt.slice(idx,idx+q.length)+'</mark>'+txt.slice(idx+q.length);
 }
 
-// ============================================================
-// SETTINGS
-// ============================================================
-function loadSettings() {
-  const s = localStorage.getItem('invSettings');
-  if (s) settings = {...settings, ...JSON.parse(s)};
-  document.getElementById('darkToggle').classList.toggle('on', settings.dark);
-  document.getElementById('alertToggle').classList.toggle('on', settings.alerts);
-  document.getElementById('confirmToggle').classList.toggle('on', settings.confirm);
-}
-function saveSettings() { localStorage.setItem('invSettings', JSON.stringify(settings)); }
-function toggleDark() { settings.dark = !settings.dark; document.getElementById('darkToggle').classList.toggle('on', settings.dark); saveSettings(); }
-function toggleAlerts() { settings.alerts = !settings.alerts; document.getElementById('alertToggle').classList.toggle('on', settings.alerts); saveSettings(); }
-function toggleConfirm() { settings.confirm = !settings.confirm; document.getElementById('confirmToggle').classList.toggle('on', settings.confirm); saveSettings(); }
+// =====================================================================
+// ALERTES — modal complet
+// =====================================================================
+async function openAlertList() {
+  var allI = await all('items');
+  var today = new Date(); today.setHours(0,0,0,0);
+  var in7   = new Date(today); in7.setDate(in7.getDate()+7);
 
-// ============================================================
-// PHOTO HANDLING
-// ============================================================
-function handlePhoto(inputId, previewId, placeholderId) {
-  const file = document.getElementById(inputId).files[0];
+  var expired  = allI.filter(function(i){return i.expDate && new Date(i.expDate)<today;});
+  var lowStock = allI.filter(function(i){return i.alertOn && i.qty<=i.alertTh;});
+  var soonExp  = allI.filter(function(i){return i.expDate && new Date(i.expDate)>=today && new Date(i.expDate)<=in7;});
+
+  var h='';
+  if (expired.length>0) {
+    h+='<div class="stitle">⚠️ Expirés ('+expired.length+')</div><div class="card">';
+    expired.forEach(function(i) {
+      var d=Math.floor((Date.now()-new Date(i.expDate))/864e5);
+      h+='<div class="irow" style="cursor:pointer" onclick="closeM(\'mAlerts\');openDetail(\''+i.id+'\')">'
+        +'<div class="iico">'+itemEmoji(i)+'</div>'
+        +'<div class="iinfo"><div class="iname">'+i.name+'</div>'
+        +'<div class="imeta" style="color:var(--danger)">Expiré le '+fDate(i.expDate)+' — il y a '+d+' jour'+(d>1?'s':'')+'</div></div>'
+        +'<div class="iqty"><div class="n exp">'+i.qty+'</div><div class="u">'+i.unit+'</div></div>'
+        +'</div>';
+    });
+    h+='</div>';
+  }
+  if (lowStock.length>0) {
+    h+='<div class="stitle">📦 Stock faible ('+lowStock.length+')</div><div class="card">';
+    lowStock.forEach(function(i) {
+      h+='<div class="irow" style="cursor:pointer" onclick="closeM(\'mAlerts\');openDetail(\''+i.id+'\')">'
+        +'<div class="iico">'+itemEmoji(i)+'</div>'
+        +'<div class="iinfo"><div class="iname">'+i.name+'</div>'
+        +'<div class="imeta" style="color:var(--warn)">Seuil : '+i.alertTh+' '+i.unit+'</div></div>'
+        +'<div class="iqty"><div class="n low">'+i.qty+'</div><div class="u">'+i.unit+'</div></div>'
+        +'</div>';
+    });
+    h+='</div>';
+  }
+  if (soonExp.length>0) {
+    h+='<div class="stitle">⏰ Expirent dans 7 jours ('+soonExp.length+')</div><div class="card">';
+    soonExp.forEach(function(i) {
+      h+='<div class="irow" style="cursor:pointer" onclick="closeM(\'mAlerts\');openDetail(\''+i.id+'\')">'
+        +'<div class="iico">'+itemEmoji(i)+'</div>'
+        +'<div class="iinfo"><div class="iname">'+i.name+'</div>'
+        +'<div class="imeta" style="color:var(--warn)">Expire le '+fDate(i.expDate)+'</div></div>'
+        +'<div class="iqty"><div class="n">'+i.qty+'</div><div class="u">'+i.unit+'</div></div>'
+        +'</div>';
+    });
+    h+='</div>';
+  }
+  if (!h) h='<div class="al al-s">✅ Tout est en ordre !</div>';
+  document.getElementById('alertContent').innerHTML=h;
+  openM('mAlerts');
+}
+
+async function refreshBadge() {
+  var allI=await all('items');
+  var today=new Date(); today.setHours(0,0,0,0);
+  var n=allI.filter(function(i){return (i.alertOn&&i.qty<=i.alertTh)||(i.expDate&&new Date(i.expDate)<today);}).length;
+  var b=document.getElementById('alertBadge');
+  b.textContent=n; b.style.display=n>0?'':'none';
+}
+
+// =====================================================================
+// PARAMÈTRES
+// =====================================================================
+function togSet(key) {
+  cfg[key]=!cfg[key];
+  document.getElementById('tConfirm').classList.toggle('on',cfg.confirm);
+  document.getElementById('tAlerts').classList.toggle('on',cfg.alerts);
+  localStorage.setItem('cfg',JSON.stringify(cfg));
+}
+function loadCfg() {
+  var s=localStorage.getItem('cfg');
+  if (s) cfg=Object.assign(cfg,JSON.parse(s));
+  document.getElementById('tConfirm').classList.toggle('on',cfg.confirm);
+  document.getElementById('tAlerts').classList.toggle('on',cfg.alerts);
+}
+
+// =====================================================================
+// PHOTOS
+// =====================================================================
+function loadPhoto(inputId, prevId, phId) {
+  var file=document.getElementById(inputId).files[0];
   if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    const img = document.getElementById(previewId);
-    const placeholder = document.getElementById(placeholderId);
-    img.src = e.target.result;
-    img.style.display = '';
-    if (placeholder) placeholder.style.display = 'none';
+  var reader=new FileReader();
+  reader.onload=function(e) {
+    var img=document.getElementById(prevId);
+    img.src=e.target.result; img.style.display='';
+    document.getElementById(phId).style.display='none';
   };
   reader.readAsDataURL(file);
 }
-
-function resetPhoto(inputId, previewId, placeholderId) {
-  const img = document.getElementById(previewId);
-  const placeholder = document.getElementById(placeholderId);
-  img.src = '';
-  img.style.display = 'none';
-  if (placeholder) placeholder.style.display = '';
+function resetPhoto(inputId, prevId, phId) {
+  var img=document.getElementById(prevId);
+  img.src=''; img.style.display='none';
+  document.getElementById(phId).style.display='';
 }
 
-// ============================================================
-// MODAL HELPERS
-// ============================================================
-function openModal(id) { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-
-// Close on overlay click
-document.querySelectorAll('.modal-overlay').forEach(overlay => {
-  overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(overlay.id); });
-});
-
-// ============================================================
-// UTILS
-// ============================================================
-function formatDate(d) {
+// =====================================================================
+// UTILITAIRES
+// =====================================================================
+function fDate(d) {
   if (!d) return '';
-  const dt = new Date(d);
-  return dt.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  return new Date(d).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'});
 }
 
-async function refreshAlertBadge() {
-  const items = await dbGetAll('items');
-  const count = items.filter(i => i.alertEnabled && i.qty <= i.alertThreshold).length;
-  const badge = document.getElementById('alertBadge');
-  badge.textContent = count;
-  badge.style.display = count > 0 ? '' : 'none';
-}
-
-// ============================================================
-// DEFAULT DATA (first run)
-// ============================================================
-async function seedDefaultData() {
-  const existing = await dbGetAll('categories');
-  if (existing.length > 0) return;
-
-  const defaultCats = [
-    { id: uid(), name: 'Réfrigérateur', icon: '🧊', color: '#3498db' },
-    { id: uid(), name: 'Congélateur', icon: '❄️', color: '#5dade2' },
-    { id: uid(), name: 'Épicerie', icon: '🛒', color: '#e67e22' },
-    { id: uid(), name: 'Fruits & Légumes', icon: '🥦', color: '#27ae60' },
-    { id: uid(), name: 'Viandes', icon: '🥩', color: '#c0392b' },
-    { id: uid(), name: 'Produits laitiers', icon: '🥛', color: '#f1c40f' },
-    { id: uid(), name: 'Boissons', icon: '🥤', color: '#9b59b6' },
-    { id: uid(), name: 'Hygiène', icon: '🧴', color: '#1abc9c' },
+// =====================================================================
+// DONNÉES PAR DÉFAUT (premier lancement)
+// =====================================================================
+async function seedDefaults() {
+  var c=await all('cats');
+  if (c.length>0) return;
+  var defCats=[
+    {id:uid(),name:'Réfrigérateur',emoji:'🧊',color:'#3b82f6'},
+    {id:uid(),name:'Congélateur',emoji:'❄️',color:'#60a5fa'},
+    {id:uid(),name:'Épicerie',emoji:'🛒',color:'#f97316'},
+    {id:uid(),name:'Fruits & Légumes',emoji:'🥦',color:'#22c55e'},
+    {id:uid(),name:'Viandes',emoji:'🥩',color:'#ef4444'},
+    {id:uid(),name:'Produits laitiers',emoji:'🥛',color:'#eab308'},
+    {id:uid(),name:'Boissons',emoji:'🥤',color:'#a855f7'},
+    {id:uid(),name:'Hygiène',emoji:'🧴',color:'#14b8a6'},
+    {id:uid(),name:'Ménage',emoji:'🧹',color:'#6366f1'}
   ];
-
-  const defaultLocs = [
-    { id: uid(), name: 'Réfrigérateur', icon: '🧊' },
-    { id: uid(), name: 'Congélateur', icon: '❄️' },
-    { id: uid(), name: 'Placard cuisine', icon: '🚪' },
-    { id: uid(), name: 'Cave', icon: '🍷' },
-    { id: uid(), name: 'Garde-manger', icon: '🏠' },
+  var defLocs=[
+    {id:uid(),name:'Réfrigérateur',emoji:'🧊'},
+    {id:uid(),name:'Congélateur',emoji:'❄️'},
+    {id:uid(),name:'Placard cuisine',emoji:'🚪'},
+    {id:uid(),name:'Garde-manger',emoji:'🏠'},
+    {id:uid(),name:'Cave',emoji:'🍷'}
   ];
-
-  for (const cat of defaultCats) await dbPut('categories', cat);
-  for (const loc of defaultLocs) await dbPut('locations', loc);
+  for (var i=0;i<defCats.length;i++) await put('cats',defCats[i]);
+  for (var i=0;i<defLocs.length;i++) await put('locs',defLocs[i]);
 }
 
-// ============================================================
-// SERVICE WORKER (offline)
-// ============================================================
-const SW_CODE = `
-self.addEventListener('install', e => { e.waitUntil(caches.open('inv-v1').then(c => c.addAll(['.']))); });
-self.addEventListener('fetch', e => { e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))); });
-`;
-
-function registerSW() {
-  if ('serviceWorker' in navigator) {
-    try {
-      const blob = new Blob([SW_CODE], { type: 'application/javascript' });
-      const url = URL.createObjectURL(blob);
-      navigator.serviceWorker.register(url).catch(() => {});
-    } catch(e) {}
-  }
-}
-
-// ============================================================
-// INIT
-// ============================================================
+// =====================================================================
+// INITIALISATION
+// =====================================================================
 async function init() {
-  await initDB();
-  await seedDefaultData();
-  loadSettings();
+  await openDB();
+  await seedDefaults();
+  loadCfg();
+  cats = await all('cats');
+  locs = await all('locs');
   await renderHome();
-  refreshAlertBadge();
-  registerSW();
+  await refreshBadge();
 }
 
 init().catch(function(err) {
-  document.getElementById('content').innerHTML = '<div style="padding:30px;color:#ff6060;font-size:15px">'
-    + '<div style="font-size:40px;margin-bottom:12px">⚠️</div>'
-    + '<b>Erreur au démarrage</b><br><br>' + (err && err.message ? err.message : String(err))
-    + '<br><br><button onclick="location.reload()" style="background:#6c63ff;color:white;border:none;padding:12px 24px;border-radius:10px;font-size:15px">🔄 Réessayer</button>'
-    + '</div>';
+  document.getElementById('content').innerHTML=
+    '<div style="padding:30px;text-align:center">'
+    +'<div style="font-size:48px;margin-bottom:12px">⚠️</div>'
+    +'<p style="color:#fca5a5;font-size:15px"><b>Erreur au démarrage</b></p>'
+    +'<p style="color:var(--text2);font-size:13px;margin:10px 0">'+(err&&err.message?err.message:String(err))+'</p>'
+    +'<button onclick="location.reload()" style="background:var(--accent);color:#fff;border:none;padding:12px 24px;border-radius:10px;font-size:15px;cursor:pointer">🔄 Réessayer</button>'
+    +'</div>';
 });
 </script>
 </body>
