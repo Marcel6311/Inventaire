@@ -8,7 +8,6 @@
 <meta name="apple-mobile-web-app-title" content="Mon Inventaire">
 <meta name="theme-color" content="#1a1a2e">
 <title>Mon Inventaire</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
 <style>
   :root {
     --bg: #0f0f1a;
@@ -240,7 +239,6 @@
     <div class="view" id="view-inventory">
       <div class="search-bar">
         <input type="text" id="invSearch" placeholder="Rechercher un article..." oninput="filterInventory()">
-        <button onclick="openScanner()" title="Scanner">📷</button>
         <button onclick="openAddModal()">+</button>
       </div>
       <div class="filter-bar" id="filterBar"></div>
@@ -395,12 +393,6 @@
       <h2 id="modalItemTitle">Ajouter un article</h2>
       <button class="modal-close" onclick="closeModal('modalItem')">Fermer</button>
     </div>
-
-    <div style="display:flex;gap:8px;margin-bottom:14px">
-      <button class="btn btn-primary" style="flex:1" onclick="openScanner()">📷 Scanner le code-barres</button>
-      <button class="btn btn-ghost btn-sm" onclick="openManualBarcode()">123</button>
-    </div>
-    <div id="scanResult" style="display:none;margin-bottom:10px"></div>
 
     <div class="form-group">
       <label>Nom de l'article *</label>
@@ -602,45 +594,6 @@
       <button class="modal-close" onclick="closeModal('modalDetail')">Fermer</button>
     </div>
     <div id="detailContent"></div>
-  </div>
-</div>
-
-<!-- INPUT CAMÉRA CACHÉ (ouvre l'appareil photo iOS nativement) -->
-<input type="file" id="barcodePhotoInput" accept="image/*" capture="environment"
-       style="display:none" onchange="processBarcodePhoto(this)">
-
-<!-- MODAL: RÉSULTAT SCANNER -->
-<div class="modal-overlay" id="modalScanner">
-  <div class="modal" style="padding:16px">
-    <div class="modal-header">
-      <h2>📷 Code-barres</h2>
-      <button class="modal-close" onclick="closeModal('modalScanner')">Fermer</button>
-    </div>
-    <div id="scannerStatus" class="alert alert-info" style="margin-bottom:12px;font-size:13px">
-      Analyse en cours…
-    </div>
-    <img id="scannerPreviewImg" style="display:none;width:100%;border-radius:10px;margin-bottom:10px;max-height:220px;object-fit:contain">
-    <div id="scannerFoundBox" style="display:none" class="alert alert-success"></div>
-    <canvas id="scannerCanvas" style="display:none"></canvas>
-  </div>
-</div>
-
-<!-- MODAL: SAISIE MANUELLE CODE-BARRES -->
-<div class="modal-overlay" id="modalManualBarcode">
-  <div class="modal">
-    <div class="modal-header">
-      <h2>Saisir un code-barres</h2>
-      <button class="modal-close" onclick="closeModal('modalManualBarcode')">Fermer</button>
-    </div>
-    <div class="form-group">
-      <label>Code-barres (EAN-13, EAN-8…)</label>
-      <input type="number" id="manualBarcodeInput" placeholder="Ex: 3017620422003" inputmode="numeric">
-    </div>
-    <div id="manualBarcodeResult" style="display:none;margin-bottom:10px"></div>
-    <div style="display:flex;gap:8px">
-      <button class="btn btn-ghost" style="flex:1" onclick="closeModal('modalManualBarcode')">Annuler</button>
-      <button class="btn btn-primary" style="flex:1" onclick="lookupManualBarcode()">🔍 Rechercher</button>
-    </div>
   </div>
 </div>
 
@@ -1203,7 +1156,7 @@ async function confirmDelete(id) {
 // ============================================================
 // ADD / EDIT ITEM
 // ============================================================
-async function openAddModal(andThen) {
+async function openAddModal() {
   currentItemId = null;
   document.getElementById('modalItemTitle').textContent = 'Ajouter un article';
   document.getElementById('btnDeleteItem').style.display = 'none';
@@ -1223,7 +1176,6 @@ async function openAddModal(andThen) {
   await renderCatChips([]);
   await renderLocChips([]);
   openModal('modalItem');
-  if (andThen) andThen();
 }
 
 async function openEditModal(id) {
@@ -1926,211 +1878,6 @@ document.querySelectorAll('.modal-overlay').forEach(overlay => {
 });
 
 // ============================================================
-// SCANNER CODE-BARRES (via appareil photo natif iOS)
-// ============================================================
-
-function openScanner() {
-  // Déclenche l'appareil photo natif iPhone via input file
-  var input = document.getElementById('barcodePhotoInput');
-  input.value = '';
-  input.click();
-}
-
-function setScannerStatus(type, msg) {
-  var el = document.getElementById('scannerStatus');
-  el.className = 'alert alert-' + type;
-  el.style.marginBottom = '12px';
-  el.style.fontSize = '13px';
-  el.textContent = msg;
-}
-
-function processBarcodePhoto(input) {
-  var file = input.files && input.files[0];
-  if (!file) return;
-
-  // Ouvre le modal de résultat pendant l'analyse
-  document.getElementById('scannerFoundBox').style.display = 'none';
-  setScannerStatus('info', '🔍 Analyse de la photo…');
-  openModal('modalScanner');
-
-  var url = URL.createObjectURL(file);
-  var previewImg = document.getElementById('scannerPreviewImg');
-  previewImg.src = url;
-  previewImg.style.display = '';
-
-  var img = new Image();
-  img.onload = function() {
-    // Convertir l'image en dataURL via canvas pour QuaggaJS
-    var canvas = document.getElementById('scannerCanvas');
-    canvas.width  = img.naturalWidth;
-    canvas.height = img.naturalHeight;
-    canvas.getContext('2d').drawImage(img, 0, 0);
-    var dataUrl = canvas.toDataURL('image/jpeg', 0.9);
-    URL.revokeObjectURL(url);
-
-    if (typeof Quagga !== 'undefined') {
-      // Décodage via QuaggaJS (marche sur tous les navigateurs)
-      Quagga.decodeSingle({
-        decoder: { readers: ['ean_reader','ean_8_reader','upc_reader','upc_e_reader','code_128_reader','code_39_reader'] },
-        locate: true,
-        src: dataUrl
-      }, function(result) {
-        if (result && result.codeResult && result.codeResult.code) {
-          var code = result.codeResult.code;
-          setScannerStatus('success', '✅ Code détecté : ' + code + ' — Recherche…');
-          handleScannedCode(code);
-        } else {
-          setScannerStatus('warn', '⚠️ Code-barres non détecté. Réessayez en tenant l\'iPhone bien droit, bien éclairé, à ~20 cm du code.');
-          var box = document.getElementById('scannerFoundBox');
-          box.style.display = '';
-          box.className = 'alert alert-warn';
-          box.innerHTML = '<div style="display:flex;gap:8px;margin-top:8px">'
-            + '<button class="btn btn-ghost btn-sm" style="flex:1" onclick="openScanner();closeModal(\'modalScanner\')">🔄 Réessayer</button>'
-            + '<button class="btn btn-primary btn-sm" style="flex:1" onclick="closeModal(\'modalScanner\');openManualBarcode()">✏️ Saisie manuelle</button>'
-            + '</div>';
-        }
-      });
-    } else {
-      // Quagga pas encore chargé (hors ligne) — saisie manuelle
-      setScannerStatus('warn', 'Bibliothèque non disponible hors connexion. Utilisez la saisie manuelle.');
-      var box = document.getElementById('scannerFoundBox');
-      box.style.display = '';
-      box.className = 'alert alert-warn';
-      box.innerHTML = '<button class="btn btn-primary btn-block" onclick="closeModal(\'modalScanner\');openManualBarcode()">✏️ Saisir le code manuellement</button>';
-    }
-  };
-
-  img.onerror = function() {
-    setScannerStatus('warn', 'Impossible de lire la photo.');
-  };
-
-  img.src = url;
-}
-
-async function handleScannedCode(code) {
-  setScannerStatus('info', '🔍 Code détecté : ' + code + ' — Recherche en cours…');
-  document.getElementById('scannerFoundBox').style.display = 'none';
-
-  var product = await fetchOpenFoodFacts(code);
-
-  if (product) {
-    // Produit trouvé
-    var box = document.getElementById('scannerFoundBox');
-    box.style.display = '';
-    box.innerHTML = '✅ <b>' + (product.name || code) + '</b> trouvé !';
-    setScannerStatus('success', 'Produit identifié ! Fermeture dans 2s…');
-    setTimeout(function() {
-      closeScanner();
-      openAddModal(function() { applyScannedProduct(code, product); });
-    }, 1500);
-  } else {
-    // Produit inconnu — on ouvre quand même le formulaire avec le code
-    setScannerStatus('warn', '⚠️ Produit non trouvé dans la base. Remplissez le formulaire manuellement.');
-    setTimeout(function() {
-      closeScanner();
-      openAddModal(function() {
-        document.getElementById('iName').value = '';
-        showScanFeedback('Code scanné : ' + code + ' — Produit inconnu, remplissez le nom.', false);
-      });
-    }, 2000);
-  }
-}
-
-async function fetchOpenFoodFacts(barcode) {
-  try {
-    var url = 'https://world.openfoodfacts.org/api/v0/product/' + barcode + '.json';
-    var resp = await fetch(url, { signal: AbortSignal.timeout(6000) });
-    var data = await resp.json();
-    if (data.status !== 1 || !data.product) return null;
-    var p = data.product;
-    var name = p.product_name_fr || p.product_name_en || p.product_name || p.generic_name_fr || p.generic_name || p.abbreviated_product_name || '';
-    // Dernier recours : utiliser la marque + catégorie
-    if (!name && p.brands) name = p.brands;
-    if (!name) name = 'Produit ' + barcode;
-    return {
-      name:     name,
-      brand:    p.brands || '',
-      quantity: p.quantity || '',
-      category: p.categories_hierarchy ? p.categories_hierarchy[0] : '',
-      imageUrl: p.image_front_small_url || p.image_url || '',
-      barcode:  barcode
-    };
-  } catch(e) {
-    return null;
-  }
-}
-
-function applyScannedProduct(barcode, product) {
-  if (product.name)  document.getElementById('iName').value = product.name;
-  // Quantité depuis le champ "quantity" (ex: "500 g", "1 L")
-  if (product.quantity) {
-    var match = product.quantity.match(/^([\d.,]+)\s*(.*)$/);
-    if (match) {
-      document.getElementById('iQty').value = parseFloat(match[1].replace(',','.')) || 1;
-      var unitRaw = (match[2] || '').toLowerCase().trim();
-      var unitMap = { 'g':'g', 'kg':'kg', 'l':'L', 'ml':'ml', 'cl':'cl', 'l':'L' };
-      if (unitMap[unitRaw]) document.getElementById('iUnit').value = unitMap[unitRaw];
-    }
-  }
-  // Notes avec marque + code
-  var notes = [];
-  if (product.brand)   notes.push('Marque : ' + product.brand);
-  if (product.barcode) notes.push('Code-barres : ' + product.barcode);
-  if (notes.length) document.getElementById('iNotes').value = notes.join('\n');
-  // Photo depuis Open Food Facts
-  if (product.imageUrl) {
-    var img = document.getElementById('iPhotoPreview');
-    img.src = product.imageUrl;
-    img.style.display = '';
-    var ph = document.getElementById('iPhotoPlaceholder');
-    if (ph) ph.style.display = 'none';
-  }
-  showScanFeedback('✅ ' + (product.name || 'Produit') + ' importé depuis Open Food Facts !', true);
-}
-
-function showScanFeedback(msg, ok) {
-  var el = document.getElementById('scanResult');
-  el.style.display = '';
-  el.className = 'alert ' + (ok ? 'alert-success' : 'alert-warn');
-  el.textContent = msg;
-}
-
-// SAISIE MANUELLE
-function openManualBarcode() {
-  document.getElementById('manualBarcodeInput').value = '';
-  document.getElementById('manualBarcodeResult').style.display = 'none';
-  openModal('modalManualBarcode');
-}
-
-async function lookupManualBarcode() {
-  var code = document.getElementById('manualBarcodeInput').value.trim();
-  if (!code) return;
-  var res = document.getElementById('manualBarcodeResult');
-  res.style.display = '';
-  res.className = 'alert alert-info';
-  res.textContent = '🔍 Recherche en cours…';
-  var product = await fetchOpenFoodFacts(code);
-  if (product) {
-    res.className = 'alert alert-success';
-    res.textContent = '✅ Trouvé : ' + (product.name || code);
-    setTimeout(function() {
-      closeModal('modalManualBarcode');
-      openAddModal(function() { applyScannedProduct(code, product); });
-    }, 1200);
-  } else {
-    res.className = 'alert alert-warn';
-    res.textContent = '⚠️ Produit non trouvé. Vérifiez le code ou remplissez manuellement.';
-    setTimeout(function() {
-      closeModal('modalManualBarcode');
-      openAddModal(function() {
-        document.getElementById('iNotes').value = 'Code-barres : ' + code;
-        showScanFeedback('Code ' + code + ' non trouvé dans la base. Remplissez le nom.', false);
-      });
-    }, 2000);
-  }
-}
-
-// ============================================================
 // UTILS
 // ============================================================
 function formatDate(d) {
@@ -2207,7 +1954,13 @@ async function init() {
   registerSW();
 }
 
-init();
+init().catch(function(err) {
+  document.getElementById('content').innerHTML = '<div style="padding:30px;color:#ff6060;font-size:15px">'
+    + '<div style="font-size:40px;margin-bottom:12px">⚠️</div>'
+    + '<b>Erreur au démarrage</b><br><br>' + (err && err.message ? err.message : String(err))
+    + '<br><br><button onclick="location.reload()" style="background:#6c63ff;color:white;border:none;padding:12px 24px;border-radius:10px;font-size:15px">🔄 Réessayer</button>'
+    + '</div>';
+});
 </script>
 </body>
 </html>
