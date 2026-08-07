@@ -362,7 +362,7 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
     <div style="display:flex;gap:10px;align-items:flex-end">
       <div class="fg" style="width:68px;flex-shrink:0">
         <label>Icône</label>
-        <input type="text" id="iEmoji" placeholder="🥗" maxlength="8" oninput="limitEmoji(this)" style="text-align:center;font-size:32px;padding:6px;letter-spacing:0;line-height:1.2" autocomplete="off" spellcheck="false" data-dashlane-ignore="true" data-lpignore="true" data-1p-ignore="true">
+        <input type="text" id="iEmoji" placeholder="🥗" maxlength="8" style="text-align:center;font-size:32px;padding:6px;letter-spacing:0;line-height:1.2" autocomplete="off" spellcheck="false" data-dashlane-ignore="true" data-lpignore="true" data-1p-ignore="true">
       </div>
       <div class="fg" style="flex:1">
         <label>Désignation *</label>
@@ -508,7 +508,7 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
     <div class="fg"><label>Nom</label><input type="text" id="catName" placeholder="Ex: Congélateur" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false" data-dashlane-ignore="true" data-lpignore="true" data-1p-ignore="true"></div>
     <div class="fg">
       <label>Emoji</label>
-      <input type="text" id="catEmoji" placeholder="🧊" maxlength="8" oninput="limitEmoji(this)" autocomplete="off" spellcheck="false" data-dashlane-ignore="true" data-lpignore="true" data-1p-ignore="true" style="font-size:32px;text-align:center;padding:10px;letter-spacing:0;line-height:1.2">
+      <input type="text" id="catEmoji" placeholder="🧊" maxlength="8" autocomplete="off" spellcheck="false" data-dashlane-ignore="true" data-lpignore="true" data-1p-ignore="true" style="font-size:32px;text-align:center;padding:10px;letter-spacing:0;line-height:1.2">
     </div>
     <div class="fg"><label>Couleur</label><input type="color" id="catColor" value="#6366f1" style="height:42px;padding:3px 5px"></div>
     <button class="btn btn-p btn-bl" onclick="saveCat()">Enregistrer</button>
@@ -522,7 +522,7 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
     <div class="fg"><label>Nom</label><input type="text" id="locName" placeholder="Ex: Placard cuisine" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false" data-dashlane-ignore="true" data-lpignore="true" data-1p-ignore="true"></div>
     <div class="fg">
       <label>Emoji</label>
-      <input type="text" id="locEmoji" placeholder="🚪" maxlength="8" oninput="limitEmoji(this)" autocomplete="off" spellcheck="false" data-dashlane-ignore="true" data-lpignore="true" data-1p-ignore="true" style="font-size:32px;text-align:center;padding:10px;letter-spacing:0;line-height:1.2">
+      <input type="text" id="locEmoji" placeholder="🚪" maxlength="8" autocomplete="off" spellcheck="false" data-dashlane-ignore="true" data-lpignore="true" data-1p-ignore="true" style="font-size:32px;text-align:center;padding:10px;letter-spacing:0;line-height:1.2">
     </div>
     <button class="btn btn-p btn-bl" onclick="saveLoc()">Enregistrer</button>
   </div>
@@ -1796,21 +1796,6 @@ function resetPhoto(inputId, prevId, phId) {
 // UTILITAIRES
 // =====================================================================
 
-// Limite un champ à 1 seul emoji (gère les emojis composites, drapeaux, etc.)
-function limitEmoji(input) {
-  var val = input.value;
-  if (!val) return;
-  // Segmentation par graphème pour ne garder que le 1er emoji
-  if (typeof Intl !== 'undefined' && Intl.Segmenter) {
-    var seg = new Intl.Segmenter();
-    var segments = Array.from(seg.segment(val));
-    if (segments.length > 0) input.value = segments[0].segment;
-  } else {
-    // Fallback : RegExp emoji
-    var match = val.match(/\p{Emoji_Presentation}|\p{Extended_Pictographic}/u);
-    if (match) input.value = match[0];
-  }
-}
 
 function fDate(d) {
   if (!d) return '';
