@@ -394,9 +394,15 @@
       <button class="modal-close" onclick="closeModal('modalItem')">Fermer</button>
     </div>
 
-    <div class="form-group">
-      <label>Nom de l'article *</label>
-      <input type="text" id="iName" placeholder="Ex: Blanc de poulet">
+    <div style="display:flex;gap:10px;align-items:flex-end">
+      <div class="form-group" style="width:70px;flex-shrink:0">
+        <label>Icône</label>
+        <input type="text" id="iEmoji" placeholder="🥗" maxlength="2" style="text-align:center;font-size:24px;padding:8px">
+      </div>
+      <div class="form-group" style="flex:1">
+        <label>Nom de l'article *</label>
+        <input type="text" id="iName" placeholder="Ex: Blanc de poulet">
+      </div>
     </div>
 
     <div class="form-row">
@@ -998,21 +1004,92 @@ function renderItemRow(item) {
 }
 
 function getItemEmoji(item) {
-  const name = item.name.toLowerCase();
-  if (name.includes('poulet') || name.includes('volaille')) return '🍗';
-  if (name.includes('bœuf') || name.includes('boeuf') || name.includes('steak')) return '🥩';
-  if (name.includes('poisson') || name.includes('saumon') || name.includes('thon')) return '🐟';
-  if (name.includes('fromage')) return '🧀';
-  if (name.includes('pain')) return '🍞';
-  if (name.includes('lait')) return '🥛';
-  if (name.includes('œuf') || name.includes('oeuf')) return '🥚';
-  if (name.includes('légume') || name.includes('carotte') || name.includes('tomate')) return '🥦';
-  if (name.includes('fruit') || name.includes('pomme') || name.includes('orange')) return '🍎';
-  if (name.includes('vin')) return '🍷';
-  if (name.includes('eau')) return '💧';
-  if (name.includes('café')) return '☕';
-  if (name.includes('chocolat')) return '🍫';
-  if (name.includes('sucre') || name.includes('farine')) return '🌾';
+  if (item.emoji) return item.emoji;
+  var n = item.name.toLowerCase();
+  // Viandes
+  if (n.includes('poulet') || n.includes('volaille') || n.includes('dinde')) return '🍗';
+  if (n.includes('jambon')) return '🍖';
+  if (n.includes('bœuf') || n.includes('boeuf') || n.includes('steak') || n.includes('entrecôte') || n.includes('entrecote')) return '🥩';
+  if (n.includes('porc') || n.includes('côte') || n.includes('lardons') || n.includes('bacon')) return '🥓';
+  if (n.includes('agneau') || n.includes('veau')) return '🍖';
+  if (n.includes('saucisse') || n.includes('saucisson') || n.includes('merguez')) return '🌭';
+  if (n.includes('charcuterie') || n.includes('salami') || n.includes('chorizo')) return '🍖';
+  // Poissons
+  if (n.includes('saumon')) return '🐟';
+  if (n.includes('thon')) return '🐠';
+  if (n.includes('crevette') || n.includes('fruits de mer')) return '🦐';
+  if (n.includes('moule') || n.includes('huître')) return '🦪';
+  if (n.includes('poisson')) return '🐟';
+  // Produits laitiers
+  if (n.includes('lait')) return '🥛';
+  if (n.includes('beurre')) return '🧈';
+  if (n.includes('fromage') || n.includes('gruyère') || n.includes('emmental') || n.includes('camembert') || n.includes('brie')) return '🧀';
+  if (n.includes('yaourt') || n.includes('yogourt')) return '🥛';
+  if (n.includes('crème') || n.includes('creme')) return '🥛';
+  if (n.includes('œuf') || n.includes('oeuf') || n.includes('oeufs')) return '🥚';
+  // Légumes
+  if (n.includes('salade') || n.includes('laitue') || n.includes('roquette')) return '🥗';
+  if (n.includes('tomate')) return '🍅';
+  if (n.includes('carotte')) return '🥕';
+  if (n.includes('oignon')) return '🧅';
+  if (n.includes('ail')) return '🧄';
+  if (n.includes('pomme de terre') || n.includes('patate')) return '🥔';
+  if (n.includes('courgette') || n.includes('concombre')) return '🥒';
+  if (n.includes('poivron')) return '🫑';
+  if (n.includes('épinard') || n.includes('brocoli') || n.includes('chou')) return '🥦';
+  if (n.includes('champignon')) return '🍄';
+  if (n.includes('avocat')) return '🥑';
+  if (n.includes('maïs')) return '🌽';
+  if (n.includes('légume')) return '🥦';
+  // Fruits
+  if (n.includes('pomme')) return '🍎';
+  if (n.includes('banane')) return '🍌';
+  if (n.includes('orange') || n.includes('clémentine') || n.includes('mandarine')) return '🍊';
+  if (n.includes('citron')) return '🍋';
+  if (n.includes('fraise')) return '🍓';
+  if (n.includes('raisin')) return '🍇';
+  if (n.includes('pêche') || n.includes('abricot')) return '🍑';
+  if (n.includes('cerise')) return '🍒';
+  if (n.includes('ananas')) return '🍍';
+  if (n.includes('mangue') || n.includes('mango')) return '🥭';
+  if (n.includes('pastèque') || n.includes('melon')) return '🍉';
+  if (n.includes('fruit')) return '🍎';
+  // Boissons
+  if (n.includes('eau')) return '💧';
+  if (n.includes('café')) return '☕';
+  if (n.includes('thé') || n.includes('infusion')) return '🍵';
+  if (n.includes('jus')) return '🧃';
+  if (n.includes('soda') || n.includes('coca') || n.includes('pepsi') || n.includes('limonade')) return '🥤';
+  if (n.includes('bière')) return '🍺';
+  if (n.includes('vin')) return '🍷';
+  if (n.includes('champagne') || n.includes('prosecco')) return '🥂';
+  if (n.includes('whisky') || n.includes('rhum') || n.includes('vodka') || n.includes('gin')) return '🥃';
+  if (n.includes('water') || n.includes('focus')) return '🥤';
+  if (n.includes('boisson') || n.includes('sirop')) return '🥤';
+  // Épicerie / Cuisine
+  if (n.includes('pain') || n.includes('baguette') || n.includes('brioche')) return '🍞';
+  if (n.includes('pâtes') || n.includes('spaghetti') || n.includes('rigatoni')) return '🍝';
+  if (n.includes('riz')) return '🍚';
+  if (n.includes('farine')) return '🌾';
+  if (n.includes('sucre')) return '🍬';
+  if (n.includes('sel') || n.includes('poivre') || n.includes('épice')) return '🧂';
+  if (n.includes('huile')) return '🫒';
+  if (n.includes('vinaigre')) return '🍶';
+  if (n.includes('moutarde') || n.includes('ketchup') || n.includes('mayonnaise')) return '🧴';
+  if (n.includes('confiture') || n.includes('miel')) return '🍯';
+  if (n.includes('chocolat') || n.includes('nutella')) return '🍫';
+  if (n.includes('gâteau') || n.includes('cake') || n.includes('tarte') || n.includes('biscuit') || n.includes('cookie')) return '🍪';
+  if (n.includes('céréale')) return '🥣';
+  if (n.includes('conserve') || n.includes('bocal')) return '🥫';
+  if (n.includes('soupe') || n.includes('bouillon')) return '🍲';
+  if (n.includes('pizza')) return '🍕';
+  if (n.includes('sandwich') || n.includes('toast')) return '🥪';
+  // Hygiène / Maison
+  if (n.includes('shampooing') || n.includes('shampoo') || n.includes('savon') || n.includes('gel douche')) return '🧴';
+  if (n.includes('dentifrice') || n.includes('brosse')) return '🪥';
+  if (n.includes('lessive') || n.includes('détergent') || n.includes('nettoyant')) return '🧹';
+  if (n.includes('papier toilette') || n.includes('papier wc')) return '🧻';
+  if (n.includes('médicament') || n.includes('comprimé') || n.includes('sirop')) return '💊';
   return '📦';
 }
 
@@ -1168,6 +1245,7 @@ async function openAddModal() {
   document.getElementById('iExpDate').value = '';
   document.getElementById('iAlertThreshold').value = 1;
   document.getElementById('iAlertEnabled').value = '1';
+  document.getElementById('iEmoji').value = '';
   document.getElementById('iPriceOld').value = '';
   document.getElementById('iPriceNew').value = '';
   document.getElementById('iPriceDiff').style.display = 'none';
@@ -1192,6 +1270,7 @@ async function openEditModal(id) {
   document.getElementById('iExpDate').value = item.expDate || '';
   document.getElementById('iAlertThreshold').value = item.alertThreshold ?? 1;
   document.getElementById('iAlertEnabled').value = item.alertEnabled ? '1' : '0';
+  document.getElementById('iEmoji').value = item.emoji || '';
   document.getElementById('iPriceOld').value = item.priceOld || '';
   document.getElementById('iPriceNew').value = item.priceNew || '';
   calcPriceDiff();
@@ -1277,6 +1356,7 @@ async function saveItem() {
     expDate: document.getElementById('iExpDate').value || null,
     alertThreshold: parseFloat(document.getElementById('iAlertThreshold').value) || 0,
     alertEnabled: document.getElementById('iAlertEnabled').value === '1',
+    emoji: document.getElementById('iEmoji').value.trim() || null,
     notes: document.getElementById('iNotes').value.trim(),
     priceOld: parseFloat(document.getElementById('iPriceOld').value) || null,
     priceNew: parseFloat(document.getElementById('iPriceNew').value) || null,
