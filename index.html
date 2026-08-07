@@ -968,7 +968,30 @@ function renderInventoryList() {
     container.innerHTML = '<div class="empty"><div class="emoji">🔍</div><p>Aucun article trouvé.</p></div>';
     return;
   }
-  container.innerHTML = items.map(i => renderItemRow(i)).join('');
+
+  // Pagination — 50 articles par page pour tenir 50 000 sans ralentir
+  const PAGE = 50;
+  const totalPages = Math.ceil(items.length / PAGE);
+  if (currentPage >= totalPages) currentPage = 0;
+  const pageItems = items.slice(currentPage * PAGE, (currentPage + 1) * PAGE);
+
+  var pagNav = '';
+  if (totalPages > 1) {
+    pagNav = '<div style="display:flex;align-items:center;justify-content:center;gap:12px;padding:10px 0;border-top:1px solid var(--border);margin-top:8px">'
+      + '<button class="btn btn-ghost btn-sm" onclick="changePage(-1)" ' + (currentPage===0?'disabled':'') + '>◀ Préc.</button>'
+      + '<span style="font-size:13px;color:var(--text2)">' + (currentPage+1) + ' / ' + totalPages + ' (' + items.length + ' articles)</span>'
+      + '<button class="btn btn-ghost btn-sm" onclick="changePage(1)" ' + (currentPage===totalPages-1?'disabled':'') + '>Suiv. ▶</button>'
+      + '</div>';
+  }
+
+  container.innerHTML = pageItems.map(function(i) { return renderItemRow(i); }).join('') + pagNav;
+}
+
+var currentPage = 0;
+function changePage(dir) {
+  currentPage += dir;
+  renderInventoryList();
+  document.getElementById('content').scrollTop = 0;
 }
 
 function renderItemRow(item) {
@@ -989,18 +1012,21 @@ function renderItemRow(item) {
     isExpired ? '⚠️ EXPIRÉ' : ''
   ].filter(Boolean).join(' · ');
 
-  return `<div class="item-row" onclick="openItemDetail('${item.id}')">
-    <div class="item-icon" style="background:rgba(108,99,255,.15)">${getItemEmoji(item)}</div>
-    <div class="item-info">
-      <div class="item-name">${item.name}</div>
-      <div class="item-meta">${meta}</div>
-      <div class="tags">${catNames}</div>
-    </div>
-    <div class="item-qty">
-      <div class="qty ${qtyClass}">${item.qty}</div>
-      <div class="unit">${item.unit}</div>
-    </div>
-  </div>`;
+  return '<div class="item-row">'
+    + '<div class="item-icon" style="background:rgba(108,99,255,.15);cursor:pointer" onclick="openItemDetail(\'' + item.id + '\')">' + getItemEmoji(item) + '</div>'
+    + '<div class="item-info" style="cursor:pointer" onclick="openItemDetail(\'' + item.id + '\')">'
+    + '<div class="item-name">' + item.name + '</div>'
+    + '<div class="item-meta">' + meta + '</div>'
+    + '<div class="tags">' + catNames + '</div>'
+    + '</div>'
+    + '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">'
+    + '<div class="item-qty" style="cursor:pointer" onclick="openItemDetail(\'' + item.id + '\')">'
+    + '<div class="qty ' + qtyClass + '">' + item.qty + '</div>'
+    + '<div class="unit">' + item.unit + '</div>'
+    + '</div>'
+    + '<button onclick="quickDelete(\'' + item.id + '\',event)" style="background:none;border:none;color:var(--text2);font-size:18px;cursor:pointer;padding:2px 4px;line-height:1" title="Supprimer">🗑</button>'
+    + '</div>'
+    + '</div>';
 }
 
 function getItemEmoji(item) {
@@ -1159,7 +1185,7 @@ function buildExpiredLine(expDate, isExpired) {
 // ============================================================
 // ITEM DETAIL
 // ============================================================
-async function openItemDetail(id) {
+async function openItemDetail(id, fromSearch) {
   const item = allItems.find(i => i.id === id);
   if (!item) return;
 
@@ -1174,6 +1200,9 @@ async function openItemDetail(id) {
   const pColor = item.qty <= item.alertThreshold ? 'var(--danger)' : item.qty <= item.alertThreshold * 2 ? 'var(--warn)' : 'var(--success)';
 
   document.getElementById('detailTitle').textContent = item.name;
+  // Supprimer nav précédente
+  var oldNav = document.getElementById('searchNav');
+  if (oldNav) oldNav.remove();
   document.getElementById('detailContent').innerHTML = `
     ${item.photo ? `<img src="${item.photo}" class="detail-photo">` : ''}
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
@@ -1203,6 +1232,7 @@ async function openItemDetail(id) {
     </div>
   `;
   openModal('modalDetail');
+  if (fromSearch) injectSearchNav();
 }
 
 async function adjustQty(id, delta) {
@@ -1216,6 +1246,17 @@ async function adjustQty(id, delta) {
   await dbPut('items', item);
   allItems = await dbGetAll('items');
   openItemDetail(id);
+  refreshAlertBadge();
+}
+
+async function quickDelete(id, evt) {
+  evt.stopPropagation();
+  var item = allItems.find(function(i) { return i.id === id; });
+  if (!item) return;
+  if (settings.confirm && !confirm('Supprimer "' + item.name + '" ?')) return;
+  await dbDelete('items', id);
+  allItems = await dbGetAll('items');
+  renderInventoryList();
   refreshAlertBadge();
 }
 
@@ -1868,36 +1909,91 @@ async function openAlertList() {
 
 function openSearch() { openModal('modalSearch'); document.getElementById('globalSearch').value=''; document.getElementById('globalResults').innerHTML=''; setTimeout(()=>document.getElementById('globalSearch').focus(),300); }
 
+var searchResults = [];   // liste d'ids pour navigation prev/next
+var searchResultIdx = -1; // index courant dans les résultats
+
 async function doGlobalSearch() {
-  const q = document.getElementById('globalSearch').value.toLowerCase().trim();
-  const container = document.getElementById('globalResults');
-  if (q.length < 1) { container.innerHTML=''; return; }
+  var q = document.getElementById('globalSearch').value.toLowerCase().trim();
+  var container = document.getElementById('globalResults');
+  if (q.length < 1) { container.innerHTML = ''; searchResults = []; return; }
 
-  const items = (await dbGetAll('items')).filter(i => i.name.toLowerCase().includes(q) || (i.notes||'').toLowerCase().includes(q));
-  const wines = (await dbGetAll('wines')).filter(w => w.name.toLowerCase().includes(q) || (w.producer||'').toLowerCase().includes(q) || (w.region||'').toLowerCase().includes(q));
+  var items = (await dbGetAll('items')).filter(function(i) {
+    return i.name.toLowerCase().includes(q) || (i.notes||'').toLowerCase().includes(q);
+  });
+  var wines = (await dbGetAll('wines')).filter(function(w) {
+    return w.name.toLowerCase().includes(q) || (w.producer||'').toLowerCase().includes(q) || (w.region||'').toLowerCase().includes(q);
+  });
 
-  if (items.length + wines.length === 0) {
+  // Mémoriser les ids pour navigation
+  searchResults = items.map(function(i) { return {type:'item', id:i.id}; })
+    .concat(wines.map(function(w) { return {type:'wine', id:w.id}; }));
+
+  if (searchResults.length === 0) {
     container.innerHTML = '<div class="empty" style="padding:20px"><div class="emoji">🔍</div><p>Aucun résultat pour "' + q + '"</p></div>';
     return;
   }
 
-  let html = '';
+  var html = '';
   if (items.length > 0) {
-    html += `<div class="section-title">${items.length} article(s)</div><div class="card">`;
-    html += items.map(i => `<div class="item-row" onclick="closeModal('modalSearch');openItemDetail('${i.id}')">
-      <div style="font-size:24px">${getItemEmoji(i)}</div>
-      <div class="item-info"><div class="item-name">${highlight(i.name,q)}</div><div class="item-meta">${i.qty} ${i.unit}</div></div>
-    </div>`).join('');
+    html += '<div class="section-title">' + items.length + ' article(s)</div><div class="card">';
+    items.forEach(function(i, idx) {
+      html += '<div class="item-row" onclick="openSearchResult(' + idx + ')">'
+        + '<div style="font-size:24px">' + getItemEmoji(i) + '</div>'
+        + '<div class="item-info"><div class="item-name">' + highlight(i.name, q) + '</div>'
+        + '<div class="item-meta">' + i.qty + ' ' + i.unit + '</div></div>'
+        + '<button onclick="event.stopPropagation();quickDeleteFromSearch(\'' + i.id + '\')" style="background:none;border:none;color:var(--text2);font-size:18px;cursor:pointer;padding:4px">🗑</button>'
+        + '</div>';
+    });
     html += '</div>';
   }
   if (wines.length > 0) {
-    html += `<div class="section-title">${wines.length} vin(s)</div>`;
-    html += wines.map(w => `<div class="wine-card" onclick="closeModal('modalSearch');navigate('wine',null);openEditWineModal('${w.id}')">
-      <div class="wine-name">${highlight(w.name,q)}</div>
-      <div class="wine-details">${[w.vintage, w.producer, w.region].filter(Boolean).join(' · ')}</div>
-    </div>`).join('');
+    html += '<div class="section-title">' + wines.length + ' vin(s)</div>';
+    wines.forEach(function(w, idx) {
+      html += '<div class="wine-card" onclick="openSearchResult(' + (items.length + idx) + ')">'
+        + '<div class="wine-name">' + highlight(w.name, q) + '</div>'
+        + '<div class="wine-details">' + [w.vintage, w.producer, w.region].filter(Boolean).join(' · ') + '</div>'
+        + '</div>';
+    });
   }
   container.innerHTML = html;
+}
+
+function openSearchResult(idx) {
+  searchResultIdx = idx;
+  var r = searchResults[idx];
+  if (!r) return;
+  // Injecter nav prev/next dans le modal détail avant d'ouvrir
+  if (r.type === 'item') {
+    openItemDetail(r.id, true);
+  } else {
+    closeModal('modalSearch');
+    navigate('wine', null);
+    openEditWineModal(r.id);
+  }
+}
+
+function injectSearchNav() {
+  var total = searchResults.length;
+  if (total <= 1) return;
+  var nav = document.createElement('div');
+  nav.id = 'searchNav';
+  nav.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:12px';
+  nav.innerHTML = '<button class="btn btn-ghost btn-sm" onclick="closeModal(\'modalDetail\');openModal(\'modalSearch\')" style="flex:0">← Retour</button>'
+    + '<button class="btn btn-ghost btn-sm" onclick="openSearchResult(' + (searchResultIdx-1) + ')" ' + (searchResultIdx===0?'disabled':'') + '>◀</button>'
+    + '<span style="flex:1;text-align:center;font-size:12px;color:var(--text2)">' + (searchResultIdx+1) + ' / ' + total + '</span>'
+    + '<button class="btn btn-ghost btn-sm" onclick="openSearchResult(' + (searchResultIdx+1) + ')" ' + (searchResultIdx===total-1?'disabled':'') + '>▶</button>';
+  var content = document.getElementById('detailContent');
+  content.parentNode.insertBefore(nav, content);
+}
+
+async function quickDeleteFromSearch(id) {
+  var item = allItems.find(function(i) { return i.id === id; });
+  if (!item) return;
+  if (settings.confirm && !confirm('Supprimer "' + item.name + '" ?')) return;
+  await dbDelete('items', id);
+  allItems = await dbGetAll('items');
+  refreshAlertBadge();
+  doGlobalSearch(); // rafraîchir les résultats
 }
 
 function highlight(text, q) {
