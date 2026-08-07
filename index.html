@@ -604,26 +604,21 @@
   </div>
 </div>
 
-<!-- MODAL: SCANNER -->
+<!-- INPUT CAMÉRA CACHÉ (ouvre l'appareil photo iOS nativement) -->
+<input type="file" id="barcodePhotoInput" accept="image/*" capture="environment"
+       style="display:none" onchange="processBarcodePhoto(this)">
+
+<!-- MODAL: RÉSULTAT SCANNER -->
 <div class="modal-overlay" id="modalScanner">
   <div class="modal" style="padding:16px">
     <div class="modal-header">
-      <h2>📷 Scanner un article</h2>
-      <button class="modal-close" onclick="closeScanner()">Fermer</button>
+      <h2>📷 Code-barres</h2>
+      <button class="modal-close" onclick="closeModal('modalScanner')">Fermer</button>
     </div>
     <div id="scannerStatus" class="alert alert-info" style="margin-bottom:12px;font-size:13px">
-      Initialisation de la caméra...
+      Analyse en cours…
     </div>
-    <div style="position:relative;border-radius:12px;overflow:hidden;background:#000;margin-bottom:12px">
-      <video id="scannerVideo" autoplay playsinline muted style="width:100%;display:block;max-height:300px;object-fit:cover"></video>
-      <!-- Viseur -->
-      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none">
-        <div style="width:220px;height:140px;border:3px solid rgba(108,99,255,.9);border-radius:12px;box-shadow:0 0 0 9999px rgba(0,0,0,.45)"></div>
-      </div>
-      <div style="position:absolute;bottom:10px;left:0;right:0;text-align:center">
-        <span style="background:rgba(0,0,0,.6);color:white;font-size:12px;padding:4px 10px;border-radius:20px">Centrez le code-barres dans le cadre</span>
-      </div>
-    </div>
+    <img id="scannerPreviewImg" style="display:none;width:100%;border-radius:10px;margin-bottom:10px;max-height:220px;object-fit:contain">
     <div id="scannerFoundBox" style="display:none" class="alert alert-success"></div>
     <canvas id="scannerCanvas" style="display:none"></canvas>
   </div>
@@ -1930,85 +1925,14 @@ document.querySelectorAll('.modal-overlay').forEach(overlay => {
 });
 
 // ============================================================
-// SCANNER CODE-BARRES
+// SCANNER CODE-BARRES (via appareil photo natif iOS)
 // ============================================================
-var scannerStream = null;
-var scannerLoop = null;
-var barcodeDetector = null;
 
 function openScanner() {
-  // Si BarcodeDetector pas dispo, fallback saisie manuelle
-  if (!('BarcodeDetector' in window)) {
-    openManualBarcode();
-    return;
-  }
-  document.getElementById('scannerStatus').textContent = 'Initialisation de la caméra...';
-  document.getElementById('scannerFoundBox').style.display = 'none';
-  openModal('modalScanner');
-  startScanner();
-}
-
-async function startScanner() {
-  try {
-    barcodeDetector = new BarcodeDetector({ formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128', 'code_39'] });
-  } catch(e) {
-    setScannerStatus('warn', 'Scanner non disponible sur ce navigateur. Utilisez la saisie manuelle.');
-    return;
-  }
-
-  try {
-    scannerStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
-    });
-    var video = document.getElementById('scannerVideo');
-    video.srcObject = scannerStream;
-    await video.play();
-    setScannerStatus('info', 'Prêt — pointez la caméra vers un code-barres.');
-    scanLoop();
-  } catch(err) {
-    if (err.name === 'NotAllowedError') {
-      setScannerStatus('warn', '⚠️ Accès caméra refusé. Autorisez la caméra dans les réglages Safari, ou utilisez la saisie manuelle.');
-    } else {
-      setScannerStatus('warn', 'Caméra indisponible : ' + err.message);
-    }
-  }
-}
-
-function scanLoop() {
-  var video = document.getElementById('scannerVideo');
-  var canvas = document.getElementById('scannerCanvas');
-
-  function detect() {
-    if (!scannerStream || !barcodeDetector) return;
-    if (video.readyState < 2) { scannerLoop = setTimeout(detect, 200); return; }
-    barcodeDetector.detect(video).then(function(barcodes) {
-      if (barcodes.length > 0) {
-        var code = barcodes[0].rawValue;
-        stopScanner();
-        handleScannedCode(code);
-      } else {
-        scannerLoop = setTimeout(detect, 300);
-      }
-    }).catch(function() {
-      scannerLoop = setTimeout(detect, 500);
-    });
-  }
-  scannerLoop = setTimeout(detect, 500);
-}
-
-function stopScanner() {
-  if (scannerLoop) { clearTimeout(scannerLoop); scannerLoop = null; }
-  if (scannerStream) {
-    scannerStream.getTracks().forEach(function(t) { t.stop(); });
-    scannerStream = null;
-  }
-  var video = document.getElementById('scannerVideo');
-  video.srcObject = null;
-}
-
-function closeScanner() {
-  stopScanner();
-  closeModal('modalScanner');
+  // Déclenche l'appareil photo natif iPhone via input file
+  var input = document.getElementById('barcodePhotoInput');
+  input.value = '';
+  input.click();
 }
 
 function setScannerStatus(type, msg) {
@@ -2017,6 +1941,67 @@ function setScannerStatus(type, msg) {
   el.style.marginBottom = '12px';
   el.style.fontSize = '13px';
   el.textContent = msg;
+}
+
+function processBarcodePhoto(input) {
+  var file = input.files && input.files[0];
+  if (!file) return;
+
+  // Ouvre le modal de résultat pendant l'analyse
+  document.getElementById('scannerFoundBox').style.display = 'none';
+  setScannerStatus('info', '🔍 Analyse de la photo…');
+  openModal('modalScanner');
+
+  var url = URL.createObjectURL(file);
+  var previewImg = document.getElementById('scannerPreviewImg');
+  previewImg.src = url;
+  previewImg.style.display = '';
+
+  var img = new Image();
+  img.onload = function() {
+    if ('BarcodeDetector' in window) {
+      var detector;
+      try {
+        detector = new BarcodeDetector({ formats: ['ean_13','ean_8','upc_a','upc_e','code_128','code_39','qr_code'] });
+      } catch(e) {
+        // BarcodeDetector disponible mais formats non supportés — essai sans formats
+        try { detector = new BarcodeDetector(); } catch(e2) { detector = null; }
+      }
+
+      if (detector) {
+        detector.detect(img).then(function(barcodes) {
+          URL.revokeObjectURL(url);
+          if (barcodes && barcodes.length > 0) {
+            var code = barcodes[0].rawValue;
+            setScannerStatus('success', '✅ Code détecté : ' + code + ' — Recherche du produit…');
+            handleScannedCode(code);
+          } else {
+            setScannerStatus('warn', '⚠️ Aucun code-barres détecté sur cette photo. Réessayez en vous approchant, ou utilisez la saisie manuelle.');
+            document.getElementById('scannerFoundBox').style.display = '';
+            document.getElementById('scannerFoundBox').className = 'alert alert-warn';
+            document.getElementById('scannerFoundBox').innerHTML = '<button class="btn btn-ghost btn-sm" onclick="closeModal(\'modalScanner\');openManualBarcode()" style="margin-top:8px">✏️ Saisir le code manuellement</button>';
+          }
+        }).catch(function(err) {
+          URL.revokeObjectURL(url);
+          setScannerStatus('warn', 'Erreur d\'analyse. Essayez la saisie manuelle.');
+        });
+        return;
+      }
+    }
+
+    // BarcodeDetector non disponible (iOS < 17)
+    URL.revokeObjectURL(url);
+    setScannerStatus('warn', 'La détection automatique n\'est pas disponible sur votre iOS. Utilisez la saisie manuelle.');
+    document.getElementById('scannerFoundBox').style.display = '';
+    document.getElementById('scannerFoundBox').className = 'alert alert-warn';
+    document.getElementById('scannerFoundBox').innerHTML = '<button class="btn btn-primary btn-block" onclick="closeModal(\'modalScanner\');openManualBarcode()" style="margin-top:8px">✏️ Saisir le code-barres manuellement</button>';
+  };
+
+  img.onerror = function() {
+    setScannerStatus('warn', 'Impossible de lire la photo.');
+  };
+
+  img.src = url;
 }
 
 async function handleScannedCode(code) {
