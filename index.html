@@ -217,7 +217,7 @@
 <div id="app">
   <div id="header">
     <h1 id="headerTitle">Mon Inventaire</h1>
-    <span id="alertBadge" class="badge" style="display:none">0</span>
+    <span id="alertBadge" class="badge" style="display:none;cursor:pointer" onclick="openAlertList()">0</span>
     <button class="btn btn-ghost btn-sm" onclick="openSearch()" style="padding:7px 10px">🔍</button>
   </div>
 
@@ -1638,6 +1638,66 @@ function download(filename, content, type) {
 // ============================================================
 // GLOBAL SEARCH
 // ============================================================
+async function openAlertList() {
+  const items = await dbGetAll('items');
+  const today = new Date(); today.setHours(0,0,0,0);
+  const in7 = new Date(today); in7.setDate(in7.getDate() + 7);
+
+  const expired = items.filter(i => i.expDate && new Date(i.expDate) < today);
+  const lowStock = items.filter(i => i.alertEnabled && i.qty <= i.alertThreshold);
+  const expiringSoon = items.filter(i => i.expDate && new Date(i.expDate) >= today && new Date(i.expDate) <= in7);
+
+  let html = '';
+
+  if (expired.length > 0) {
+    html += `<div class="section-title">⚠️ Expirés (${expired.length})</div><div class="card">`;
+    html += expired.map(i => `
+      <div class="item-row" onclick="closeModal('modalDetail');openEditModal('${i.id}')">
+        <div class="item-icon" style="background:rgba(231,76,60,.15)">${getItemEmoji(i)}</div>
+        <div class="item-info">
+          <div class="item-name">${i.name}</div>
+          <div class="item-meta" style="color:var(--danger)">Expiré le ${formatDate(i.expDate)}</div>
+        </div>
+        <div class="item-qty"><div class="qty qty-warn">${i.qty}</div><div class="unit">${i.unit}</div></div>
+      </div>`).join('');
+    html += '</div>';
+  }
+
+  if (lowStock.length > 0) {
+    html += `<div class="section-title">📦 Stock faible (${lowStock.length})</div><div class="card">`;
+    html += lowStock.map(i => `
+      <div class="item-row" onclick="closeModal('modalDetail');openEditModal('${i.id}')">
+        <div class="item-icon" style="background:rgba(243,156,18,.15)">${getItemEmoji(i)}</div>
+        <div class="item-info">
+          <div class="item-name">${i.name}</div>
+          <div class="item-meta" style="color:var(--warn)">Seuil : ${i.alertThreshold} ${i.unit}</div>
+        </div>
+        <div class="item-qty"><div class="qty qty-low">${i.qty}</div><div class="unit">${i.unit}</div></div>
+      </div>`).join('');
+    html += '</div>';
+  }
+
+  if (expiringSoon.length > 0) {
+    html += `<div class="section-title">⏰ Expirent dans 7 jours (${expiringSoon.length})</div><div class="card">`;
+    html += expiringSoon.map(i => `
+      <div class="item-row" onclick="closeModal('modalDetail');openEditModal('${i.id}')">
+        <div class="item-icon" style="background:rgba(108,99,255,.15)">${getItemEmoji(i)}</div>
+        <div class="item-info">
+          <div class="item-name">${i.name}</div>
+          <div class="item-meta" style="color:var(--warn)">Expire le ${formatDate(i.expDate)}</div>
+        </div>
+        <div class="item-qty"><div class="qty">${i.qty}</div><div class="unit">${i.unit}</div></div>
+      </div>`).join('');
+    html += '</div>';
+  }
+
+  if (!html) html = '<div class="alert alert-success"><span>✅</span><span>Tout est en ordre !</span></div>';
+
+  document.getElementById('detailTitle').textContent = '🔴 Alertes';
+  document.getElementById('detailContent').innerHTML = html;
+  openModal('modalDetail');
+}
+
 function openSearch() { openModal('modalSearch'); document.getElementById('globalSearch').value=''; document.getElementById('globalResults').innerHTML=''; setTimeout(()=>document.getElementById('globalSearch').focus(),300); }
 
 async function doGlobalSearch() {
