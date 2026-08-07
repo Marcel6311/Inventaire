@@ -221,7 +221,7 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
     <!-- INVENTAIRE -->
     <div class="view" id="v-inv">
       <div class="sbar">
-        <input type="text" id="invSearch" placeholder="Rechercher..." oninput="filterInv()">
+        <input type="text" id="invSearch" placeholder="Rechercher..." oninput="filterInv()" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
         <button onclick="openAddItem()">＋</button>
       </div>
       <div class="fbar" id="invFilters"></div>
@@ -283,7 +283,7 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
       <div class="card" id="shopList"></div>
       <div class="stitle">Ajouter manuellement</div>
       <div class="card" style="display:flex;gap:8px">
-        <input type="text" id="shopInput" placeholder="Article..." style="flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:9px 12px;color:var(--text);font-size:14px;outline:none">
+        <input type="text" id="shopInput" placeholder="Article..." style="flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:9px 12px;color:var(--text);font-size:14px;outline:none" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false">
         <button class="btn btn-p btn-sm" onclick="addShopItem()">＋</button>
       </div>
     </div>
@@ -361,15 +361,15 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
     <div style="display:flex;gap:10px;align-items:flex-end">
       <div class="fg" style="width:68px;flex-shrink:0">
         <label>Icône</label>
-        <input type="text" id="iEmoji" placeholder="🥗" maxlength="2" style="text-align:center;font-size:22px;padding:8px">
+        <input type="text" id="iEmoji" placeholder="🥗" maxlength="2" style="text-align:center;font-size:22px;padding:8px" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
       </div>
       <div class="fg" style="flex:1">
         <label>Nom *</label>
-        <input type="text" id="iName" placeholder="Ex: Blanc de poulet" oninput="checkDup()">
+        <input type="text" id="iName" placeholder="Ex: Blanc de poulet" oninput="checkDup()" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false">
       </div>
     </div>
     <div class="frow">
-      <div class="fg"><label>Quantité *</label><input type="number" id="iQty" value="1" min="0" step="0.1"></div>
+      <div class="fg"><label>Quantité *</label><input type="number" id="iQty" value="1" min="0" step="0.1" autocomplete="off"></div>
       <div class="fg"><label>Unité</label>
         <select id="iUnit">
           <option>pièce(s)</option><option>kg</option><option>g</option><option>L</option>
@@ -397,7 +397,7 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
       <div class="fg"><label>🆕 Nouveau prix (€)</label><input type="number" id="iPnew" placeholder="0.00" step="0.01" min="0" oninput="calcPrice()"></div>
     </div>
     <div id="priceDiff" style="display:none;margin-bottom:12px"></div>
-    <div class="fg"><label>Notes</label><textarea id="iNotes" placeholder="Remarques, origine..."></textarea></div>
+    <div class="fg"><label>Notes</label><textarea id="iNotes" placeholder="Remarques, origine..." autocomplete="off" autocorrect="off" spellcheck="false"></textarea></div>
     <div class="fg">
       <label>📷 Photo de l'article</label>
       <input type="file" id="iPhotoF" accept="image/*" capture="environment" style="display:none" onchange="loadPhoto('iPhotoF','iPrev','iPph')">
@@ -442,18 +442,18 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
         <option value="liqueur">🥃 Liqueur</option><option value="autre">🍶 Autre</option>
       </select>
     </div>
-    <div class="fg"><label>Nom / Appellation *</label><input type="text" id="wName" placeholder="Ex: Château Margaux"></div>
+    <div class="fg"><label>Nom / Appellation *</label><input type="text" id="wName" placeholder="Ex: Château Margaux" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false"></div>
     <div class="frow">
-      <div class="fg"><label>Producteur</label><input type="text" id="wProd" placeholder="Domaine..."></div>
-      <div class="fg"><label>Région</label><input type="text" id="wReg" placeholder="Bordeaux..."></div>
+      <div class="fg"><label>Producteur</label><input type="text" id="wProd" placeholder="Domaine..." autocomplete="off" autocorrect="off" spellcheck="false"></div>
+      <div class="fg"><label>Région</label><input type="text" id="wReg" placeholder="Bordeaux..." autocomplete="off" autocorrect="off" spellcheck="false"></div>
     </div>
     <div class="frow">
-      <div class="fg"><label>Millésime</label><input type="number" id="wVint" placeholder="2020"></div>
-      <div class="fg"><label>Cépage</label><input type="text" id="wGrape" placeholder="Cabernet..."></div>
+      <div class="fg"><label>Millésime</label><input type="number" id="wVint" placeholder="2020" autocomplete="off"></div>
+      <div class="fg"><label>Cépage</label><input type="text" id="wGrape" placeholder="Cabernet..." autocomplete="off" autocorrect="off" spellcheck="false"></div>
     </div>
     <div class="frow">
-      <div class="fg"><label>Bouteilles</label><input type="number" id="wQty" value="1" min="0"></div>
-      <div class="fg"><label>Prix (€)</label><input type="number" id="wPrice" placeholder="0.00" step="0.01"></div>
+      <div class="fg"><label>Bouteilles</label><input type="number" id="wQty" value="1" min="0" autocomplete="off"></div>
+      <div class="fg"><label>Prix (€)</label><input type="number" id="wPrice" placeholder="0.00" step="0.01" autocomplete="off"></div>
     </div>
     <div class="fg"><label>Ma note</label>
       <div style="display:flex;gap:6px" id="wStars">
@@ -464,9 +464,9 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
         <span class="rstar" onclick="setWineRating(5)">★</span>
       </div>
     </div>
-    <div class="fg"><label>Notes de dégustation</label><textarea id="wTasting" placeholder="Arômes, goût..."></textarea></div>
-    <div class="fg"><label>Date d'acquisition</label><input type="date" id="wAcq"></div>
-    <div class="fg"><label>Emplacement</label><input type="text" id="wLoc" placeholder="Cave, étagère..."></div>
+    <div class="fg"><label>Notes de dégustation</label><textarea id="wTasting" placeholder="Arômes, goût..." autocomplete="off" autocorrect="off" spellcheck="false"></textarea></div>
+    <div class="fg"><label>Date d'acquisition</label><input type="date" id="wAcq" autocomplete="off"></div>
+    <div class="fg"><label>Emplacement</label><input type="text" id="wLoc" placeholder="Cave, étagère..." autocomplete="off" autocorrect="off" spellcheck="false"></div>
     <div class="fg">
       <label>📷 Photo</label>
       <input type="file" id="wPhotoF" accept="image/*" capture="environment" style="display:none" onchange="loadPhoto('wPhotoF','wPrev','wPph')">
@@ -493,7 +493,7 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
   <div class="modal" style="max-height:95vh">
     <div class="mhdr"><h2>🔍 Recherche</h2><button class="mclose" onclick="closeM('mSearch')">Fermer</button></div>
     <div class="sbar" style="margin-bottom:12px">
-      <input type="text" id="gSearch" placeholder="Nom, catégorie, notes..." oninput="doSearch()" autofocus>
+      <input type="text" id="gSearch" placeholder="Nom, catégorie, notes..." oninput="doSearch()" autofocus autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
     </div>
     <div id="gResults"></div>
   </div>
