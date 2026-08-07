@@ -361,15 +361,15 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
     <div style="display:flex;gap:10px;align-items:flex-end">
       <div class="fg" style="width:68px;flex-shrink:0">
         <label>Icône</label>
-        <input type="text" id="iEmoji" placeholder="🥗" maxlength="2" style="text-align:center;font-size:22px;padding:8px" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+        <input type="search" id="iEmoji" placeholder="🥗" maxlength="2" style="text-align:center;font-size:22px;padding:8px" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false" data-dashlane-ignore="true" data-lpignore="true" data-1p-ignore="true">
       </div>
       <div class="fg" style="flex:1">
-        <label>Nom *</label>
-        <input type="text" id="iName" placeholder="Ex: Blanc de poulet" oninput="checkDup()" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false">
+        <label>Désignation *</label>
+        <input type="search" id="iName" placeholder="Ex: Blanc de poulet" oninput="checkDup()" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false" data-dashlane-ignore="true" data-lpignore="true" data-1p-ignore="true">
       </div>
     </div>
     <div class="frow">
-      <div class="fg"><label>Quantité *</label><input type="number" id="iQty" value="1" min="0" step="0.1" autocomplete="off"></div>
+      <div class="fg"><label>Quantité *</label><input type="number" id="iQty" value="1" min="0" step="0.1" autocomplete="off" data-dashlane-ignore="true" data-lpignore="true"></div>
       <div class="fg"><label>Unité</label>
         <select id="iUnit">
           <option>pièce(s)</option><option>kg</option><option>g</option><option>L</option>
@@ -383,21 +383,21 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
     <div class="fg"><label>Emplacements <small style="color:var(--text2)">(plusieurs possibles)</small></label>
       <div class="chips" id="locChips"></div></div>
     <div class="frow">
-      <div class="fg"><label>Date d'acquisition</label><input type="date" id="iAcq"></div>
-      <div class="fg"><label>Date d'expiration</label><input type="date" id="iExp"></div>
+      <div class="fg"><label>Date d'acquisition</label><input type="date" id="iAcq" autocomplete="off" data-dashlane-ignore="true"></div>
+      <div class="fg"><label>Date d'expiration</label><input type="date" id="iExp" autocomplete="off" data-dashlane-ignore="true"></div>
     </div>
     <div class="frow">
-      <div class="fg"><label>Alerte si qté ≤</label><input type="number" id="iAlert" value="1" min="0"></div>
+      <div class="fg"><label>Alerte si qté ≤</label><input type="number" id="iAlert" value="1" min="0" autocomplete="off" data-dashlane-ignore="true"></div>
       <div class="fg"><label>Alertes</label>
         <select id="iAlertOn"><option value="1">Activées</option><option value="0">Désactivées</option></select>
       </div>
     </div>
     <div class="frow">
-      <div class="fg"><label>💰 Prix d'achat (€)</label><input type="number" id="iPold" placeholder="0.00" step="0.01" min="0" oninput="calcPrice()"></div>
-      <div class="fg"><label>🆕 Nouveau prix (€)</label><input type="number" id="iPnew" placeholder="0.00" step="0.01" min="0" oninput="calcPrice()"></div>
+      <div class="fg"><label>💰 Prix d'achat (€)</label><input type="number" id="iPold" placeholder="0.00" step="0.01" min="0" oninput="calcPrice()" autocomplete="off" data-dashlane-ignore="true" data-lpignore="true"></div>
+      <div class="fg"><label>🆕 Nouveau prix (€)</label><input type="number" id="iPnew" placeholder="0.00" step="0.01" min="0" oninput="calcPrice()" autocomplete="off" data-dashlane-ignore="true" data-lpignore="true"></div>
     </div>
     <div id="priceDiff" style="display:none;margin-bottom:12px"></div>
-    <div class="fg"><label>Notes</label><textarea id="iNotes" placeholder="Remarques, origine..." autocomplete="off" autocorrect="off" spellcheck="false"></textarea></div>
+    <div class="fg"><label>Remarques</label><textarea id="iNotes" placeholder="Origine, notes..." autocomplete="off" autocorrect="off" spellcheck="false" data-dashlane-ignore="true" data-lpignore="true"></textarea></div>
     <div class="fg">
       <label>📷 Photo de l'article</label>
       <input type="file" id="iPhotoF" accept="image/*" capture="environment" style="display:none" onchange="loadPhoto('iPhotoF','iPrev','iPph')">
@@ -442,18 +442,18 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
         <option value="liqueur">🥃 Liqueur</option><option value="autre">🍶 Autre</option>
       </select>
     </div>
-    <div class="fg"><label>Nom / Appellation *</label><input type="text" id="wName" placeholder="Ex: Château Margaux" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false"></div>
+    <div class="fg"><label>Appellation *</label><input type="search" id="wName" placeholder="Ex: Château Margaux" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false" data-dashlane-ignore="true" data-lpignore="true" data-1p-ignore="true"></div>
     <div class="frow">
-      <div class="fg"><label>Producteur</label><input type="text" id="wProd" placeholder="Domaine..." autocomplete="off" autocorrect="off" spellcheck="false"></div>
-      <div class="fg"><label>Région</label><input type="text" id="wReg" placeholder="Bordeaux..." autocomplete="off" autocorrect="off" spellcheck="false"></div>
+      <div class="fg"><label>Producteur</label><input type="search" id="wProd" placeholder="Domaine..." autocomplete="new-password" autocorrect="off" spellcheck="false" data-dashlane-ignore="true" data-lpignore="true" data-1p-ignore="true"></div>
+      <div class="fg"><label>Région</label><input type="search" id="wReg" placeholder="Bordeaux..." autocomplete="new-password" autocorrect="off" spellcheck="false" data-dashlane-ignore="true" data-lpignore="true" data-1p-ignore="true"></div>
     </div>
     <div class="frow">
-      <div class="fg"><label>Millésime</label><input type="number" id="wVint" placeholder="2020" autocomplete="off"></div>
-      <div class="fg"><label>Cépage</label><input type="text" id="wGrape" placeholder="Cabernet..." autocomplete="off" autocorrect="off" spellcheck="false"></div>
+      <div class="fg"><label>Millésime</label><input type="number" id="wVint" placeholder="2020" autocomplete="off" data-dashlane-ignore="true"></div>
+      <div class="fg"><label>Cépage</label><input type="search" id="wGrape" placeholder="Cabernet..." autocomplete="new-password" autocorrect="off" spellcheck="false" data-dashlane-ignore="true" data-lpignore="true" data-1p-ignore="true"></div>
     </div>
     <div class="frow">
-      <div class="fg"><label>Bouteilles</label><input type="number" id="wQty" value="1" min="0" autocomplete="off"></div>
-      <div class="fg"><label>Prix (€)</label><input type="number" id="wPrice" placeholder="0.00" step="0.01" autocomplete="off"></div>
+      <div class="fg"><label>Bouteilles</label><input type="number" id="wQty" value="1" min="0" autocomplete="off" data-dashlane-ignore="true"></div>
+      <div class="fg"><label>Prix (€)</label><input type="number" id="wPrice" placeholder="0.00" step="0.01" autocomplete="off" data-dashlane-ignore="true"></div>
     </div>
     <div class="fg"><label>Ma note</label>
       <div style="display:flex;gap:6px" id="wStars">
@@ -464,9 +464,9 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
         <span class="rstar" onclick="setWineRating(5)">★</span>
       </div>
     </div>
-    <div class="fg"><label>Notes de dégustation</label><textarea id="wTasting" placeholder="Arômes, goût..." autocomplete="off" autocorrect="off" spellcheck="false"></textarea></div>
-    <div class="fg"><label>Date d'acquisition</label><input type="date" id="wAcq" autocomplete="off"></div>
-    <div class="fg"><label>Emplacement</label><input type="text" id="wLoc" placeholder="Cave, étagère..." autocomplete="off" autocorrect="off" spellcheck="false"></div>
+    <div class="fg"><label>Notes de dégustation</label><textarea id="wTasting" placeholder="Arômes, goût..." autocomplete="off" autocorrect="off" spellcheck="false" data-dashlane-ignore="true" data-lpignore="true"></textarea></div>
+    <div class="fg"><label>Date d'acquisition</label><input type="date" id="wAcq" autocomplete="off" data-dashlane-ignore="true"></div>
+    <div class="fg"><label>Rangement</label><input type="search" id="wLoc" placeholder="Cave, étagère..." autocomplete="new-password" autocorrect="off" spellcheck="false" data-dashlane-ignore="true" data-lpignore="true" data-1p-ignore="true"></div>
     <div class="fg">
       <label>📷 Photo</label>
       <input type="file" id="wPhotoF" accept="image/*" capture="environment" style="display:none" onchange="loadPhoto('wPhotoF','wPrev','wPph')">
@@ -503,8 +503,8 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
 <div class="ov" id="mCat">
   <div class="modal">
     <div class="mhdr"><h2>Nouvelle catégorie</h2><button class="mclose" onclick="closeM('mCat')">Fermer</button></div>
-    <div class="fg"><label>Nom</label><input type="text" id="catName" placeholder="Ex: Congélateur"></div>
-    <div class="fg"><label>Emoji</label><input type="text" id="catEmoji" placeholder="🧊" maxlength="2"></div>
+    <div class="fg"><label>Nom</label><input type="search" id="catName" placeholder="Ex: Congélateur" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false" data-dashlane-ignore="true" data-lpignore="true" data-1p-ignore="true"></div>
+    <div class="fg"><label>Emoji</label><input type="search" id="catEmoji" placeholder="🧊" maxlength="2" autocomplete="new-password" data-dashlane-ignore="true" data-lpignore="true" data-1p-ignore="true"></div>
     <div class="fg"><label>Couleur</label><input type="color" id="catColor" value="#6366f1" style="height:42px;padding:3px 5px"></div>
     <button class="btn btn-p btn-bl" onclick="saveCat()">Enregistrer</button>
   </div>
@@ -514,8 +514,8 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
 <div class="ov" id="mLoc">
   <div class="modal">
     <div class="mhdr"><h2>Nouvel emplacement</h2><button class="mclose" onclick="closeM('mLoc')">Fermer</button></div>
-    <div class="fg"><label>Nom</label><input type="text" id="locName" placeholder="Ex: Placard cuisine"></div>
-    <div class="fg"><label>Emoji</label><input type="text" id="locEmoji" placeholder="🚪" maxlength="2"></div>
+    <div class="fg"><label>Nom</label><input type="search" id="locName" placeholder="Ex: Placard cuisine" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false" data-dashlane-ignore="true" data-lpignore="true" data-1p-ignore="true"></div>
+    <div class="fg"><label>Emoji</label><input type="search" id="locEmoji" placeholder="🚪" maxlength="2" autocomplete="new-password" data-dashlane-ignore="true" data-lpignore="true" data-1p-ignore="true"></div>
     <button class="btn btn-p btn-bl" onclick="saveLoc()">Enregistrer</button>
   </div>
 </div>
