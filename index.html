@@ -450,6 +450,18 @@
       </div>
     </div>
 
+    <div class="form-row">
+      <div class="form-group">
+        <label>💰 Prix d'achat (€)</label>
+        <input type="number" id="iPriceOld" placeholder="0.00" step="0.01" min="0" oninput="calcPriceDiff()">
+      </div>
+      <div class="form-group">
+        <label>🆕 Nouveau prix (€)</label>
+        <input type="number" id="iPriceNew" placeholder="0.00" step="0.01" min="0" oninput="calcPriceDiff()">
+      </div>
+    </div>
+    <div id="iPriceDiff" style="display:none;margin-bottom:14px"></div>
+
     <div class="form-group">
       <label>Notes</label>
       <textarea id="iNotes" placeholder="Remarques, recettes, origine..."></textarea>
@@ -1004,6 +1016,45 @@ function getItemEmoji(item) {
   return '📦';
 }
 
+function calcPriceDiff() {
+  var pOld = parseFloat(document.getElementById('iPriceOld').value);
+  var pNew = parseFloat(document.getElementById('iPriceNew').value);
+  var box = document.getElementById('iPriceDiff');
+  if (!pOld || !pNew || isNaN(pOld) || isNaN(pNew)) { box.style.display = 'none'; return; }
+  var diff = pNew - pOld;
+  var pct = ((diff / pOld) * 100).toFixed(1);
+  var isUp = diff > 0;
+  var color = isUp ? 'var(--danger)' : 'var(--success)';
+  var arrow = isUp ? '📈' : '📉';
+  var sign = isUp ? '+' : '';
+  box.style.display = '';
+  box.innerHTML = '<div class="alert" style="background:rgba(0,0,0,.2);border:1px solid ' + color + ';color:' + color + '">'
+    + arrow + ' Différence : <b>' + sign + diff.toFixed(2) + ' €</b> — <b>' + sign + pct + ' %</b>'
+    + (isUp ? ' ↑ plus cher' : ' ↓ moins cher')
+    + '</div>';
+}
+
+function buildPriceBlock(priceOld, priceNew) {
+  if (!priceOld && !priceNew) return '';
+  var html = '<div class="card" style="margin-bottom:10px">';
+  html += '<div style="font-size:13px;color:var(--text2);margin-bottom:8px;font-weight:600">💰 PRIX</div>';
+  html += '<div style="display:flex;gap:12px;flex-wrap:wrap">';
+  if (priceOld) html += '<div><div style="font-size:11px;color:var(--text2)">Prix d\'achat</div><div style="font-size:20px;font-weight:700">' + priceOld.toFixed(2) + ' €</div></div>';
+  if (priceNew) html += '<div><div style="font-size:11px;color:var(--text2)">Nouveau prix</div><div style="font-size:20px;font-weight:700">' + priceNew.toFixed(2) + ' €</div></div>';
+  if (priceOld && priceNew) {
+    var diff = priceNew - priceOld;
+    var pct = ((diff / priceOld) * 100).toFixed(1);
+    var isUp = diff > 0;
+    var color = isUp ? 'var(--danger)' : 'var(--success)';
+    var sign = isUp ? '+' : '';
+    html += '<div style="border-left:2px solid var(--border);padding-left:12px"><div style="font-size:11px;color:var(--text2)">Évolution</div>';
+    html += '<div style="font-size:20px;font-weight:700;color:' + color + '">' + sign + diff.toFixed(2) + ' €</div>';
+    html += '<div style="font-size:13px;font-weight:600;color:' + color + '">' + sign + pct + ' %</div></div>';
+  }
+  html += '</div></div>';
+  return html;
+}
+
 function buildAcqLine(acqDate, daysSince) {
   if (!acqDate) return '';
   var since = daysSince !== null ? ' — <b>il y a ' + daysSince + ' jour(s)</b>' : '';
@@ -1061,7 +1112,8 @@ async function openItemDetail(id) {
 
     ${buildAcqLine(item.acqDate, daysSince)}
     ${buildExpiredLine(item.expDate, isExpired)}
-    ${item.notes ? `<div class="card" style="margin-bottom:10px"><p style="font-size:14px">${item.notes}</p></div>` : ''}
+    ${buildPriceBlock(item.priceOld, item.priceNew)}
+    ${item.notes ? '<div class="card" style="margin-bottom:10px"><p style="font-size:14px">' + item.notes + '</p></div>' : ''}
     ${item.locPhoto ? `<div class="section-title" style="margin-top:0">📍 Lieu de rangement</div><img src="${item.locPhoto}" class="photo-preview" style="display:block;margin-bottom:12px">` : ''}
 
     <div style="display:flex;gap:8px">
@@ -1116,6 +1168,9 @@ async function openAddModal() {
   document.getElementById('iExpDate').value = '';
   document.getElementById('iAlertThreshold').value = 1;
   document.getElementById('iAlertEnabled').value = '1';
+  document.getElementById('iPriceOld').value = '';
+  document.getElementById('iPriceNew').value = '';
+  document.getElementById('iPriceDiff').style.display = 'none';
   resetPhoto('iPhotoFile','iPhotoPreview','iPhotoPlaceholder');
   resetPhoto('iLocPhotoFile','iLocPhotoPreview','iLocPhotoPlaceholder');
   await renderCatChips([]);
@@ -1137,6 +1192,9 @@ async function openEditModal(id) {
   document.getElementById('iExpDate').value = item.expDate || '';
   document.getElementById('iAlertThreshold').value = item.alertThreshold ?? 1;
   document.getElementById('iAlertEnabled').value = item.alertEnabled ? '1' : '0';
+  document.getElementById('iPriceOld').value = item.priceOld || '';
+  document.getElementById('iPriceNew').value = item.priceNew || '';
+  calcPriceDiff();
 
   if (item.photo) { document.getElementById('iPhotoPreview').src = item.photo; document.getElementById('iPhotoPreview').style.display=''; document.getElementById('iPhotoPlaceholder').style.display='none'; } else resetPhoto('iPhotoFile','iPhotoPreview','iPhotoPlaceholder');
   if (item.locPhoto) { document.getElementById('iLocPhotoPreview').src = item.locPhoto; document.getElementById('iLocPhotoPreview').style.display=''; document.getElementById('iLocPhotoPlaceholder').style.display='none'; } else resetPhoto('iLocPhotoFile','iLocPhotoPreview','iLocPhotoPlaceholder');
@@ -1220,6 +1278,8 @@ async function saveItem() {
     alertThreshold: parseFloat(document.getElementById('iAlertThreshold').value) || 0,
     alertEnabled: document.getElementById('iAlertEnabled').value === '1',
     notes: document.getElementById('iNotes').value.trim(),
+    priceOld: parseFloat(document.getElementById('iPriceOld').value) || null,
+    priceNew: parseFloat(document.getElementById('iPriceNew').value) || null,
     photo: photo && photo.startsWith('data:') ? photo : (currentItemId ? (allItems.find(i=>i.id===currentItemId)||{}).photo : null),
     locPhoto: locPhoto && locPhoto.startsWith('data:') ? locPhoto : (currentItemId ? (allItems.find(i=>i.id===currentItemId)||{}).locPhoto : null),
     createdAt: currentItemId ? ((allItems.find(i=>i.id===currentItemId)||{}).createdAt || Date.now()) : Date.now(),
