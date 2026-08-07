@@ -239,6 +239,7 @@
     <div class="view" id="view-inventory">
       <div class="search-bar">
         <input type="text" id="invSearch" placeholder="Rechercher un article..." oninput="filterInventory()">
+        <button onclick="openScanner()" title="Scanner">📷</button>
         <button onclick="openAddModal()">+</button>
       </div>
       <div class="filter-bar" id="filterBar"></div>
@@ -393,6 +394,12 @@
       <h2 id="modalItemTitle">Ajouter un article</h2>
       <button class="modal-close" onclick="closeModal('modalItem')">Fermer</button>
     </div>
+
+    <div style="display:flex;gap:8px;margin-bottom:14px">
+      <button class="btn btn-primary" style="flex:1" onclick="openScanner()">📷 Scanner le code-barres</button>
+      <button class="btn btn-ghost btn-sm" onclick="openManualBarcode()">123</button>
+    </div>
+    <div id="scanResult" style="display:none;margin-bottom:10px"></div>
 
     <div class="form-group">
       <label>Nom de l'article *</label>
@@ -594,6 +601,50 @@
       <button class="modal-close" onclick="closeModal('modalDetail')">Fermer</button>
     </div>
     <div id="detailContent"></div>
+  </div>
+</div>
+
+<!-- MODAL: SCANNER -->
+<div class="modal-overlay" id="modalScanner">
+  <div class="modal" style="padding:16px">
+    <div class="modal-header">
+      <h2>📷 Scanner un article</h2>
+      <button class="modal-close" onclick="closeScanner()">Fermer</button>
+    </div>
+    <div id="scannerStatus" class="alert alert-info" style="margin-bottom:12px;font-size:13px">
+      Initialisation de la caméra...
+    </div>
+    <div style="position:relative;border-radius:12px;overflow:hidden;background:#000;margin-bottom:12px">
+      <video id="scannerVideo" autoplay playsinline muted style="width:100%;display:block;max-height:300px;object-fit:cover"></video>
+      <!-- Viseur -->
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none">
+        <div style="width:220px;height:140px;border:3px solid rgba(108,99,255,.9);border-radius:12px;box-shadow:0 0 0 9999px rgba(0,0,0,.45)"></div>
+      </div>
+      <div style="position:absolute;bottom:10px;left:0;right:0;text-align:center">
+        <span style="background:rgba(0,0,0,.6);color:white;font-size:12px;padding:4px 10px;border-radius:20px">Centrez le code-barres dans le cadre</span>
+      </div>
+    </div>
+    <div id="scannerFoundBox" style="display:none" class="alert alert-success"></div>
+    <canvas id="scannerCanvas" style="display:none"></canvas>
+  </div>
+</div>
+
+<!-- MODAL: SAISIE MANUELLE CODE-BARRES -->
+<div class="modal-overlay" id="modalManualBarcode">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Saisir un code-barres</h2>
+      <button class="modal-close" onclick="closeModal('modalManualBarcode')">Fermer</button>
+    </div>
+    <div class="form-group">
+      <label>Code-barres (EAN-13, EAN-8…)</label>
+      <input type="number" id="manualBarcodeInput" placeholder="Ex: 3017620422003" inputmode="numeric">
+    </div>
+    <div id="manualBarcodeResult" style="display:none;margin-bottom:10px"></div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeModal('modalManualBarcode')">Annuler</button>
+      <button class="btn btn-primary" style="flex:1" onclick="lookupManualBarcode()">🔍 Rechercher</button>
+    </div>
   </div>
 </div>
 
@@ -1156,7 +1207,7 @@ async function confirmDelete(id) {
 // ============================================================
 // ADD / EDIT ITEM
 // ============================================================
-async function openAddModal() {
+async function openAddModal(andThen) {
   currentItemId = null;
   document.getElementById('modalItemTitle').textContent = 'Ajouter un article';
   document.getElementById('btnDeleteItem').style.display = 'none';
@@ -1176,6 +1227,7 @@ async function openAddModal() {
   await renderCatChips([]);
   await renderLocChips([]);
   openModal('modalItem');
+  if (andThen) andThen();
 }
 
 async function openEditModal(id) {
@@ -1876,6 +1928,215 @@ function closeModal(id) { document.getElementById(id).classList.remove('open'); 
 document.querySelectorAll('.modal-overlay').forEach(overlay => {
   overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(overlay.id); });
 });
+
+// ============================================================
+// SCANNER CODE-BARRES
+// ============================================================
+var scannerStream = null;
+var scannerLoop = null;
+var barcodeDetector = null;
+
+function openScanner() {
+  // Si BarcodeDetector pas dispo, fallback saisie manuelle
+  if (!('BarcodeDetector' in window)) {
+    openManualBarcode();
+    return;
+  }
+  document.getElementById('scannerStatus').textContent = 'Initialisation de la caméra...';
+  document.getElementById('scannerFoundBox').style.display = 'none';
+  openModal('modalScanner');
+  startScanner();
+}
+
+async function startScanner() {
+  try {
+    barcodeDetector = new BarcodeDetector({ formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128', 'code_39'] });
+  } catch(e) {
+    setScannerStatus('warn', 'Scanner non disponible sur ce navigateur. Utilisez la saisie manuelle.');
+    return;
+  }
+
+  try {
+    scannerStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
+    });
+    var video = document.getElementById('scannerVideo');
+    video.srcObject = scannerStream;
+    await video.play();
+    setScannerStatus('info', 'Prêt — pointez la caméra vers un code-barres.');
+    scanLoop();
+  } catch(err) {
+    if (err.name === 'NotAllowedError') {
+      setScannerStatus('warn', '⚠️ Accès caméra refusé. Autorisez la caméra dans les réglages Safari, ou utilisez la saisie manuelle.');
+    } else {
+      setScannerStatus('warn', 'Caméra indisponible : ' + err.message);
+    }
+  }
+}
+
+function scanLoop() {
+  var video = document.getElementById('scannerVideo');
+  var canvas = document.getElementById('scannerCanvas');
+
+  function detect() {
+    if (!scannerStream || !barcodeDetector) return;
+    if (video.readyState < 2) { scannerLoop = setTimeout(detect, 200); return; }
+    barcodeDetector.detect(video).then(function(barcodes) {
+      if (barcodes.length > 0) {
+        var code = barcodes[0].rawValue;
+        stopScanner();
+        handleScannedCode(code);
+      } else {
+        scannerLoop = setTimeout(detect, 300);
+      }
+    }).catch(function() {
+      scannerLoop = setTimeout(detect, 500);
+    });
+  }
+  scannerLoop = setTimeout(detect, 500);
+}
+
+function stopScanner() {
+  if (scannerLoop) { clearTimeout(scannerLoop); scannerLoop = null; }
+  if (scannerStream) {
+    scannerStream.getTracks().forEach(function(t) { t.stop(); });
+    scannerStream = null;
+  }
+  var video = document.getElementById('scannerVideo');
+  video.srcObject = null;
+}
+
+function closeScanner() {
+  stopScanner();
+  closeModal('modalScanner');
+}
+
+function setScannerStatus(type, msg) {
+  var el = document.getElementById('scannerStatus');
+  el.className = 'alert alert-' + type;
+  el.style.marginBottom = '12px';
+  el.style.fontSize = '13px';
+  el.textContent = msg;
+}
+
+async function handleScannedCode(code) {
+  setScannerStatus('info', '🔍 Code détecté : ' + code + ' — Recherche en cours…');
+  document.getElementById('scannerFoundBox').style.display = 'none';
+
+  var product = await fetchOpenFoodFacts(code);
+
+  if (product) {
+    // Produit trouvé
+    var box = document.getElementById('scannerFoundBox');
+    box.style.display = '';
+    box.innerHTML = '✅ <b>' + (product.name || code) + '</b> trouvé !';
+    setScannerStatus('success', 'Produit identifié ! Fermeture dans 2s…');
+    setTimeout(function() {
+      closeScanner();
+      openAddModal(function() { applyScannedProduct(code, product); });
+    }, 1500);
+  } else {
+    // Produit inconnu — on ouvre quand même le formulaire avec le code
+    setScannerStatus('warn', '⚠️ Produit non trouvé dans la base. Remplissez le formulaire manuellement.');
+    setTimeout(function() {
+      closeScanner();
+      openAddModal(function() {
+        document.getElementById('iName').value = '';
+        showScanFeedback('Code scanné : ' + code + ' — Produit inconnu, remplissez le nom.', false);
+      });
+    }, 2000);
+  }
+}
+
+async function fetchOpenFoodFacts(barcode) {
+  try {
+    var url = 'https://world.openfoodfacts.org/api/v0/product/' + barcode + '.json';
+    var resp = await fetch(url, { signal: AbortSignal.timeout(6000) });
+    var data = await resp.json();
+    if (data.status !== 1 || !data.product) return null;
+    var p = data.product;
+    return {
+      name:     p.product_name_fr || p.product_name || p.generic_name_fr || p.generic_name || '',
+      brand:    p.brands || '',
+      quantity: p.quantity || '',
+      category: p.categories_hierarchy ? p.categories_hierarchy[0] : '',
+      imageUrl: p.image_front_small_url || p.image_url || '',
+      barcode:  barcode
+    };
+  } catch(e) {
+    return null;
+  }
+}
+
+function applyScannedProduct(barcode, product) {
+  if (product.name)  document.getElementById('iName').value = product.name;
+  // Quantité depuis le champ "quantity" (ex: "500 g", "1 L")
+  if (product.quantity) {
+    var match = product.quantity.match(/^([\d.,]+)\s*(.*)$/);
+    if (match) {
+      document.getElementById('iQty').value = parseFloat(match[1].replace(',','.')) || 1;
+      var unitRaw = (match[2] || '').toLowerCase().trim();
+      var unitMap = { 'g':'g', 'kg':'kg', 'l':'L', 'ml':'ml', 'cl':'cl', 'l':'L' };
+      if (unitMap[unitRaw]) document.getElementById('iUnit').value = unitMap[unitRaw];
+    }
+  }
+  // Notes avec marque + code
+  var notes = [];
+  if (product.brand)   notes.push('Marque : ' + product.brand);
+  if (product.barcode) notes.push('Code-barres : ' + product.barcode);
+  if (notes.length) document.getElementById('iNotes').value = notes.join('\n');
+  // Photo depuis Open Food Facts
+  if (product.imageUrl) {
+    var img = document.getElementById('iPhotoPreview');
+    img.src = product.imageUrl;
+    img.style.display = '';
+    var ph = document.getElementById('iPhotoPlaceholder');
+    if (ph) ph.style.display = 'none';
+  }
+  showScanFeedback('✅ ' + (product.name || 'Produit') + ' importé depuis Open Food Facts !', true);
+}
+
+function showScanFeedback(msg, ok) {
+  var el = document.getElementById('scanResult');
+  el.style.display = '';
+  el.className = 'alert ' + (ok ? 'alert-success' : 'alert-warn');
+  el.textContent = msg;
+}
+
+// SAISIE MANUELLE
+function openManualBarcode() {
+  document.getElementById('manualBarcodeInput').value = '';
+  document.getElementById('manualBarcodeResult').style.display = 'none';
+  openModal('modalManualBarcode');
+}
+
+async function lookupManualBarcode() {
+  var code = document.getElementById('manualBarcodeInput').value.trim();
+  if (!code) return;
+  var res = document.getElementById('manualBarcodeResult');
+  res.style.display = '';
+  res.className = 'alert alert-info';
+  res.textContent = '🔍 Recherche en cours…';
+  var product = await fetchOpenFoodFacts(code);
+  if (product) {
+    res.className = 'alert alert-success';
+    res.textContent = '✅ Trouvé : ' + (product.name || code);
+    setTimeout(function() {
+      closeModal('modalManualBarcode');
+      openAddModal(function() { applyScannedProduct(code, product); });
+    }, 1200);
+  } else {
+    res.className = 'alert alert-warn';
+    res.textContent = '⚠️ Produit non trouvé. Vérifiez le code ou remplissez manuellement.';
+    setTimeout(function() {
+      closeModal('modalManualBarcode');
+      openAddModal(function() {
+        document.getElementById('iNotes').value = 'Code-barres : ' + code;
+        showScanFeedback('Code ' + code + ' non trouvé dans la base. Remplissez le nom.', false);
+      });
+    }, 2000);
+  }
+}
 
 // ============================================================
 // UTILS
