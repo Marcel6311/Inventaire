@@ -449,6 +449,14 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
       <h2 id="mWineTitle">Ajouter un vin</h2>
       <button class="mclose" onclick="closeM('mWine')">Fermer</button>
     </div>
+    <div class="fg" style="margin-bottom:10px">
+      <label>🔍 Recherche base Grapeminds (optionnel)</label>
+      <div style="display:flex;gap:8px">
+        <input type="text" id="gmSearch" placeholder="Ex: Margaux, Barolo, Sancerre..." autocomplete="off" autocorrect="off" spellcheck="false" style="flex:1" onkeydown="if(event.key==='Enter'){event.preventDefault();searchGrapeminds();}">
+        <button class="btn btn-w btn-sm" onclick="searchGrapeminds()">Chercher</button>
+      </div>
+      <div id="gmResults" style="margin-top:8px;max-height:200px;overflow-y:auto"></div>
+    </div>
     <div class="fg"><label>Type</label>
       <select id="wType">
         <option value="rouge">🍷 Rouge</option><option value="blanc">🥂 Blanc</option>
@@ -1387,45 +1395,46 @@ function suggestWines(food, btn) {
 }
 
 // =====================================================================
-// GRAPEMINDS API
+// GRAPEMINDS — via proxy Render (sans CORS)
 // =====================================================================
-var GM_KEY = localStorage.getItem('gmApiKey') || 'GMM425ESRWHL-AOQSZ2ZsXIRY4UmadLYwI2u5xagRmokp683kXaOJ3RcXafxM';
+var GM_PROXY = 'https://recherche-mail.onrender.com/api/wine';
+var gmWineCache = [];
 
 function gmResetSearch() {
   var s = document.getElementById('gmSearch');
   var r = document.getElementById('gmResults');
   if (s) s.value = '';
   if (r) { r.style.display = 'none'; r.innerHTML = ''; }
+  gmWineCache = [];
 }
 
 async function searchGrapeminds() {
   var q = (document.getElementById('gmSearch').value||'').trim();
-  if (q.length < 3) { alert('Minimum 3 caractères pour la recherche.'); return; }
-  if (!GM_KEY) {
-    var k = prompt('Entrez votre clé API Grapeminds :');
-    if (!k) return;
-    GM_KEY = k.trim();
-    localStorage.setItem('gmApiKey', GM_KEY);
-  }
+  if (q.length < 2) { alert('Minimum 2 caractères.'); return; }
   var box = document.getElementById('gmResults');
   box.style.display = '';
   box.innerHTML = '<div style="padding:12px;color:var(--text2);text-align:center">🔍 Recherche en cours...</div>';
   try {
-    var resp = await fetch('https://api.grapeminds.eu/public/v1/wines/search?q=' + encodeURIComponent(q) + '&limit=10', {
-      headers: { 'Authorization': 'Bearer ' + GM_KEY, 'Accept-Language': 'fr' }
-    });
-    if (resp.status === 401) { GM_KEY=''; localStorage.removeItem('gmApiKey'); throw new Error('Clé API invalide. Réessayez.'); }
-    if (!resp.ok) throw new Error('Erreur API (' + resp.status + ')');
+    var resp = await fetch(GM_PROXY + '?q=' + encodeURIComponent(q));
+    if (!resp.ok) throw new Error('Erreur serveur (' + resp.status + ')');
     var data = await resp.json();
-    if (!data.data || data.data.length === 0) {
+    // Grapeminds renvoie soit un tableau, soit { data: [...] } ou { wines: [...] }
+    var list = Array.isArray(data) ? data : (data.data || data.wines || data.results || []);
+    if (list.length === 0) {
       box.innerHTML = '<div style="padding:12px;color:var(--text2);text-align:center">Aucun résultat pour "'+q+'"</div>';
       return;
     }
+    gmWineCache = list;
     var h = '';
-    data.data.forEach(function(w) {
-      h += '<div onclick="fillWineFromGM('+w.id+')" style="padding:10px 12px;border-bottom:1px solid var(--bg2);cursor:pointer;active:background:var(--bg2)">'
-        + '<div style="font-weight:600;font-size:13px;color:var(--text)">'+w.display_name+'</div>'
-        + (w.producer_display_name ? '<div style="font-size:11px;color:var(--text2);margin-top:2px">'+w.producer_display_name+'</div>' : '')
+    list.forEach(function(w, i) {
+      var name = w.name || w.display_name || w.title || 'Vin #'+(i+1);
+      var prod = w.producer || w.producer_name || w.producer_display_name || (w.winery && w.winery.name) || '';
+      var region = w.region || w.appellation || (w.region_name) || '';
+      var vintage = w.vintage || w.year || '';
+      var sub = [prod, region, vintage].filter(Boolean).join(' · ');
+      h += '<div onclick="fillWineFromGM('+i+')" style="padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer;border-radius:8px">'
+        + '<div style="font-weight:600;font-size:13px;color:var(--text)">'+name+'</div>'
+        + (sub ? '<div style="font-size:11px;color:var(--text2);margin-top:2px">'+sub+'</div>' : '')
         + '</div>';
     });
     box.innerHTML = h;
@@ -1434,26 +1443,23 @@ async function searchGrapeminds() {
   }
 }
 
-async function fillWineFromGM(id) {
-  var box = document.getElementById('gmResults');
-  box.innerHTML = '<div style="padding:12px;color:var(--text2);text-align:center">⏳ Chargement des détails...</div>';
-  try {
-    var resp = await fetch('https://api.grapeminds.eu/public/v1/wines/' + id, {
-      headers: { 'Authorization': 'Bearer ' + GM_KEY, 'Accept-Language': 'fr' }
-    });
-    if (!resp.ok) throw new Error('Erreur API (' + resp.status + ')');
-    var w = await resp.json();
-    if (w.display_name) document.getElementById('wName').value = w.display_name;
-    if (w.producer && w.producer.display_name) document.getElementById('wProd').value = w.producer.display_name;
-    if (w.region && w.region.name) document.getElementById('wReg').value = w.region.name;
-    if (w.grapes && w.grapes.length > 0) document.getElementById('wGrape').value = w.grapes.map(function(g){return g.name;}).join(', ');
-    if (w.tasting_notes && w.tasting_notes.text) document.getElementById('wTasting').value = w.tasting_notes.text;
-    var colorMap = {red:'rouge', white:'blanc', rose:'rosé', rosé:'rosé'};
-    if (w.color && colorMap[w.color]) document.getElementById('wType').value = colorMap[w.color];
-    gmResetSearch();
-  } catch(err) {
-    box.innerHTML = '<div style="padding:12px;color:var(--danger)">❌ '+err.message+'</div>';
-  }
+function fillWineFromGM(idx) {
+  var w = gmWineCache[idx];
+  if (!w) return;
+  var name = w.name || w.display_name || w.title || '';
+  var prod = w.producer || w.producer_name || w.producer_display_name || (w.winery && w.winery.name) || '';
+  var region = w.region || w.appellation || w.region_name || '';
+  var grape = w.grape || w.varietal || (w.grapes && w.grapes.map(function(g){return g.name||g;}).join(', ')) || '';
+  var vintage = w.vintage || w.year || '';
+  var color = w.color || w.type || w.style || '';
+  if (name) document.getElementById('wName').value = name;
+  if (prod) document.getElementById('wProd').value = prod;
+  if (region) document.getElementById('wReg').value = region;
+  if (grape) document.getElementById('wGrape').value = grape;
+  if (vintage) document.getElementById('wVint').value = vintage;
+  var colorMap = {red:'rouge', rouge:'rouge', white:'blanc', blanc:'blanc', rose:'rosé', rosé:'rosé', champagne:'champagne'};
+  if (color && colorMap[color.toLowerCase()]) document.getElementById('wType').value = colorMap[color.toLowerCase()];
+  gmResetSearch();
 }
 
 async function openAddWine() {
