@@ -771,7 +771,18 @@ function renderInvList() {
   }
   if (q) {
     list = list.filter(function(i) {
-      return i.name.toLowerCase().includes(q) || (i.notes||'').toLowerCase().includes(q);
+      if (i.name.toLowerCase().includes(q)) return true;
+      if ((i.notes||'').toLowerCase().includes(q)) return true;
+      var catMatch = (i.cats||[]).some(function(cid) {
+        var c = cats.find(function(x){return x.id===cid;});
+        return c && c.name.toLowerCase().includes(q);
+      });
+      if (catMatch) return true;
+      var locMatch = (i.locs||[]).some(function(lid) {
+        var l = locs.find(function(x){return x.id===lid;});
+        return l && l.name.toLowerCase().includes(q);
+      });
+      return locMatch;
     });
   }
 
