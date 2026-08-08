@@ -269,22 +269,19 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
       <div id="wineList"></div>
       <div class="stitle">🍽️ Quel plat cuisinez-vous ?</div>
       <div class="card">
-        <div class="fg">
-          <select id="foodSel" onchange="suggestWines()">
-            <option value="">-- Choisir un plat --</option>
-            <option value="viande_rouge">Viande rouge (bœuf, agneau)</option>
-            <option value="viande_blanche">Volaille, porc</option>
-            <option value="poisson">Poisson, fruits de mer</option>
-            <option value="foie_gras">Foie gras</option>
-            <option value="fromage">Fromage</option>
-            <option value="dessert_chocolat">Dessert chocolat</option>
-            <option value="dessert_fruit">Dessert aux fruits</option>
-            <option value="charcuterie">Charcuterie</option>
-            <option value="risotto">Risotto, pâtes</option>
-            <option value="sushi">Sushi, cuisine asiatique</option>
-            <option value="gibier">Gibier, canard</option>
-            <option value="aperitif">Apéritif</option>
-          </select>
+        <div id="foodBtns" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:4px">
+          <button class="wpair" style="cursor:pointer;border:none;font-size:13px;padding:6px 12px" onclick="suggestWines('viande_rouge',this)">🥩 Viande rouge</button>
+          <button class="wpair" style="cursor:pointer;border:none;font-size:13px;padding:6px 12px" onclick="suggestWines('gibier',this)">🦌 Gibier</button>
+          <button class="wpair" style="cursor:pointer;border:none;font-size:13px;padding:6px 12px" onclick="suggestWines('viande_blanche',this)">🍗 Volaille</button>
+          <button class="wpair" style="cursor:pointer;border:none;font-size:13px;padding:6px 12px" onclick="suggestWines('poisson',this)">🐟 Poisson</button>
+          <button class="wpair" style="cursor:pointer;border:none;font-size:13px;padding:6px 12px" onclick="suggestWines('foie_gras',this)">🫙 Foie gras</button>
+          <button class="wpair" style="cursor:pointer;border:none;font-size:13px;padding:6px 12px" onclick="suggestWines('fromage',this)">🧀 Fromage</button>
+          <button class="wpair" style="cursor:pointer;border:none;font-size:13px;padding:6px 12px" onclick="suggestWines('charcuterie',this)">🥓 Charcuterie</button>
+          <button class="wpair" style="cursor:pointer;border:none;font-size:13px;padding:6px 12px" onclick="suggestWines('risotto',this)">🍝 Risotto / Pâtes</button>
+          <button class="wpair" style="cursor:pointer;border:none;font-size:13px;padding:6px 12px" onclick="suggestWines('sushi',this)">🍣 Sushi</button>
+          <button class="wpair" style="cursor:pointer;border:none;font-size:13px;padding:6px 12px" onclick="suggestWines('dessert_chocolat',this)">🍫 Dessert chocolat</button>
+          <button class="wpair" style="cursor:pointer;border:none;font-size:13px;padding:6px 12px" onclick="suggestWines('dessert_fruit',this)">🍓 Dessert fruité</button>
+          <button class="wpair" style="cursor:pointer;border:none;font-size:13px;padding:6px 12px" onclick="suggestWines('aperitif',this)">🥂 Apéritif</button>
         </div>
         <div id="wineSugg"></div>
       </div>
@@ -1128,7 +1125,6 @@ async function openAddItem() {
   document.getElementById('priceDiff').style.display='none';
   resetPhoto('iPhotoF','iPrev','iPph');
   resetPhoto('iLocF','iLprev','iLpph');
-  document.getElementById('iEmoji').value='';
   cats = await all('cats'); locs = await all('locs');
   buildChips('catChips', cats, [], 'var(--accent)');
   buildChips('locChips', locs, [], 'var(--accent3)');
@@ -1290,6 +1286,10 @@ function calcPrice() {
 // =====================================================================
 async function renderWineView() {
   wines = await all('wines');
+  curFoodSel = '';
+  var box = document.getElementById('wineSugg');
+  if (box) box.innerHTML = '';
+  document.querySelectorAll('#foodBtns button').forEach(function(b){ b.style.background=''; b.style.color=''; });
   renderWineList();
 }
 
@@ -1322,7 +1322,12 @@ function renderWineList() {
     var stars = '★'.repeat(w.rating||0)+'☆'.repeat(5-(w.rating||0));
     var ds = w.acqDate ? Math.floor((Date.now()-new Date(w.acqDate))/864e5) : null;
     var pairs = (WINE_PAIRS[w.type]||{}).pairs||[];
-    var pairHtml = pairs.slice(0,4).map(function(p) { return '<span class="wpair">'+p+'</span>'; }).join('');
+    var PAIR_KEY = {'Viande rouge':'viande_rouge','Agneau':'viande_rouge','Gibier':'gibier','Charcuterie':'charcuterie','Fromages affinés':'fromage','Fromage de chèvre':'fromage','Poisson':'poisson','Fruits de mer':'poisson','Volaille':'viande_blanche','Foie gras':'foie_gras','Huîtres':'poisson','Risotto':'risotto','Sushi':'sushi','Dessert chocolat':'dessert_chocolat','Digestif':'aperitif','Apéritif':'aperitif'};
+    var pairHtml = pairs.slice(0,4).map(function(p) {
+      var k = PAIR_KEY[p]||'';
+      return k ? '<span class="wpair" style="cursor:pointer" onclick="event.stopPropagation();scrollToFood(\''+k+'\')">'+p+'</span>'
+               : '<span class="wpair">'+p+'</span>';
+    }).join('');
     return '<div class="wcard" onclick="openEditWine(\''+w.id+'\')">'
       +(w.photo?'<img src="'+w.photo+'" style="width:100%;height:110px;object-fit:cover;border-radius:9px;margin-bottom:8px">':'')
       +'<div style="display:flex;gap:10px"><div style="font-size:30px">'+(emoji[w.type]||'🍷')+'</div><div style="flex:1">'
@@ -1356,23 +1361,45 @@ var FOOD_WINE = {
   gibier:['rouge'], aperitif:['champagne','rosé','blanc']
 };
 
-function suggestWines() {
-  var food = document.getElementById('foodSel').value;
-  var box  = document.getElementById('wineSugg');
-  if (!food) { box.innerHTML=''; return; }
-  var types = FOOD_WINE[food]||[];
-  var matches = wines.filter(function(w) { return types.includes(w.type) && w.qty>0; });
-  var emoji = {rouge:'🍷',blanc:'🥂',rosé:'🌸',champagne:'✨',liqueur:'🥃','eaux-de-vie':'🍶',autre:'🍾'};
-  if (matches.length===0) {
-    box.innerHTML='<div class="al al-w" style="margin-top:8px">Aucun vin disponible pour ce plat. Types recommandés : '+types.join(', ')+'.</div>';
+function scrollToFood(key) {
+  var btn = document.querySelector('#foodBtns button[onclick*="\''+key+'\'"]');
+  if (btn) {
+    suggestWines(key, btn);
+    btn.scrollIntoView({behavior:'smooth', block:'center'});
+  }
+}
+var curFoodSel = '';
+function suggestWines(food, btn) {
+  var box = document.getElementById('wineSugg');
+  // toggle off if same button pressed again
+  if (food === curFoodSel) {
+    curFoodSel = '';
+    box.innerHTML = '';
+    document.querySelectorAll('#foodBtns button').forEach(function(b){ b.style.background=''; b.style.color=''; });
     return;
   }
-  box.innerHTML='<div class="stitle" style="margin-top:8px">Suggestions de votre cave</div>'
-    +matches.map(function(w) {
-      return '<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)">'
-        +'<span style="font-size:20px">'+(emoji[w.type]||'🍷')+'</span>'
-        +'<div><div style="font-size:14px;font-weight:600;color:var(--wine2)">'+w.name+'</div>'
-        +'<div style="font-size:12px;color:#f87171">'+[w.vintage,w.region].filter(Boolean).join(' · ')+' — '+w.qty+' btl</div></div>'
+  curFoodSel = food;
+  // highlight selected button
+  document.querySelectorAll('#foodBtns button').forEach(function(b){ b.style.background=''; b.style.color=''; });
+  if (btn) { btn.style.background='var(--accent)'; btn.style.color='#fff'; }
+
+  var types = FOOD_WINE[food]||[];
+  var matches = wines.filter(function(w){ return types.includes(w.type) && w.qty>0; });
+  var emoji = {rouge:'🍷',blanc:'🥂',rosé:'🌸',champagne:'✨',liqueur:'🥃','eaux-de-vie':'🍶',autre:'🍾'};
+  if (matches.length===0) {
+    box.innerHTML='<div class="al al-w" style="margin-top:10px">Aucun vin disponible en cave pour ce plat.<br>Types idéaux : '+types.map(function(t){return (emoji[t]||'🍷')+' '+t;}).join(', ')+'.</div>';
+    return;
+  }
+  box.innerHTML='<div style="font-size:12px;font-weight:700;color:var(--text2);margin:10px 0 6px;text-transform:uppercase;letter-spacing:.5px">'+matches.length+' vin(s) dans votre cave</div>'
+    +matches.sort(function(a,b){return (b.rating||0)-(a.rating||0);}).map(function(w){
+      var stars = '★'.repeat(w.rating||0)+'☆'.repeat(5-(w.rating||0));
+      return '<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer" onclick="openEditWine(\''+w.id+'\')">'
+        +'<span style="font-size:24px">'+(emoji[w.type]||'🍷')+'</span>'
+        +'<div style="flex:1">'
+        +'<div style="font-size:14px;font-weight:700;color:var(--wine2)">'+w.name+'</div>'
+        +'<div style="font-size:12px;color:var(--text2)">'+[w.vintage,w.producer,w.region].filter(Boolean).join(' · ')+'</div>'
+        +'<div style="font-size:12px;color:var(--accent3)">'+stars+' — '+w.qty+' btl</div>'
+        +'</div>'
         +'</div>';
     }).join('');
 }
@@ -1380,7 +1407,7 @@ function suggestWines() {
 // =====================================================================
 // GRAPEMINDS API
 // =====================================================================
-var GM_KEY = localStorage.getItem('gmApiKey') || '';
+var GM_KEY = localStorage.getItem('gmApiKey') || 'GMM425ESRWHL-AOQSZ2ZsXIRY4UmadLYwI2u5xagRmokp683kXaOJ3RcXafxM';
 
 function gmResetSearch() {
   var s = document.getElementById('gmSearch');
@@ -2132,13 +2159,6 @@ var CAT_COLORS = [
   '#f97316','#f59e0b','#eab308','#84cc16','#22c55e',
   '#10b981','#14b8a6','#06b6d4','#3b82f6','#0ea5e9',
   '#a855f7','#d946ef','#64748b','#78716c','#1e293b'
-];
-
-var CAT_COLORS = [
-  '#6366f1','#8b5cf6','#ec4899','#f43f5e','#ef4444',
-  '#f97316','#f59e0b','#eab308','#84cc16','#22c55e',
-  '#10b981','#14b8a6','#06b6d4','#3b82f6','#0ea5e9',
-  '#6366f1','#a855f7','#d946ef','#64748b','#78716c'
 ];
 
 function buildColorPal(palId, hiddenId, selected) {
