@@ -450,7 +450,7 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
       <button class="mclose" onclick="closeM('mWine')">Fermer</button>
     </div>
     <div class="fg" style="margin-bottom:10px">
-      <label>🔍 Recherche CellarTracker (optionnel)</label>
+      <label>🔍 Recherche Grapeminds (optionnel)</label>
       <div style="display:flex;gap:8px">
         <input type="text" id="gmSearch" placeholder="Ex: Margaux, Barolo, Sancerre..." autocomplete="off" autocorrect="off" spellcheck="false" style="flex:1" onkeydown="if(event.key==='Enter'){event.preventDefault();searchGrapeminds();}">
         <button class="btn btn-w btn-sm" onclick="searchGrapeminds()">Chercher</button>
@@ -1395,9 +1395,9 @@ function suggestWines(food, btn) {
 }
 
 // =====================================================================
-// CELLARTRACKER — via proxy Render (sans CORS)
+// GRAPEMINDS — via proxy Render (sans CORS)
 // =====================================================================
-var GM_PROXY = 'https://recherche-mail.onrender.com/api/cellar';
+var GM_PROXY = 'https://recherche-mail.onrender.com/api/wine';
 var gmWineCache = [];
 
 function gmResetSearch() {
@@ -1410,32 +1410,31 @@ function gmResetSearch() {
 
 async function searchGrapeminds() {
   var q = (document.getElementById('gmSearch').value||'').trim();
-  if (q.length < 2) { alert('Minimum 2 caractères.'); return; }
+  if (q.length < 3) { alert('Minimum 3 caractères.'); return; }
   var box = document.getElementById('gmResults');
   box.style.display = '';
-  box.innerHTML = '<div style="padding:12px;color:var(--text2);text-align:center">🔍 Recherche CellarTracker...</div>';
+  box.innerHTML = '<div style="padding:12px;color:var(--text2);text-align:center">🔍 Recherche en cours...</div>';
   try {
     var resp = await fetch(GM_PROXY + '?q=' + encodeURIComponent(q));
     if (!resp.ok) throw new Error('Erreur serveur (' + resp.status + ')');
-    var list = await resp.json();
-    if (!Array.isArray(list) || list.length === 0) {
+    var data = await resp.json();
+    var list = data.data || [];
+    if (list.length === 0) {
       box.innerHTML = '<div style="padding:12px;color:var(--text2);text-align:center">Aucun résultat pour "'+q+'"</div>';
       return;
     }
     gmWineCache = list;
+    var colorEmoji = {red:'🍷', white:'🥂', rose:'🌸', rosé:'🌸'};
     var h = '';
-    list.slice(0,15).forEach(function(w, i) {
-      var name = w.Wine || w.wine || w.WineName || 'Vin #'+(i+1);
-      var prod = w.Producer || w.producer || '';
-      var region = w.Appellation || w.Region || w.region || '';
-      var vintage = w.Vintage || w.vintage || '';
-      var color = w.Color || w.color || '';
-      var sub = [prod, region, vintage ? 'Mill. '+vintage : ''].filter(Boolean).join(' · ');
-      h += '<div onclick="fillWineFromGM('+i+')" style="padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer">'
-        + '<div style="font-weight:600;font-size:13px;color:var(--text)">'+name+'</div>'
-        + (sub ? '<div style="font-size:11px;color:var(--text2);margin-top:2px">'+sub+'</div>' : '')
-        + (color ? '<div style="font-size:10px;color:var(--accent3);margin-top:1px">'+color+'</div>' : '')
-        + '</div>';
+    list.forEach(function(w, i) {
+      var name = w.display_name || '';
+      var prod = w.producer_display_name || w.producer_name || '';
+      var em = colorEmoji[w.color] || '🍾';
+      h += '<div onclick="fillWineFromGM('+i+')" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer">'
+        + '<span style="font-size:20px">'+em+'</span>'
+        + '<div><div style="font-weight:600;font-size:13px;color:var(--text)">'+name+'</div>'
+        + (prod ? '<div style="font-size:11px;color:var(--text2);margin-top:2px">'+prod+'</div>' : '')
+        + '</div></div>';
     });
     box.innerHTML = h;
   } catch(err) {
@@ -1443,22 +1442,26 @@ async function searchGrapeminds() {
   }
 }
 
-function fillWineFromGM(idx) {
+async function fillWineFromGM(idx) {
   var w = gmWineCache[idx];
   if (!w) return;
-  var name = w.Wine || w.wine || w.WineName || '';
-  var prod = w.Producer || w.producer || '';
-  var region = w.Appellation || w.Region || w.region || '';
-  var grape = w.Varietal || w.varietal || w.Grape || '';
-  var vintage = w.Vintage || w.vintage || '';
-  var color = (w.Color || w.color || '').toLowerCase();
-  if (name) document.getElementById('wName').value = name;
-  if (prod) document.getElementById('wProd').value = prod;
-  if (region) document.getElementById('wReg').value = region;
-  if (grape) document.getElementById('wGrape').value = grape;
-  if (vintage) document.getElementById('wVint').value = vintage;
-  var colorMap = {red:'rouge', rouge:'rouge', white:'blanc', blanc:'blanc', rose:'rosé', rosé:'rosé', champagne:'champagne', sparkling:'champagne'};
-  if (color && colorMap[color]) document.getElementById('wType').value = colorMap[color];
+  var box = document.getElementById('gmResults');
+  box.innerHTML = '<div style="padding:12px;color:var(--text2);text-align:center">⏳ Chargement des détails...</div>';
+  // Remplissage rapide depuis le résultat de recherche
+  var colorMap = {red:'rouge', white:'blanc', rose:'rosé', rosé:'rosé', sparkling:'champagne'};
+  document.getElementById('wName').value = w.display_name || '';
+  document.getElementById('wProd').value = w.producer_display_name || w.producer_name || '';
+  if (w.color && colorMap[w.color]) document.getElementById('wType').value = colorMap[w.color];
+  // Appel détail pour grapes, région, notes
+  try {
+    var resp = await fetch(GM_PROXY + '/' + w.id);
+    if (resp.ok) {
+      var d = await resp.json();
+      if (d.region && d.region.name) document.getElementById('wReg').value = d.region.name;
+      if (d.grapes && d.grapes.length > 0) document.getElementById('wGrape').value = d.grapes.map(function(g){return g.name;}).join(', ');
+      if (d.tasting_notes && d.tasting_notes.text) document.getElementById('wTasting').value = d.tasting_notes.text;
+    }
+  } catch(e) { /* détail optionnel */ }
   gmResetSearch();
 }
 
