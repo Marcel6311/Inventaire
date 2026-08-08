@@ -132,6 +132,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .wdet{font-size:13px;color:#f87171;margin-top:3px}
 .wpairs{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
 .wpair{background:rgba(153,27,27,.35);border:1px solid rgba(153,27,27,.6);border-radius:20px;padding:3px 9px;font-size:12px;color:var(--wine2)}
+.fchip{background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:5px 11px;font-size:13px;color:var(--text);cursor:pointer;transition:background .15s}
+.fchip:active{opacity:.7}
 .stars{color:#fbbf24;font-size:14px;letter-spacing:1px}
 
 /* SHOPPING */
@@ -268,19 +270,19 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
       </div>
       <div class="stitle">🍽️ Quel plat cuisinez-vous ?</div>
       <div class="card" style="margin-bottom:12px">
-        <div id="foodBtns" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:4px">
-          <button class="btn btn-g btn-sm" onclick="suggestWines('viande_rouge',this)">🥩 Viande rouge</button>
-          <button class="btn btn-g btn-sm" onclick="suggestWines('gibier',this)">🦌 Gibier</button>
-          <button class="btn btn-g btn-sm" onclick="suggestWines('viande_blanche',this)">🍗 Volaille</button>
-          <button class="btn btn-g btn-sm" onclick="suggestWines('poisson',this)">🐟 Poisson</button>
-          <button class="btn btn-g btn-sm" onclick="suggestWines('foie_gras',this)">🫙 Foie gras</button>
-          <button class="btn btn-g btn-sm" onclick="suggestWines('fromage',this)">🧀 Fromage</button>
-          <button class="btn btn-g btn-sm" onclick="suggestWines('charcuterie',this)">🥓 Charcuterie</button>
-          <button class="btn btn-g btn-sm" onclick="suggestWines('risotto',this)">🍝 Risotto</button>
-          <button class="btn btn-g btn-sm" onclick="suggestWines('sushi',this)">🍣 Sushi</button>
-          <button class="btn btn-g btn-sm" onclick="suggestWines('dessert_chocolat',this)">🍫 Chocolat</button>
-          <button class="btn btn-g btn-sm" onclick="suggestWines('dessert_fruit',this)">🍓 Dessert fruité</button>
-          <button class="btn btn-g btn-sm" onclick="suggestWines('aperitif',this)">🥂 Apéritif</button>
+        <div id="foodBtns" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px">
+          <button class="fchip" onclick="suggestWines('viande_rouge',this)">🥩 Viande rouge</button>
+          <button class="fchip" onclick="suggestWines('gibier',this)">🦌 Gibier</button>
+          <button class="fchip" onclick="suggestWines('viande_blanche',this)">🍗 Volaille</button>
+          <button class="fchip" onclick="suggestWines('poisson',this)">🐟 Poisson</button>
+          <button class="fchip" onclick="suggestWines('foie_gras',this)">🫙 Foie gras</button>
+          <button class="fchip" onclick="suggestWines('fromage',this)">🧀 Fromage</button>
+          <button class="fchip" onclick="suggestWines('charcuterie',this)">🥓 Charcuterie</button>
+          <button class="fchip" onclick="suggestWines('risotto',this)">🍝 Risotto</button>
+          <button class="fchip" onclick="suggestWines('sushi',this)">🍣 Sushi</button>
+          <button class="fchip" onclick="suggestWines('dessert_chocolat',this)">🍫 Chocolat</button>
+          <button class="fchip" onclick="suggestWines('dessert_fruit',this)">🍓 Dessert fruité</button>
+          <button class="fchip" onclick="suggestWines('aperitif',this)">🥂 Apéritif</button>
         </div>
         <div id="wineSugg"></div>
       </div>
@@ -1448,8 +1450,11 @@ async function fillWineFromGM(idx) {
   var box = document.getElementById('gmResults');
   box.innerHTML = '<div style="padding:12px;color:var(--text2);text-align:center">⏳ Chargement des détails...</div>';
   // Remplissage rapide depuis le résultat de recherche
+  // display_name = "Chateau Margaux, Pavillon Blanc" → on sépare
   var colorMap = {red:'rouge', white:'blanc', rose:'rosé', rosé:'rosé', sparkling:'champagne'};
-  document.getElementById('wName').value = w.display_name || '';
+  var displayParts = (w.display_name || '').split(', ');
+  var wineName = displayParts.length > 1 ? displayParts.slice(1).join(', ') : displayParts[0];
+  document.getElementById('wName').value = wineName;
   document.getElementById('wProd').value = w.producer_display_name || w.producer_name || '';
   if (w.color && colorMap[w.color]) document.getElementById('wType').value = colorMap[w.color];
   // Appel détail pour grapes, région, notes
