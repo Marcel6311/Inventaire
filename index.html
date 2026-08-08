@@ -163,6 +163,12 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .pval .pl{font-size:11px;color:var(--text2);margin-bottom:2px}
 .pval .pv{font-size:22px;font-weight:800}
 
+/* EMOJI PICKER */
+.epicker{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;max-height:160px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.epick-btn{font-size:28px;width:46px;height:46px;border-radius:10px;border:2px solid transparent;background:var(--bg3);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.epick-btn.sel{border-color:var(--accent);background:rgba(99,102,241,.2)}
+.epick-preview{font-size:42px;text-align:center;padding:8px 0;line-height:1}
+
 /* LOCATION GRID */
 .lgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
 .lcard{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;text-align:center}
@@ -207,6 +213,8 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
 
     <!-- ACCUEIL -->
     <div class="view active" id="v-home">
+      <input type="file" id="impFileHome" accept=".json" style="display:none" onchange="doImport()">
+      <button class="btn btn-p btn-bl" style="margin-bottom:14px" onclick="document.getElementById('impFileHome').click()">📥 Restaurer depuis inventaire.json</button>
       <div class="sgrid" id="statsGrid"></div>
       <div class="stitle">⚠️ Alertes</div>
       <div id="homeAlerts"></div>
@@ -359,15 +367,15 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
       <button class="mclose" onclick="closeM('mItem')">Fermer</button>
     </div>
     <div id="dupWarn" style="display:none" class="al al-w">⚠️ Cet article existe déjà. Vous pouvez continuer quand même.</div>
-    <div style="display:flex;gap:10px;align-items:flex-end">
-      <div class="fg" style="width:68px;flex-shrink:0">
-        <label>Icône</label>
-        <input type="text" id="iEmoji" placeholder="🥗" maxlength="8" style="text-align:center;font-size:32px;padding:6px;letter-spacing:0;line-height:1.2" autocomplete="off" spellcheck="false" data-dashlane-ignore="true" data-lpignore="true" data-1p-ignore="true">
-      </div>
-      <div class="fg" style="flex:1">
-        <label>Désignation *</label>
-        <input type="text" id="iName" placeholder="Ex: Blanc de poulet" oninput="checkDup()" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false" data-dashlane-ignore="true" data-lpignore="true" data-1p-ignore="true">
-      </div>
+    <div class="fg">
+      <label>Désignation *</label>
+      <input type="text" id="iName" placeholder="Ex: Blanc de poulet" oninput="checkDup()" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false" data-dashlane-ignore="true" data-lpignore="true" data-1p-ignore="true">
+    </div>
+    <div class="fg">
+      <label>Icône <small style="color:var(--text2)">(appuyez pour choisir)</small></label>
+      <div class="epick-preview" id="iEmojiPrev">📦</div>
+      <input type="hidden" id="iEmoji" value="">
+      <div class="epicker" id="iEmojiPicker"></div>
     </div>
     <div class="frow">
       <div class="fg"><label>Quantité *</label><input type="number" id="iQty" value="1" min="0" step="0.1" autocomplete="off" data-dashlane-ignore="true" data-lpignore="true"></div>
@@ -507,8 +515,10 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
     <div class="mhdr"><h2>Nouvelle catégorie</h2><button class="mclose" onclick="closeM('mCat')">Fermer</button></div>
     <div class="fg"><label>Nom</label><input type="text" id="catName" placeholder="Ex: Congélateur" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false" data-dashlane-ignore="true" data-lpignore="true" data-1p-ignore="true"></div>
     <div class="fg">
-      <label>Emoji</label>
-      <input type="text" id="catEmoji" placeholder="🧊" maxlength="8" autocomplete="off" spellcheck="false" data-dashlane-ignore="true" data-lpignore="true" data-1p-ignore="true" style="font-size:32px;text-align:center;padding:10px;letter-spacing:0;line-height:1.2">
+      <label>Emoji <small style="color:var(--text2)">(appuyez pour choisir)</small></label>
+      <div class="epick-preview" id="catEmojiPrev">📁</div>
+      <input type="hidden" id="catEmoji" value="📁">
+      <div class="epicker" id="catEmojiPicker"></div>
     </div>
     <div class="fg"><label>Couleur</label><input type="color" id="catColor" value="#6366f1" style="height:42px;padding:3px 5px"></div>
     <button class="btn btn-p btn-bl" onclick="saveCat()">Enregistrer</button>
@@ -521,8 +531,10 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
     <div class="mhdr"><h2>Nouvel emplacement</h2><button class="mclose" onclick="closeM('mLoc')">Fermer</button></div>
     <div class="fg"><label>Nom</label><input type="text" id="locName" placeholder="Ex: Placard cuisine" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false" data-dashlane-ignore="true" data-lpignore="true" data-1p-ignore="true"></div>
     <div class="fg">
-      <label>Emoji</label>
-      <input type="text" id="locEmoji" placeholder="🚪" maxlength="8" autocomplete="off" spellcheck="false" data-dashlane-ignore="true" data-lpignore="true" data-1p-ignore="true" style="font-size:32px;text-align:center;padding:10px;letter-spacing:0;line-height:1.2">
+      <label>Emoji <small style="color:var(--text2)">(appuyez pour choisir)</small></label>
+      <div class="epick-preview" id="locEmojiPrev">📍</div>
+      <input type="hidden" id="locEmoji" value="📍">
+      <div class="epicker" id="locEmojiPicker"></div>
     </div>
     <button class="btn btn-p btn-bl" onclick="saveLoc()">Enregistrer</button>
   </div>
@@ -1067,6 +1079,9 @@ async function openAddItem() {
   document.getElementById('priceDiff').style.display='none';
   resetPhoto('iPhotoF','iPrev','iPph');
   resetPhoto('iLocF','iLprev','iLpph');
+  document.getElementById('iEmoji').value='';
+  document.getElementById('iEmojiPrev').textContent='📦';
+  buildEmojiPicker('iEmojiPicker','iEmoji','iEmojiPrev',EMOJIS_FOOD,'');
   cats = await all('cats'); locs = await all('locs');
   buildChips('catChips', cats, [], 'var(--accent)');
   buildChips('locChips', locs, [], 'var(--accent3)');
@@ -1097,6 +1112,10 @@ async function openEditItem(id) {
   else resetPhoto('iPhotoF','iPrev','iPph');
   if (item.locPhoto) { document.getElementById('iLprev').src=item.locPhoto; document.getElementById('iLprev').style.display=''; document.getElementById('iLpph').style.display='none'; }
   else resetPhoto('iLocF','iLprev','iLpph');
+  var curEmoji = item.emoji||'';
+  document.getElementById('iEmoji').value = curEmoji;
+  document.getElementById('iEmojiPrev').textContent = curEmoji || itemEmoji(item);
+  buildEmojiPicker('iEmojiPicker','iEmoji','iEmojiPrev',EMOJIS_FOOD,curEmoji);
   cats = await all('cats'); locs = await all('locs');
   buildChips('catChips', cats, item.cats||[], 'var(--accent)');
   buildChips('locChips', locs, item.locs||[], 'var(--accent3)');
@@ -1507,19 +1526,31 @@ async function renderMore() {
       }).join('');
 }
 
-function openAddCat() { document.getElementById('catName').value=''; document.getElementById('catEmoji').value=''; openM('mCat'); }
+function openAddCat() {
+  document.getElementById('catName').value='';
+  document.getElementById('catEmoji').value='📁';
+  document.getElementById('catEmojiPrev').textContent='📁';
+  buildEmojiPicker('catEmojiPicker','catEmoji','catEmojiPrev',EMOJIS_CAT,'📁');
+  openM('mCat');
+}
 async function saveCat() {
   var name=document.getElementById('catName').value.trim();
-  if (!name) return;
+  if (!name) { alert('Le nom est obligatoire.'); return; }
   await put('cats',{id:uid(),name:name,emoji:document.getElementById('catEmoji').value||'📁',color:document.getElementById('catColor').value});
   closeM('mCat'); renderMore();
 }
 async function delCat(id) { if (!confirm('Supprimer cette catégorie ?')) return; await del('cats',id); renderMore(); }
 
-function openAddLoc() { document.getElementById('locName').value=''; document.getElementById('locEmoji').value=''; openM('mLoc'); }
+function openAddLoc() {
+  document.getElementById('locName').value='';
+  document.getElementById('locEmoji').value='📍';
+  document.getElementById('locEmojiPrev').textContent='📍';
+  buildEmojiPicker('locEmojiPicker','locEmoji','locEmojiPrev',EMOJIS_LOC,'📍');
+  openM('mLoc');
+}
 async function saveLoc() {
   var name=document.getElementById('locName').value.trim();
-  if (!name) return;
+  if (!name) { alert('Le nom est obligatoire.'); return; }
   await put('locs',{id:uid(),name:name,emoji:document.getElementById('locEmoji').value||'📍'});
   closeM('mLoc'); renderMore();
 }
@@ -1545,42 +1576,99 @@ async function expJSON() {
 }
 
 async function doImport() {
-  var file=document.getElementById('impFile').files[0];
+  var f1=document.getElementById('impFile');
+  var f2=document.getElementById('impFileHome');
+  var file=(f1&&f1.files&&f1.files[0])||(f2&&f2.files&&f2.files[0]);
+  if(f1) f1.value=''; if(f2) f2.value='';
   if (!file) return;
   var reader=new FileReader();
   reader.onload=async function(e) {
     try {
       var d=JSON.parse(e.target.result);
-      var nItems=0,nWines=0,nCats=0,nLocs=0;
 
-      // Articles — compatibilité ancienne/nouvelle version
-      var itemsData = d.items||[];
-      for(var i=0;i<itemsData.length;i++) {
-        var it = itemsData[i];
-        // Ancienne version utilisait 'categories' et 'locations' dans l'article
-        if (!it.cats  && it.categories) it.cats = it.categories;
-        if (!it.locs  && it.locations)  it.locs = it.locations;
-        if (!it.id) it.id = uid();
-        await put('items',it); nItems++;
+      // Vérification basique
+      var hasItems = (d.items||[]).length;
+      var hasCats  = (d.cats||d.categories||[]).length;
+      var hasLocs  = (d.locs||d.locations||[]).length;
+      var hasWines = (d.wines||[]).length;
+
+      var msg = 'Contenu du fichier :\n'
+        +'• '+hasItems+' article(s)\n'
+        +'• '+hasWines+' vin(s)\n'
+        +'• '+hasCats+' catégorie(s)\n'
+        +'• '+hasLocs+' emplacement(s)\n\n'
+        +'⚠️ Cette opération va REMPLACER toutes vos données actuelles.\nContinuer ?';
+
+      if (!confirm(msg)) return;
+
+      // 1. Vider les stores existants
+      var stores = ['items','wines','cats','locs','shop'];
+      for (var s=0;s<stores.length;s++) {
+        var tx = DB.transaction(stores[s],'readwrite');
+        await new Promise(function(res,rej){ var r=tx.objectStore(stores[s]).clear(); r.onsuccess=res; r.onerror=rej; });
       }
 
-      // Vins
-      var winesData = d.wines||[];
-      for(var i=0;i<winesData.length;i++) { if(!winesData[i].id) winesData[i].id=uid(); await put('wines',winesData[i]); nWines++; }
+      var nItems=0, nWines=0, nCats=0, nLocs=0;
 
-      // Catégories — ancienne clé 'categories', nouvelle clé 'cats'
+      // 2. Importer catégories (clé 'cats' ou ancienne clé 'categories')
       var catsData = d.cats||d.categories||[];
-      for(var i=0;i<catsData.length;i++) { if(!catsData[i].id) catsData[i].id=uid(); await put('cats',catsData[i]); nCats++; }
+      for (var i=0;i<catsData.length;i++) {
+        var c = catsData[i];
+        if (!c.id) c.id = uid();
+        // Compatibilité champ nom
+        if (!c.name && c.label) c.name = c.label;
+        await put('cats', c);
+        nCats++;
+      }
 
-      // Emplacements — ancienne clé 'locations', nouvelle clé 'locs'
+      // 3. Importer emplacements (clé 'locs' ou ancienne clé 'locations')
       var locsData = d.locs||d.locations||[];
-      for(var i=0;i<locsData.length;i++) { if(!locsData[i].id) locsData[i].id=uid(); await put('locs',locsData[i]); nLocs++; }
+      for (var i=0;i<locsData.length;i++) {
+        var l = locsData[i];
+        if (!l.id) l.id = uid();
+        if (!l.name && l.label) l.name = l.label;
+        await put('locs', l);
+        nLocs++;
+      }
 
-      alert('Importation réussie !\n\n• '+nItems+' article(s)\n• '+nWines+' vin(s)\n• '+nCats+' catégorie(s)\n• '+nLocs+' emplacement(s)');
-      items = await all('items'); cats = await all('cats'); locs = await all('locs');
-      renderMore();
+      // 4. Importer articles — compatibilité champs cats/locs vs categories/locations
+      var itemsData = d.items||[];
+      for (var i=0;i<itemsData.length;i++) {
+        var it = itemsData[i];
+        if (!it.id) it.id = uid();
+        // Compatibilité anciens noms de champs
+        if (!it.cats  && it.categories) it.cats = it.categories;
+        if (!it.locs  && it.locations)  it.locs = it.locations;
+        if (!it.cats)  it.cats = [];
+        if (!it.locs)  it.locs = [];
+        if (!it.unit)  it.unit = 'pièce(s)';
+        if (it.qty==null) it.qty = 0;
+        await put('items', it);
+        nItems++;
+      }
+
+      // 5. Importer vins
+      var winesData = d.wines||[];
+      for (var i=0;i<winesData.length;i++) {
+        var w = winesData[i];
+        if (!w.id) w.id = uid();
+        await put('wines', w);
+        nWines++;
+      }
+
+      // Recharger tout
+      items = await all('items');
+      cats  = await all('cats');
+      locs  = await all('locs');
+      wines = await all('wines');
+
+      alert('✅ Importation réussie !\n\n• '+nItems+' article(s)\n• '+nWines+' vin(s)\n• '+nCats+' catégorie(s)\n• '+nLocs+' emplacement(s)');
       refreshBadge();
-    } catch(err) { alert('Erreur d\'importation : '+err.message); }
+      renderMore();
+
+    } catch(err) {
+      alert('❌ Erreur d\'importation :\n'+err.message+'\n\nVérifiez que le fichier est bien un JSON exporté depuis Mon Inventaire.');
+    }
   };
   reader.readAsText(file);
 }
@@ -1800,6 +1888,30 @@ function resetPhoto(inputId, prevId, phId) {
 function fDate(d) {
   if (!d) return '';
   return new Date(d).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'});
+}
+
+// =====================================================================
+// SÉLECTEUR D'EMOJI — grille cliquable, aucun clavier
+// =====================================================================
+var EMOJIS_FOOD = ['🥩','🍗','🥚','🧀','🥛','🧈','🥦','🥕','🍅','🥑','🫒','🧄','🧅','🥔','🌽','🫑','🍋','🍊','🍎','🍌','🍇','🍓','🫐','🍒','🍑','🥭','🍍','🍉','🥝','🍞','🥐','🥨','🧆','🥗','🍲','🥫','🫙','🍖','🌭','🥓','🐟','🐠','🦐','🦪','🍣','🍱','🥣','🧇','🥞','🧁','🍰','🎂','🍪','🍫','🍬','🍭','☕','🍵','🧃','🥤','💧','🍺','🍷','🥂','✨','🥃','🍶','🫗'];
+var EMOJIS_LOC  = ['🧊','❄️','🚪','🏠','🍷','🛒','📦','🗄️','🪣','🛁','🛋️','🪴','🔒','🏡','🏪','🏬','🚗','🧺','🪤','📫'];
+var EMOJIS_CAT  = ['🧊','❄️','🛒','🥦','🥩','🥛','🥤','🍷','🧴','🧹','💊','🏠','🔧','📦','🎁','👕','🧸','📚','🖥️','🎮','🧺','🛁','🪴','🐾','🚿','🧽','🪥','🫙','🥫','🍞'];
+
+function buildEmojiPicker(containerId, hiddenId, previewId, list, selected) {
+  var box = document.getElementById(containerId);
+  var h = '';
+  list.forEach(function(e) {
+    h += '<button type="button" class="epick-btn'+(e===selected?' sel':'')+'" onclick="pickEmoji(\''+containerId+'\',\''+hiddenId+'\',\''+previewId+'\',\''+e+'\')">'+e+'</button>';
+  });
+  box.innerHTML = h;
+}
+
+function pickEmoji(containerId, hiddenId, previewId, emoji) {
+  document.getElementById(hiddenId).value = emoji;
+  document.getElementById(previewId).textContent = emoji;
+  document.querySelectorAll('#'+containerId+' .epick-btn').forEach(function(b) { b.classList.remove('sel'); });
+  var btns = document.querySelectorAll('#'+containerId+' .epick-btn');
+  btns.forEach(function(b) { if (b.textContent===emoji) b.classList.add('sel'); });
 }
 
 // =====================================================================
