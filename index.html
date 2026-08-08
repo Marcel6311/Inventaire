@@ -450,7 +450,7 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
       <button class="mclose" onclick="closeM('mWine')">Fermer</button>
     </div>
     <div class="fg" style="margin-bottom:10px">
-      <label>🔍 Recherche base Grapeminds (optionnel)</label>
+      <label>🔍 Recherche CellarTracker (optionnel)</label>
       <div style="display:flex;gap:8px">
         <input type="text" id="gmSearch" placeholder="Ex: Margaux, Barolo, Sancerre..." autocomplete="off" autocorrect="off" spellcheck="false" style="flex:1" onkeydown="if(event.key==='Enter'){event.preventDefault();searchGrapeminds();}">
         <button class="btn btn-w btn-sm" onclick="searchGrapeminds()">Chercher</button>
@@ -1395,9 +1395,9 @@ function suggestWines(food, btn) {
 }
 
 // =====================================================================
-// GRAPEMINDS — via proxy Render (sans CORS)
+// CELLARTRACKER — via proxy Render (sans CORS)
 // =====================================================================
-var GM_PROXY = 'https://recherche-mail.onrender.com/api/wine';
+var GM_PROXY = 'https://recherche-mail.onrender.com/api/cellar';
 var gmWineCache = [];
 
 function gmResetSearch() {
@@ -1413,28 +1413,28 @@ async function searchGrapeminds() {
   if (q.length < 2) { alert('Minimum 2 caractères.'); return; }
   var box = document.getElementById('gmResults');
   box.style.display = '';
-  box.innerHTML = '<div style="padding:12px;color:var(--text2);text-align:center">🔍 Recherche en cours...</div>';
+  box.innerHTML = '<div style="padding:12px;color:var(--text2);text-align:center">🔍 Recherche CellarTracker...</div>';
   try {
     var resp = await fetch(GM_PROXY + '?q=' + encodeURIComponent(q));
     if (!resp.ok) throw new Error('Erreur serveur (' + resp.status + ')');
-    var data = await resp.json();
-    // Grapeminds renvoie soit un tableau, soit { data: [...] } ou { wines: [...] }
-    var list = Array.isArray(data) ? data : (data.data || data.wines || data.results || []);
-    if (list.length === 0) {
+    var list = await resp.json();
+    if (!Array.isArray(list) || list.length === 0) {
       box.innerHTML = '<div style="padding:12px;color:var(--text2);text-align:center">Aucun résultat pour "'+q+'"</div>';
       return;
     }
     gmWineCache = list;
     var h = '';
-    list.forEach(function(w, i) {
-      var name = w.name || w.display_name || w.title || 'Vin #'+(i+1);
-      var prod = w.producer || w.producer_name || w.producer_display_name || (w.winery && w.winery.name) || '';
-      var region = w.region || w.appellation || (w.region_name) || '';
-      var vintage = w.vintage || w.year || '';
-      var sub = [prod, region, vintage].filter(Boolean).join(' · ');
-      h += '<div onclick="fillWineFromGM('+i+')" style="padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer;border-radius:8px">'
+    list.slice(0,15).forEach(function(w, i) {
+      var name = w.Wine || w.wine || w.WineName || 'Vin #'+(i+1);
+      var prod = w.Producer || w.producer || '';
+      var region = w.Appellation || w.Region || w.region || '';
+      var vintage = w.Vintage || w.vintage || '';
+      var color = w.Color || w.color || '';
+      var sub = [prod, region, vintage ? 'Mill. '+vintage : ''].filter(Boolean).join(' · ');
+      h += '<div onclick="fillWineFromGM('+i+')" style="padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer">'
         + '<div style="font-weight:600;font-size:13px;color:var(--text)">'+name+'</div>'
         + (sub ? '<div style="font-size:11px;color:var(--text2);margin-top:2px">'+sub+'</div>' : '')
+        + (color ? '<div style="font-size:10px;color:var(--accent3);margin-top:1px">'+color+'</div>' : '')
         + '</div>';
     });
     box.innerHTML = h;
@@ -1446,19 +1446,19 @@ async function searchGrapeminds() {
 function fillWineFromGM(idx) {
   var w = gmWineCache[idx];
   if (!w) return;
-  var name = w.name || w.display_name || w.title || '';
-  var prod = w.producer || w.producer_name || w.producer_display_name || (w.winery && w.winery.name) || '';
-  var region = w.region || w.appellation || w.region_name || '';
-  var grape = w.grape || w.varietal || (w.grapes && w.grapes.map(function(g){return g.name||g;}).join(', ')) || '';
-  var vintage = w.vintage || w.year || '';
-  var color = w.color || w.type || w.style || '';
+  var name = w.Wine || w.wine || w.WineName || '';
+  var prod = w.Producer || w.producer || '';
+  var region = w.Appellation || w.Region || w.region || '';
+  var grape = w.Varietal || w.varietal || w.Grape || '';
+  var vintage = w.Vintage || w.vintage || '';
+  var color = (w.Color || w.color || '').toLowerCase();
   if (name) document.getElementById('wName').value = name;
   if (prod) document.getElementById('wProd').value = prod;
   if (region) document.getElementById('wReg').value = region;
   if (grape) document.getElementById('wGrape').value = grape;
   if (vintage) document.getElementById('wVint').value = vintage;
-  var colorMap = {red:'rouge', rouge:'rouge', white:'blanc', blanc:'blanc', rose:'rosé', rosé:'rosé', champagne:'champagne'};
-  if (color && colorMap[color.toLowerCase()]) document.getElementById('wType').value = colorMap[color.toLowerCase()];
+  var colorMap = {red:'rouge', rouge:'rouge', white:'blanc', blanc:'blanc', rose:'rosé', rosé:'rosé', champagne:'champagne', sparkling:'champagne'};
+  if (color && colorMap[color]) document.getElementById('wType').value = colorMap[color];
   gmResetSearch();
 }
 
