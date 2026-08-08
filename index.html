@@ -164,11 +164,20 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .pval .pv{font-size:22px;font-weight:800}
 
 /* EMOJI PICKER */
-.epicker{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px;max-height:200px;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:2px}
+.etabs{display:flex;gap:4px;overflow-x:auto;padding-bottom:6px;margin-bottom:6px;border-bottom:1px solid var(--border)}
+.etabs::-webkit-scrollbar{display:none}
+.etab{background:var(--bg3);border:none;border-radius:8px;padding:5px 10px;font-size:18px;cursor:pointer;color:var(--text2);white-space:nowrap;flex-shrink:0}
+.etab.on{background:var(--accent);color:#fff}
+.epicker{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;max-height:180px;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:2px}
 .epick-btn{font-size:26px;width:44px;height:44px;border-radius:10px;border:2px solid var(--border);background:var(--bg);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .1s}
 .epick-btn:active{transform:scale(.88)}
 .epick-btn.sel{border-color:var(--accent);background:rgba(99,102,241,.25);box-shadow:0 0 0 2px rgba(99,102,241,.4)}
 .epick-preview{width:72px;height:72px;border-radius:16px;background:var(--bg3);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:40px;margin:0 auto 10px;cursor:default}
+/* COULEURS */
+.cpal{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.cpick{width:36px;height:36px;border-radius:50%;border:3px solid transparent;cursor:pointer;transition:transform .1s}
+.cpick:active{transform:scale(.85)}
+.cpick.sel{border-color:#fff;box-shadow:0 0 0 2px var(--accent)}
 
 /* LOCATION GRID */
 .lgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
@@ -521,7 +530,11 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
       <input type="hidden" id="catEmoji" value="📁">
       <div class="epicker" id="catEmojiPicker"></div>
     </div>
-    <div class="fg"><label>Couleur</label><input type="color" id="catColor" value="#6366f1" style="height:42px;padding:3px 5px"></div>
+    <div class="fg">
+      <label>Couleur</label>
+      <input type="hidden" id="catColor" value="#6366f1">
+      <div class="cpal" id="catColorPal"></div>
+    </div>
     <button class="btn btn-p btn-bl" onclick="saveCat()">Enregistrer</button>
   </div>
 </div>
@@ -1539,6 +1552,7 @@ function openAddCat() {
   document.getElementById('catEmojiPrev').textContent='📁';
   document.getElementById('catColor').value='#6366f1';
   buildEmojiPicker('catEmojiPicker','catEmoji','catEmojiPrev',EMOJIS_CAT,'📁');
+  buildColorPal('catColorPal','catColor','#6366f1');
   openM('mCat');
 }
 async function openEditCat(id) {
@@ -1551,6 +1565,7 @@ async function openEditCat(id) {
   document.getElementById('catEmojiPrev').textContent=c.emoji||'📁';
   document.getElementById('catColor').value=c.color||'#6366f1';
   buildEmojiPicker('catEmojiPicker','catEmoji','catEmojiPrev',EMOJIS_CAT,c.emoji||'📁');
+  buildColorPal('catColorPal','catColor',c.color||'#6366f1');
   openM('mCat');
 }
 async function saveCat() {
@@ -1936,78 +1951,89 @@ function fDate(d) {
 // =====================================================================
 // SÉLECTEUR D'EMOJI — grille cliquable, aucun clavier
 // =====================================================================
-var EMOJIS_FOOD = [
-  // Viandes & charcuterie
-  '🥩','🍖','🍗','🥓','🌭','🍔','🥚','🍳',
-  // Poissons & fruits de mer
-  '🐟','🐠','🐡','🦈','🦐','🦞','🦀','🦪','🍣','🍤','🍱',
-  // Produits laitiers
-  '🧀','🥛','🧈','🍦','🍧','🍨',
-  // Légumes
-  '🥦','🥕','🍅','🫑','🌽','🥔','🧅','🧄','🥒','🫛','🥬','🌿','🫚','🥜','🫘','🍄','🧆',
-  // Fruits
-  '🍎','🍊','🍋','🍌','🍇','🍓','🫐','🍒','🍑','🥭','🍍','🍉','🥝','🍐','🍈','🍏','🫒','🥑','🌶️','🍆','🧅',
-  // Boulangerie & épicerie
-  '🍞','🥐','🥖','🥨','🥯','🧁','🍰','🎂','🍪','🍫','🍬','🍭','🍯','🫙','🥫','🥣','🧇','🥞','🧈','🌾','🍚','🍝',
-  // Plats cuisinés
-  '🍲','🥗','🍜','🍛','🥘','🫕','🍕','🌮','🌯','🥪','🥙','🧆','🍟',
-  // Boissons
-  '💧','🧃','🥤','☕','🍵','🧋','🍺','🍻','🍷','🥂','✨','🥃','🍶','🫗','🧉','🍾','🍸','🍹','🧊',
-  // Condiments & épices
-  '🧂','🫙','🫒','🧴','🥄','🫗',
-  // Hygiène & maison
-  '🧴','🧷','🧹','🧺','🧻','🪥','🧽','🫧','💊','🩹','🩺','🧼','🪒',
-  // Divers
-  '📦','🛒','🎁','🌡️','🍽️'
-];
-var EMOJIS_LOC = [
-  // Froid
-  '🧊','❄️','🥶',
-  // Rangements cuisine
-  '🚪','🗄️','🪣','🫙','🥫',
-  // Pièces
-  '🏠','🏡','🛋️','🛁','🚿','🪴','🛏️','🪞',
-  // Cave & extérieur
-  '🍷','🏪','🏬','🏗️','🌿','🪵','⛺',
-  // Transports & stockage
-  '🚗','🚐','📦','📫','🗂️','📁','🗃️',
-  // Autres
-  '🔒','🧺','🪤','🔑','🪜','🔧','🏋️','🎒','🧳'
-];
-var EMOJIS_CAT = [
-  // Alimentation
-  '🥩','🍗','🐟','🥚','🧀','🥛','🥦','🍎','🍞','🥫','🫙','🍷','🥃','🍶','✨','🥤','💧','☕',
-  // Hygiène & santé
-  '🧴','🪥','🧷','💊','🩺','🩹','🧼','🪒','🧻','🧽',
-  // Maison & ménage
-  '🧹','🧺','🪣','🫧','🔧','🪛','💡','🔌','🔋','🪴','🌿',
-  // Vêtements & textile
-  '👕','👖','🧦','👗','🧥','🎒','🧳','👜',
-  // Electronique & loisirs
-  '📱','💻','🖥️','🎮','📺','📷','🎵','📚','🎨','✏️','🎁',
-  // Animaux & jardin
-  '🐾','🐕','🐈','🌱','🌻','🌺','🪴','🌾',
-  // Bébé & enfants
-  '🧸','🍼','🎠','🧩','🎯','⚽',
-  // Autres
-  '📦','🛒','🏠','❄️','🧊','🔒','🗄️','🏷️','⭐','💎','🎯','🔑'
+// Emoji organisés par onglets — accessible à tous les sélecteurs
+var EMOJI_TABS = {
+  '🍖 Viandes':['🥩','🍖','🍗','🥓','🌭','🍔','🍟','🌮','🌯','🥙','🧆','🥚','🍳','🥘','🫕'],
+  '🐟 Poissons':['🐟','🐠','🐡','🦈','🦐','🦞','🦀','🦪','🍣','🍤','🦑','🦒','🐙','🫐','🍱','🍜'],
+  '🥦 Légumes':['🥦','🥕','🍅','🫑','🌽','🥔','🧅','🧄','🥒','🫛','🥬','🌿','🥜','🫘','🍄','🫚','🌾','🍆','🌶️','🥑','🧅','🫛'],
+  '🍎 Fruits':['🍎','🍏','🍊','🍋','🍋‍🟩','🍌','🍇','🍓','🫐','🍒','🍑','🥭','🍍','🍉','🥝','🍐','🍈','🫒','🍑','🍒','🥥','🍅'],
+  '🧀 Laitiers':['🥛','🧀','🧈','🍦','🍧','🍨','🍮','🍯','🥣'],
+  '🍞 Épicerie':['🍞','🥐','🥖','🥨','🥯','🫓','🧇','🥞','🧈','🍚','🍝','🍛','🥫','🫙','🧂','🌾','🫒','🍯','🥜','🫘','🥣','🧆'],
+  '🍰 Sucreries':['🍰','🎂','🧁','🍪','🍫','🍬','🍭','🍡','🍧','🍨','🍦','🥧','🍮','🍯','🍩','🍿'],
+  '☕ Boissons':['💧','🧃','🥤','☕','🍵','🧋','🧉','🍺','🍻','🍷','🥂','✨','🥃','🍶','🫗','🍾','🍸','🍹','🍱','🧊','🫖'],
+  '🧴 Hygiène':['🧴','🪥','🧷','💊','🩺','🩹','🧼','🪒','🧻','🧽','🫧','🩻','💉','🩸','🏥','🌡️','🪮'],
+  '🧹 Maison':['🧹','🧺','🪣','🫧','🔧','🪛','💡','🔌','🔋','🪴','🌿','🏠','🏡','🛋️','🛁','🚿','🪞','🛏️','🪑','🚪','🗄️','🪜','🔑','🔒','🪤','🧲','🔩','🪝'],
+  '👕 Vêtements':['👕','👖','🧦','👗','🧥','🎒','🧳','👜','👚','🧤','🧣','🎩','👒','🧢','👟','👠','👡','👢','🥿','🩴'],
+  '📱 High-tech':['📱','💻','🖥️','🎮','📺','📷','📸','🎵','🎧','🖨️','⌨️','🖱️','💾','💿','📀','🔋','🔌','📡','⌚','📻'],
+  '📚 Loisirs':['📚','🎨','✏️','🖊️','📖','🎯','⚽','🏀','🎾','🎸','🎺','🎻','🎲','🧩','♟️','🎭','🎬','🎤','🎳','🏋️'],
+  '🐾 Animaux':['🐾','🐕','🐈','🐇','🐹','🐠','🐢','🦜','🐓','🐟','🐄','🐖','🐑','🐓','🦆','🐝','🪱','🦴','🐾'],
+  '🌱 Jardin':['🌱','🌻','🌺','🌸','🌼','🌷','🪴','🌾','🍀','🌿','🌳','🌲','🍃','🍂','🍁','🪨','🪵','🌍','☀️','🌧️','❄️'],
+  '🧸 Enfants':['🧸','🍼','🎠','🧩','🎯','⚽','🎪','🎡','🪀','🪁','🎈','🎁','🎀','🎊','🎉','🪆'],
+  '📦 Stockage':['📦','🛒','🗄️','📁','🗂️','🗃️','📫','📮','🔒','🏷️','📌','📎','🖇️','✂️','🗑️','📋','📊','📈','📉'],
+  '⭐ Symboles':['⭐','💎','🏆','🥇','🥈','🥉','🎖️','🏅','🌟','✨','💫','🔥','❄️','🌊','⚡','🌈','💯','❤️','🧡','💛','💚','💙','💜','🖤','🤍','🏁','🚩']
+};
+// Listes simplifiées utilisées pour les articles (toutes catégories fusionnées)
+var EMOJIS_FOOD = Object.values(EMOJI_TABS).reduce(function(acc,arr){return acc.concat(arr);},[]);
+var EMOJIS_LOC  = EMOJI_TABS['📦 Stockage'].concat(EMOJI_TABS['🧹 Maison']).concat(EMOJI_TABS['🌱 Jardin']);
+var EMOJIS_CAT  = EMOJIS_FOOD;
+
+var CAT_COLORS = [
+  '#6366f1','#8b5cf6','#ec4899','#f43f5e','#ef4444',
+  '#f97316','#f59e0b','#eab308','#84cc16','#22c55e',
+  '#10b981','#14b8a6','#06b6d4','#3b82f6','#0ea5e9',
+  '#6366f1','#a855f7','#d946ef','#64748b','#78716c'
 ];
 
 function buildEmojiPicker(containerId, hiddenId, previewId, list, selected) {
+  // Construire les onglets
+  var tabKeys = Object.keys(EMOJI_TABS);
+  var firstTab = tabKeys[0];
+  var tabsHtml = '<div class="etabs" id="'+containerId+'Tabs">';
+  tabKeys.forEach(function(k, i) {
+    var icon = k.split(' ')[0];
+    tabsHtml += '<button type="button" class="etab'+(i===0?' on':'')+'" onclick="switchEmojiTab(\''+containerId+'\',\''+hiddenId+'\',\''+previewId+'\',\''+k.replace(/'/g,'')+'\',this)">'+icon+'</button>';
+  });
+  tabsHtml += '</div>';
   var box = document.getElementById(containerId);
+  box.innerHTML = tabsHtml + '<div id="'+containerId+'Grid" class="epicker"></div>';
+  renderEmojiGrid(containerId, hiddenId, previewId, EMOJI_TABS[firstTab]||list, selected);
+}
+
+function renderEmojiGrid(containerId, hiddenId, previewId, list, selected) {
+  var grid = document.getElementById(containerId+'Grid');
+  if (!grid) return;
   var h = '';
   list.forEach(function(e) {
     h += '<button type="button" class="epick-btn'+(e===selected?' sel':'')+'" onclick="pickEmoji(\''+containerId+'\',\''+hiddenId+'\',\''+previewId+'\',\''+e+'\')">'+e+'</button>';
   });
-  box.innerHTML = h;
+  grid.innerHTML = h;
+}
+
+function switchEmojiTab(containerId, hiddenId, previewId, tabKey, el) {
+  document.querySelectorAll('#'+containerId+'Tabs .etab').forEach(function(b){b.classList.remove('on');});
+  el.classList.add('on');
+  var sel = document.getElementById(hiddenId).value;
+  renderEmojiGrid(containerId, hiddenId, previewId, EMOJI_TABS[tabKey]||[], sel);
 }
 
 function pickEmoji(containerId, hiddenId, previewId, emoji) {
   document.getElementById(hiddenId).value = emoji;
   document.getElementById(previewId).textContent = emoji;
-  document.querySelectorAll('#'+containerId+' .epick-btn').forEach(function(b) { b.classList.remove('sel'); });
-  var btns = document.querySelectorAll('#'+containerId+' .epick-btn');
-  btns.forEach(function(b) { if (b.textContent===emoji) b.classList.add('sel'); });
+  var grid = document.getElementById(containerId+'Grid');
+  if (grid) grid.querySelectorAll('.epick-btn').forEach(function(b){b.classList.toggle('sel', b.textContent===emoji);});
+}
+
+function buildColorPal(palId, hiddenId, selected) {
+  var box = document.getElementById(palId);
+  if (!box) return;
+  box.innerHTML = CAT_COLORS.map(function(c) {
+    return '<div class="cpick'+(c===selected?' sel':'')+'" style="background:'+c+'" onclick="pickColor(\''+palId+'\',\''+hiddenId+'\',\''+c+'\')"></div>';
+  }).join('');
+}
+
+function pickColor(palId, hiddenId, color) {
+  document.getElementById(hiddenId).value = color;
+  document.querySelectorAll('#'+palId+' .cpick').forEach(function(d){d.classList.toggle('sel',d.style.background===color||d.style.backgroundColor===color);});
 }
 
 // =====================================================================
