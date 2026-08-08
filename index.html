@@ -164,10 +164,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .pval .pv{font-size:22px;font-weight:800}
 
 /* EMOJI PICKER */
-.epicker{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;max-height:160px;overflow-y:auto;-webkit-overflow-scrolling:touch}
-.epick-btn{font-size:28px;width:46px;height:46px;border-radius:10px;border:2px solid transparent;background:var(--bg3);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.epick-btn.sel{border-color:var(--accent);background:rgba(99,102,241,.2)}
-.epick-preview{font-size:42px;text-align:center;padding:8px 0;line-height:1}
+.epicker{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px;max-height:200px;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:2px}
+.epick-btn{font-size:26px;width:44px;height:44px;border-radius:10px;border:2px solid var(--border);background:var(--bg);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .1s}
+.epick-btn:active{transform:scale(.88)}
+.epick-btn.sel{border-color:var(--accent);background:rgba(99,102,241,.25);box-shadow:0 0 0 2px rgba(99,102,241,.4)}
+.epick-preview{width:72px;height:72px;border-radius:16px;background:var(--bg3);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:40px;margin:0 auto 10px;cursor:default}
 
 /* LOCATION GRID */
 .lgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
@@ -373,7 +374,7 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
     </div>
     <div class="fg">
       <label>Icône <small style="color:var(--text2)">(appuyez pour choisir)</small></label>
-      <div class="epick-preview" id="iEmojiPrev">📦</div>
+      <div class="epick-preview" style="display:flex" id="iEmojiPrev">📦</div>
       <input type="hidden" id="iEmoji" value="">
       <div class="epicker" id="iEmojiPicker"></div>
     </div>
@@ -516,7 +517,7 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
     <div class="fg"><label>Nom</label><input type="text" id="catName" placeholder="Ex: Congélateur" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false" data-dashlane-ignore="true" data-lpignore="true" data-1p-ignore="true"></div>
     <div class="fg">
       <label>Emoji <small style="color:var(--text2)">(appuyez pour choisir)</small></label>
-      <div class="epick-preview" id="catEmojiPrev">📁</div>
+      <div class="epick-preview" style="display:flex" id="catEmojiPrev">📁</div>
       <input type="hidden" id="catEmoji" value="📁">
       <div class="epicker" id="catEmojiPicker"></div>
     </div>
@@ -532,7 +533,7 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
     <div class="fg"><label>Nom</label><input type="text" id="locName" placeholder="Ex: Placard cuisine" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false" data-dashlane-ignore="true" data-lpignore="true" data-1p-ignore="true"></div>
     <div class="fg">
       <label>Emoji <small style="color:var(--text2)">(appuyez pour choisir)</small></label>
-      <div class="epick-preview" id="locEmojiPrev">📍</div>
+      <div class="epick-preview" style="display:flex" id="locEmojiPrev">📍</div>
       <input type="hidden" id="locEmoji" value="📍">
       <div class="epicker" id="locEmojiPicker"></div>
     </div>
@@ -1507,9 +1508,10 @@ async function renderMore() {
   var cl = document.getElementById('catList');
   cl.innerHTML = cats.length===0 ? '<p style="color:var(--text2);font-size:13px">Aucune catégorie.</p>'
     : cats.map(function(c) {
-        return '<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)">'
-          +'<span style="font-size:20px">'+(c.emoji||'📁')+'</span>'
-          +'<span style="flex:1;font-weight:500">'+c.name+'</span>'
+        return '<div style="display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--border)">'
+          +'<span style="font-size:26px;width:36px;text-align:center">'+(c.emoji||'📁')+'</span>'
+          +'<span style="flex:1;font-weight:500;font-size:15px">'+c.name+'</span>'
+          +'<button class="btn btn-g btn-sm" onclick="openEditCat(\''+c.id+'\')" style="margin-right:4px">✏️</button>'
           +'<button class="btn btn-d btn-sm" onclick="delCat(\''+c.id+'\')">🗑</button>'
           +'</div>';
       }).join('');
@@ -1518,43 +1520,84 @@ async function renderMore() {
   var ll = document.getElementById('locList');
   ll.innerHTML = locs.length===0 ? '<p style="color:var(--text2);font-size:13px">Aucun emplacement.</p>'
     : locs.map(function(l) {
-        return '<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)">'
-          +'<span style="font-size:20px">'+(l.emoji||'📍')+'</span>'
-          +'<span style="flex:1;font-weight:500">'+l.name+'</span>'
+        return '<div style="display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--border)">'
+          +'<span style="font-size:26px;width:36px;text-align:center">'+(l.emoji||'📍')+'</span>'
+          +'<span style="flex:1;font-weight:500;font-size:15px">'+l.name+'</span>'
+          +'<button class="btn btn-g btn-sm" onclick="openEditLoc(\''+l.id+'\')" style="margin-right:4px">✏️</button>'
           +'<button class="btn btn-d btn-sm" onclick="delLoc(\''+l.id+'\')">🗑</button>'
           +'</div>';
       }).join('');
 }
 
+var editCatId=null, editLocId=null;
+
 function openAddCat() {
+  editCatId=null;
+  document.querySelector('#mCat .mhdr h2').textContent='Nouvelle catégorie';
   document.getElementById('catName').value='';
   document.getElementById('catEmoji').value='📁';
   document.getElementById('catEmojiPrev').textContent='📁';
+  document.getElementById('catColor').value='#6366f1';
   buildEmojiPicker('catEmojiPicker','catEmoji','catEmojiPrev',EMOJIS_CAT,'📁');
+  openM('mCat');
+}
+async function openEditCat(id) {
+  var c=cats.find(function(x){return x.id===id;});
+  if(!c) return;
+  editCatId=id;
+  document.querySelector('#mCat .mhdr h2').textContent='Modifier catégorie';
+  document.getElementById('catName').value=c.name;
+  document.getElementById('catEmoji').value=c.emoji||'📁';
+  document.getElementById('catEmojiPrev').textContent=c.emoji||'📁';
+  document.getElementById('catColor').value=c.color||'#6366f1';
+  buildEmojiPicker('catEmojiPicker','catEmoji','catEmojiPrev',EMOJIS_CAT,c.emoji||'📁');
   openM('mCat');
 }
 async function saveCat() {
   var name=document.getElementById('catName').value.trim();
   if (!name) { alert('Le nom est obligatoire.'); return; }
-  await put('cats',{id:uid(),name:name,emoji:document.getElementById('catEmoji').value||'📁',color:document.getElementById('catColor').value});
+  var obj={id:editCatId||uid(),name:name,emoji:document.getElementById('catEmoji').value||'📁',color:document.getElementById('catColor').value};
+  await put('cats',obj);
+  cats=await all('cats');
   closeM('mCat'); renderMore();
 }
-async function delCat(id) { if (!confirm('Supprimer cette catégorie ?')) return; await del('cats',id); renderMore(); }
+async function delCat(id) {
+  if (!confirm('Supprimer cette catégorie ?')) return;
+  await del('cats',id); cats=await all('cats'); renderMore();
+}
 
 function openAddLoc() {
+  editLocId=null;
+  document.querySelector('#mLoc .mhdr h2').textContent='Nouvel emplacement';
   document.getElementById('locName').value='';
   document.getElementById('locEmoji').value='📍';
   document.getElementById('locEmojiPrev').textContent='📍';
   buildEmojiPicker('locEmojiPicker','locEmoji','locEmojiPrev',EMOJIS_LOC,'📍');
   openM('mLoc');
 }
+async function openEditLoc(id) {
+  var l=locs.find(function(x){return x.id===id;});
+  if(!l) return;
+  editLocId=id;
+  document.querySelector('#mLoc .mhdr h2').textContent='Modifier emplacement';
+  document.getElementById('locName').value=l.name;
+  document.getElementById('locEmoji').value=l.emoji||'📍';
+  document.getElementById('locEmojiPrev').textContent=l.emoji||'📍';
+  buildEmojiPicker('locEmojiPicker','locEmoji','locEmojiPrev',EMOJIS_LOC,l.emoji||'📍');
+  openM('mLoc');
+}
 async function saveLoc() {
   var name=document.getElementById('locName').value.trim();
   if (!name) { alert('Le nom est obligatoire.'); return; }
-  await put('locs',{id:uid(),name:name,emoji:document.getElementById('locEmoji').value||'📍'});
+  var obj={id:editLocId||uid(),name:name,emoji:document.getElementById('locEmoji').value||'📍'};
+  await put('locs',obj);
+  locs=await all('locs');
   closeM('mLoc'); renderMore();
 }
-async function delLoc(id) { if (!confirm('Supprimer cet emplacement ?')) return; await del('locs',id); renderMore(); }
+async function delLoc(id) {
+  if (!confirm('Supprimer cet emplacement ?')) return;
+  await del('locs',id); locs=await all('locs'); renderMore();
+}
 
 // =====================================================================
 // EXPORT / IMPORT
