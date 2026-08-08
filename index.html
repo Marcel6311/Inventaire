@@ -333,6 +333,17 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
       <div class="card" id="locList"></div>
       <button class="btn btn-g btn-bl" onclick="openAddLoc()">＋ Nouvel emplacement</button>
 
+      <div class="stitle">🍇 API Grapeminds (vins)</div>
+      <div class="card">
+        <div class="fg" style="margin-bottom:8px"><label>Clé API</label>
+          <div style="display:flex;gap:8px">
+            <input type="text" id="gmKeyInput" placeholder="gm_xxxx..." autocomplete="new-password" spellcheck="false" data-dashlane-ignore="true" data-lpignore="true" data-1p-ignore="true" style="flex:1">
+            <button class="btn btn-p btn-sm" onclick="saveGmKey()">Sauver</button>
+          </div>
+        </div>
+        <p style="font-size:12px;color:var(--text2);margin:0">250 requêtes/mois gratuites. La clé est sauvegardée localement sur votre appareil.</p>
+      </div>
+
       <div class="stitle">⚙️ Paramètres</div>
       <div class="card">
         <div class="sw"><label>Confirmation suppression</label><div class="tog on" id="tConfirm" onclick="togSet('confirm')"></div></div>
@@ -450,6 +461,14 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
     <div class="mhdr">
       <h2 id="mWineTitle">Ajouter un vin</h2>
       <button class="mclose" onclick="closeM('mWine')">Fermer</button>
+    </div>
+    <div class="fg" style="margin-bottom:10px">
+      <label>🔍 Recherche Grapeminds (auto-remplissage)</label>
+      <div style="display:flex;gap:8px">
+        <input type="text" id="gmSearch" placeholder="Nom du vin (min. 3 lettres)..." autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false" data-dashlane-ignore="true" data-lpignore="true" data-1p-ignore="true" style="flex:1" onkeydown="if(event.key==='Enter')searchGrapeminds()">
+        <button type="button" class="btn btn-p btn-sm" onclick="searchGrapeminds()" style="white-space:nowrap;padding:0 14px">🔍</button>
+      </div>
+      <div id="gmResults" style="display:none;margin-top:6px;max-height:220px;overflow-y:auto;border-radius:12px;background:var(--bg3);border:1px solid var(--bg2)"></div>
     </div>
     <div class="fg"><label>Type</label>
       <select id="wType">
@@ -634,7 +653,11 @@ function goTo(v, btn) {
   if (v==='inv')  renderInv();
   if (v==='wine') renderWineView();
   if (v==='shop') renderShop();
-  if (v==='more') renderMore();
+  if (v==='more') {
+    renderMore();
+    var ki = document.getElementById('gmKeyInput');
+    if (ki) ki.value = GM_KEY || '';
+  }
 }
 
 // =====================================================================
@@ -1354,8 +1377,79 @@ function suggestWines() {
     }).join('');
 }
 
+// =====================================================================
+// GRAPEMINDS API
+// =====================================================================
+var GM_KEY = localStorage.getItem('gmApiKey') || '';
+
+function gmResetSearch() {
+  var s = document.getElementById('gmSearch');
+  var r = document.getElementById('gmResults');
+  if (s) s.value = '';
+  if (r) { r.style.display = 'none'; r.innerHTML = ''; }
+}
+
+async function searchGrapeminds() {
+  var q = (document.getElementById('gmSearch').value||'').trim();
+  if (q.length < 3) { alert('Minimum 3 caractères pour la recherche.'); return; }
+  if (!GM_KEY) {
+    var k = prompt('Entrez votre clé API Grapeminds :');
+    if (!k) return;
+    GM_KEY = k.trim();
+    localStorage.setItem('gmApiKey', GM_KEY);
+  }
+  var box = document.getElementById('gmResults');
+  box.style.display = '';
+  box.innerHTML = '<div style="padding:12px;color:var(--text2);text-align:center">🔍 Recherche en cours...</div>';
+  try {
+    var resp = await fetch('https://api.grapeminds.eu/public/v1/wines/search?q=' + encodeURIComponent(q) + '&limit=10', {
+      headers: { 'Authorization': 'Bearer ' + GM_KEY, 'Accept-Language': 'fr' }
+    });
+    if (resp.status === 401) { GM_KEY=''; localStorage.removeItem('gmApiKey'); throw new Error('Clé API invalide. Réessayez.'); }
+    if (!resp.ok) throw new Error('Erreur API (' + resp.status + ')');
+    var data = await resp.json();
+    if (!data.data || data.data.length === 0) {
+      box.innerHTML = '<div style="padding:12px;color:var(--text2);text-align:center">Aucun résultat pour "'+q+'"</div>';
+      return;
+    }
+    var h = '';
+    data.data.forEach(function(w) {
+      h += '<div onclick="fillWineFromGM('+w.id+')" style="padding:10px 12px;border-bottom:1px solid var(--bg2);cursor:pointer;active:background:var(--bg2)">'
+        + '<div style="font-weight:600;font-size:13px;color:var(--text)">'+w.display_name+'</div>'
+        + (w.producer_display_name ? '<div style="font-size:11px;color:var(--text2);margin-top:2px">'+w.producer_display_name+'</div>' : '')
+        + '</div>';
+    });
+    box.innerHTML = h;
+  } catch(err) {
+    box.innerHTML = '<div style="padding:12px;color:var(--danger)">❌ '+err.message+'</div>';
+  }
+}
+
+async function fillWineFromGM(id) {
+  var box = document.getElementById('gmResults');
+  box.innerHTML = '<div style="padding:12px;color:var(--text2);text-align:center">⏳ Chargement des détails...</div>';
+  try {
+    var resp = await fetch('https://api.grapeminds.eu/public/v1/wines/' + id, {
+      headers: { 'Authorization': 'Bearer ' + GM_KEY, 'Accept-Language': 'fr' }
+    });
+    if (!resp.ok) throw new Error('Erreur API (' + resp.status + ')');
+    var w = await resp.json();
+    if (w.display_name) document.getElementById('wName').value = w.display_name;
+    if (w.producer && w.producer.display_name) document.getElementById('wProd').value = w.producer.display_name;
+    if (w.region && w.region.name) document.getElementById('wReg').value = w.region.name;
+    if (w.grapes && w.grapes.length > 0) document.getElementById('wGrape').value = w.grapes.map(function(g){return g.name;}).join(', ');
+    if (w.tasting_notes && w.tasting_notes.text) document.getElementById('wTasting').value = w.tasting_notes.text;
+    var colorMap = {red:'rouge', white:'blanc', rose:'rosé', rosé:'rosé'};
+    if (w.color && colorMap[w.color]) document.getElementById('wType').value = colorMap[w.color];
+    gmResetSearch();
+  } catch(err) {
+    box.innerHTML = '<div style="padding:12px;color:var(--danger)">❌ '+err.message+'</div>';
+  }
+}
+
 async function openAddWine() {
   editWineId=null; wineRating=0;
+  gmResetSearch();
   document.getElementById('mWineTitle').textContent='Ajouter un vin';
   document.getElementById('btnDelWine').style.display='none';
   ['wName','wProd','wReg','wGrape','wTasting','wLoc'].forEach(function(id){document.getElementById(id).value='';});
@@ -1372,6 +1466,7 @@ async function openAddWine() {
 async function openEditWine(id) {
   var w = wines.find(function(x){return x.id===id;});
   if (!w) return;
+  gmResetSearch();
   editWineId=id; wineRating=w.rating||0;
   document.getElementById('mWineTitle').textContent='Modifier';
   document.getElementById('btnDelWine').style.display='';
@@ -1490,6 +1585,14 @@ function shareShop() {
   var txt = '🛒 Liste de courses\n\n'+names.join('\n');
   if (navigator.share) navigator.share({title:'Liste de courses',text:txt});
   else if (navigator.clipboard) navigator.clipboard.writeText(txt).then(function(){alert('Liste copiée !');});
+}
+
+function saveGmKey() {
+  var k = (document.getElementById('gmKeyInput').value||'').trim();
+  if (!k) { alert('Clé vide.'); return; }
+  GM_KEY = k;
+  localStorage.setItem('gmApiKey', k);
+  alert('✅ Clé API Grapeminds sauvegardée !');
 }
 
 // =====================================================================
