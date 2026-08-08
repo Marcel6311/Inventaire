@@ -1743,11 +1743,23 @@ async function doSearch() {
 
   var allI = await all('items');
   var allC = await all('cats');
+  var allL = await all('locs');
   var allW = await all('wines');
-  cats = allC;
+  cats = allC; locs = allL;
 
   var matchItems = allI.filter(function(i) {
-    return i.name.toLowerCase().includes(q) || (i.notes||'').toLowerCase().includes(q);
+    if (i.name.toLowerCase().includes(q)) return true;
+    if ((i.notes||'').toLowerCase().includes(q)) return true;
+    var catMatch = (i.cats||[]).some(function(cid) {
+      var c = allC.find(function(x){return x.id===cid;});
+      return c && c.name.toLowerCase().includes(q);
+    });
+    if (catMatch) return true;
+    var locMatch = (i.locs||[]).some(function(lid) {
+      var l = allL.find(function(x){return x.id===lid;});
+      return l && l.name.toLowerCase().includes(q);
+    });
+    return locMatch;
   });
   var matchWines = allW.filter(function(w) {
     return w.name.toLowerCase().includes(q)||(w.producer||'').toLowerCase().includes(q)||(w.region||'').toLowerCase().includes(q);
@@ -1765,11 +1777,15 @@ async function doSearch() {
   if (matchItems.length>0) {
     h+='<div class="stitle">'+matchItems.length+' article(s)</div><div class="card">';
     matchItems.forEach(function(i,idx) {
+      var catTags = (i.cats||[]).map(function(cid){var c=allC.find(function(x){return x.id===cid;});return c?'<span class="tag" style="font-size:10px">'+(c.emoji||'')+'&nbsp;'+hlText(c.name,q)+'</span>':'';}).join('');
+      var locTags = (i.locs||[]).map(function(lid){var l=allL.find(function(x){return x.id===lid;});return l?'<span class="tag" style="font-size:10px;background:var(--accent3)20;color:var(--accent3)">📍&nbsp;'+hlText(l.name,q)+'</span>':'';}).join('');
+      var tagsHtml = (catTags||locTags) ? '<div style="margin-top:3px">'+catTags+locTags+'</div>' : '';
       h+='<div class="irow">'
         +'<div class="iico" onclick="openSR('+idx+')">'+(i.emoji||itemEmoji(i))+'</div>'
         +'<div class="iinfo" onclick="openSR('+idx+')">'
         +'<div class="iname">'+hlText(i.name,q)+'</div>'
         +'<div class="imeta">'+i.qty+' '+i.unit+'</div>'
+        +tagsHtml
         +'</div>'
         +'<button class="del-btn" onclick="delFromSearch(\''+i.id+'\',event)">🗑</button>'
         +'</div>';
