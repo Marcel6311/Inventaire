@@ -864,6 +864,10 @@ function itemRow(item, showDel) {
     var c = cats.find(function(x) { return x.id===id; });
     return c ? '<span class="tag">'+(c.emoji||'')+ ' '+c.name+'</span>' : '';
   }).join('');
+  var locTags = (item.locs||[]).map(function(id) {
+    var l = locs.find(function(x) { return x.id===id; });
+    return l ? '<span class="tag" style="background:var(--accent3)20;color:var(--accent3);border-color:var(--accent3)40">'+(l.emoji||'📍')+' '+l.name+'</span>' : '';
+  }).join('');
 
   var delbtn = showDel
     ? '<button class="del-btn" onclick="quickDel(\''+item.id+'\',event)" title="Supprimer">🗑</button>'
@@ -874,7 +878,7 @@ function itemRow(item, showDel) {
     +'<div class="iinfo" onclick="openDetail(\''+item.id+'\')">'
     +'<div class="iname">'+item.name+'</div>'
     +'<div class="imeta">'+meta.join(' · ')+'</div>'
-    +'<div class="tags">'+catTags+'</div>'
+    +'<div class="tags">'+catTags+locTags+'</div>'
     +'</div>'
     +'<div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px">'
     +'<div class="iqty" onclick="openDetail(\''+item.id+'\')" style="cursor:pointer">'
@@ -1223,6 +1227,7 @@ async function saveItem() {
   await put('items', obj);
   closeM('mItem');
   items = await all('items');
+  renderFilters();
   renderInvList();
   refreshBadge();
 }
@@ -1234,6 +1239,7 @@ async function delItem() {
   await del('items', editItemId);
   closeM('mItem');
   items = await all('items');
+  renderFilters();
   renderInvList();
   refreshBadge();
 }
