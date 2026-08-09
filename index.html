@@ -431,6 +431,11 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
       <button class="btn btn-d btn-sm" id="btnDelItem" style="display:none" onclick="delItem()">🗑 Supprimer</button>
       <button class="btn btn-p" style="flex:1" onclick="saveItem()">💾 Enregistrer</button>
     </div>
+    <div id="itemNav" style="display:none;margin-top:10px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);padding-top:10px">
+      <button class="btn btn-g btn-sm" id="btnNavPrev" onclick="saveAndNavItem(-1)">◀ Préc.</button>
+      <span id="itemNavLabel" style="font-size:12px;color:var(--text2);text-align:center"></span>
+      <button class="btn btn-g btn-sm" id="btnNavNext" onclick="saveAndNavItem(1)">Suiv. ▶</button>
+    </div>
   </div>
 </div>
 
@@ -502,6 +507,11 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
     <div style="display:flex;gap:8px;margin-top:4px">
       <button class="btn btn-d btn-sm" id="btnDelWine" style="display:none" onclick="delWine()">🗑 Supprimer</button>
       <button class="btn btn-w" style="flex:1" onclick="saveWine()">💾 Enregistrer</button>
+    </div>
+    <div id="wineNav" style="display:none;margin-top:10px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);padding-top:10px">
+      <button class="btn btn-g btn-sm" id="btnNavWinePrev" onclick="saveAndNavWine(-1)">◀ Préc.</button>
+      <span id="wineNavLabel" style="font-size:12px;color:var(--text2);text-align:center"></span>
+      <button class="btn btn-g btn-sm" id="btnNavWineNext" onclick="saveAndNavWine(1)">Suiv. ▶</button>
     </div>
   </div>
 </div>
@@ -618,6 +628,8 @@ var items=[], wines=[], cats=[], locs=[], shopList=[];
 var curSort='name', curFilter='all', curWineFilter='all';
 var curPage=0, PAGE_SIZE=50;
 var editItemId=null, editWineId=null, wineRating=0;
+var editItemList=[], editItemIdx=-1; // liste courante pour navigation entre fiches
+var editWineList=[], editWineIdx=-1; // liste courante pour navigation entre vins
 var srResults=[], srIdx=-1; // résultats de recherche pour navigation
 var cfg = { confirm:true, alerts:true };
 
@@ -1055,7 +1067,7 @@ async function openDetail(id, fromSearch) {
     + '<button class="btn btn-s" style="flex:1" onclick="adjQty(\''+item.id+'\',1)">+ Ajouter</button>'
     + '</div>'
     + '<div style="display:flex;gap:8px;margin-top:8px">'
-    + '<button class="btn btn-g btn-sm" style="flex:1" onclick="closeM(\'mDetail\');openEditItem(\''+item.id+'\')">✏️ Modifier</button>'
+    + '<button class="btn btn-g btn-sm" style="flex:1" onclick="closeM(\'mDetail\');editItemList=getCurrentInvList();openEditItem(\''+item.id+'\')">✏️ Modifier</button>'
     + '<button class="btn btn-d btn-sm" style="flex:1" onclick="delFromDetail(\''+item.id+'\')">🗑 Supprimer</button>'
     + '</div>';
 
@@ -1129,11 +1141,20 @@ async function openAddItem() {
   openM('mItem');
 }
 
-async function openEditItem(id) {
+async function openEditItem(id, navList) {
   var item = items.find(function(i){return i.id===id;});
   if (!item) { items=await all('items'); item=items.find(function(i){return i.id===id;}); }
   if (!item) return;
   editItemId = id;
+
+  // Navigation : capturer la liste courante si non fournie
+  if (navList) {
+    editItemList = navList;
+  } else if (editItemList.length === 0) {
+    editItemList = getCurrentInvList();
+  }
+  editItemIdx = editItemList.findIndex(function(i){ return i.id===id; });
+
   document.getElementById('mItemTitle').textContent = 'Modifier';
   document.getElementById('btnDelItem').style.display = '';
   document.getElementById('dupWarn').style.display = 'none';
@@ -1157,7 +1178,51 @@ async function openEditItem(id) {
   cats = await all('cats'); locs = await all('locs');
   buildChips('catChips', cats, item.cats||[], 'var(--accent)');
   buildChips('locChips', locs, item.locs||[], 'var(--accent3)');
+
+  // Mettre à jour la barre de navigation
+  var nav = document.getElementById('itemNav');
+  var total = editItemList.length;
+  if (total > 1) {
+    nav.style.display = 'flex';
+    document.getElementById('btnNavPrev').disabled = editItemIdx <= 0;
+    document.getElementById('btnNavNext').disabled = editItemIdx >= total-1;
+    document.getElementById('itemNavLabel').textContent = (editItemIdx+1)+' / '+total;
+  } else {
+    nav.style.display = 'none';
+  }
+
   openM('mItem');
+}
+
+function getCurrentInvList() {
+  var q = (document.getElementById('invSearch') ? document.getElementById('invSearch').value||'' : '').toLowerCase();
+  var list = items.slice();
+  if (curFilter !== 'all') {
+    list = list.filter(function(i){ return (i.cats&&i.cats.includes(curFilter))||(i.locs&&i.locs.includes(curFilter)); });
+  }
+  if (q) {
+    list = list.filter(function(i){ return i.name.toLowerCase().includes(q)||(i.notes||'').toLowerCase().includes(q); });
+  }
+  list.sort(function(a,b){
+    if (curSort==='name')   return a.name.localeCompare(b.name,'fr');
+    if (curSort==='qty')    return b.qty-a.qty;
+    if (curSort==='date')   return (b.createdAt||0)-(a.createdAt||0);
+    if (curSort==='expiry') { if (!a.expDate) return 1; if (!b.expDate) return -1; return new Date(a.expDate)-new Date(b.expDate); }
+    return 0;
+  });
+  return list;
+}
+
+async function saveAndNavItem(dir) {
+  await saveItem(true); // true = ne pas fermer le modal
+  var newIdx = editItemIdx + dir;
+  if (newIdx < 0 || newIdx >= editItemList.length) return;
+  // Recharger la liste après sauvegarde
+  items = await all('items');
+  editItemList = getCurrentInvList();
+  var target = editItemList[newIdx];
+  if (!target) return;
+  await openEditItem(target.id, editItemList);
 }
 
 function buildChips(containerId, list, selected, color) {
@@ -1185,7 +1250,7 @@ async function checkDup() {
   document.getElementById('dupWarn').style.display = dup ? '' : 'none';
 }
 
-async function saveItem() {
+async function saveItem(keepOpen) {
   var name = document.getElementById('iName').value.trim();
   if (!name) { alert('Le nom est obligatoire.'); return; }
 
@@ -1226,7 +1291,7 @@ async function saveItem() {
   };
 
   await put('items', obj);
-  closeM('mItem');
+  if (!keepOpen) closeM('mItem');
   items = await all('items');
   renderFilters();
   renderInvList();
@@ -1325,7 +1390,7 @@ function renderWineList() {
       return k ? '<span class="wpair" style="cursor:pointer" onclick="event.stopPropagation();scrollToFood(\''+k+'\')">'+p+'</span>'
                : '<span class="wpair">'+p+'</span>';
     }).join('');
-    return '<div class="wcard" onclick="openEditWine(\''+w.id+'\')">'
+    return '<div class="wcard" onclick="editWineList=getCurrentWineList();openEditWine(\''+w.id+'\')">'
       +(w.photo?'<img src="'+w.photo+'" style="width:100%;max-height:180px;object-fit:contain;border-radius:9px;margin-bottom:8px;background:var(--bg2)">':'')
       +'<div style="display:flex;gap:10px"><div style="font-size:30px">'+(emoji[w.type]||'🍷')+'</div><div style="flex:1">'
       +'<div class="wname">'+w.name+'</div>'
@@ -1491,11 +1556,19 @@ async function openAddWine() {
   openM('mWine');
 }
 
-async function openEditWine(id) {
+async function openEditWine(id, navList) {
   var w = wines.find(function(x){return x.id===id;});
   if (!w) return;
   gmResetSearch();
   editWineId=id; wineRating=w.rating||0;
+
+  if (navList) {
+    editWineList = navList;
+  } else if (editWineList.length === 0) {
+    editWineList = getCurrentWineList();
+  }
+  editWineIdx = editWineList.findIndex(function(x){ return x.id===id; });
+
   document.getElementById('mWineTitle').textContent='Modifier';
   document.getElementById('btnDelWine').style.display='';
   document.getElementById('wType').value   = w.type||'rouge';
@@ -1512,7 +1585,40 @@ async function openEditWine(id) {
   updateWineStars(w.rating||0);
   if (w.photo) { document.getElementById('wPrev').src=w.photo; document.getElementById('wPrev').style.display=''; document.getElementById('wPph').style.display='none'; }
   else resetPhoto('wPhotoF','wPrev','wPph');
+
+  var nav = document.getElementById('wineNav');
+  var total = editWineList.length;
+  if (total > 1) {
+    nav.style.display = 'flex';
+    document.getElementById('btnNavWinePrev').disabled = editWineIdx <= 0;
+    document.getElementById('btnNavWineNext').disabled = editWineIdx >= total-1;
+    document.getElementById('wineNavLabel').textContent = (editWineIdx+1)+' / '+total;
+  } else {
+    nav.style.display = 'none';
+  }
+
   openM('mWine');
+}
+
+function getCurrentWineList() {
+  var q = (document.getElementById('wSearch') ? document.getElementById('wSearch').value||'' : '').toLowerCase();
+  var list = wines.slice();
+  if (curWineFilter!=='all') list = list.filter(function(w){ return w.type===curWineFilter; });
+  if (q) list = list.filter(function(w){
+    return w.name.toLowerCase().includes(q)||(w.producer||'').toLowerCase().includes(q)||(w.region||'').toLowerCase().includes(q);
+  });
+  return list;
+}
+
+async function saveAndNavWine(dir) {
+  await saveWine(true);
+  var newIdx = editWineIdx + dir;
+  if (newIdx < 0 || newIdx >= editWineList.length) return;
+  wines = await all('wines');
+  editWineList = getCurrentWineList();
+  var target = editWineList[newIdx];
+  if (!target) return;
+  await openEditWine(target.id, editWineList);
 }
 
 function setWineRating(n) { wineRating=n; updateWineStars(n); }
@@ -1520,7 +1626,7 @@ function updateWineStars(n) {
   document.querySelectorAll('#wStars .rstar').forEach(function(s,i) { s.classList.toggle('on',i<n); });
 }
 
-async function saveWine() {
+async function saveWine(keepOpen) {
   var name = document.getElementById('wName').value.trim();
   if (!name) { alert('Le nom est obligatoire.'); return; }
   var photo = getPhoto('wPrev');
@@ -1537,7 +1643,7 @@ async function saveWine() {
     updatedAt:Date.now()
   };
   await put('wines',obj);
-  closeM('mWine');
+  if (!keepOpen) closeM('mWine');
   wines = await all('wines');
   renderWineList();
 }
