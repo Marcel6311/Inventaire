@@ -117,7 +117,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .stitle{font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.7px;margin:14px 0 8px}
 
 /* PHOTO */
-.photo-prev{width:100%;height:150px;object-fit:cover;border-radius:10px;margin-top:7px;cursor:pointer;display:none}
+.photo-prev{width:100%;max-height:260px;object-fit:contain;border-radius:10px;margin-top:7px;cursor:pointer;display:none;background:var(--bg2)}
 .photo-ph{width:100%;height:110px;border:2px dashed var(--border);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:var(--text2);cursor:pointer;font-size:13px}
 
 /* FILTER BAR */
@@ -317,6 +317,7 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
         <button class="btn btn-g" onclick="doPrint()">🖨️ Imprimer</button>
         <button class="btn btn-g" onclick="doPrint()">📄 PDF</button>
       </div>
+      <button class="btn btn-d btn-bl" onclick="purgePhotos()">🗑️ Purger les photos (réduire le JSON)</button>
 
       <div class="stitle">📥 Importer</div>
       <div class="card">
@@ -999,7 +1000,7 @@ async function openDetail(id, fromSearch) {
       +'</div>';
   }
 
-  var photoHtml = item.photo ? '<img src="'+item.photo+'" style="width:100%;height:200px;object-fit:cover;border-radius:12px;margin-bottom:12px">' : '';
+  var photoHtml = item.photo ? '<img src="'+item.photo+'" style="width:100%;max-height:280px;object-fit:contain;border-radius:12px;margin-bottom:12px;background:var(--bg2)">' : '';
   var locPhotoHtml = item.locPhoto ? '<div class="stitle" style="margin-top:0">📍 Lieu de rangement</div><img src="'+item.locPhoto+'" style="width:100%;border-radius:10px;margin-bottom:12px">' : '';
 
   var priceHtml = '';
@@ -1321,7 +1322,7 @@ function renderWineList() {
                : '<span class="wpair">'+p+'</span>';
     }).join('');
     return '<div class="wcard" onclick="openEditWine(\''+w.id+'\')">'
-      +(w.photo?'<img src="'+w.photo+'" style="width:100%;height:110px;object-fit:cover;border-radius:9px;margin-bottom:8px">':'')
+      +(w.photo?'<img src="'+w.photo+'" style="width:100%;max-height:180px;object-fit:contain;border-radius:9px;margin-bottom:8px;background:var(--bg2)">':'')
       +'<div style="display:flex;gap:10px"><div style="font-size:30px">'+(emoji[w.type]||'🍷')+'</div><div style="flex:1">'
       +'<div class="wname">'+w.name+'</div>'
       +'<div class="wdet">'+[w.producer,w.region,w.vintage].filter(Boolean).join(' · ')+'</div>'
@@ -1754,8 +1755,42 @@ async function expCSV() {
 }
 
 async function expJSON() {
-  var data={items:await all('items'),wines:await all('wines'),cats:await all('cats'),locs:await all('locs'),exportedAt:new Date().toISOString()};
-  dlFile('inventaire.json',JSON.stringify(data,null,2),'application/json');
+  // On exclut les photos du JSON (évite les fichiers de 100+ Mo)
+  function noPhoto(obj) {
+    var o = Object.assign({}, obj);
+    delete o.photo; delete o.locPhoto;
+    return o;
+  }
+  var data = {
+    items: (await all('items')).map(noPhoto),
+    wines: (await all('wines')).map(noPhoto),
+    cats:  await all('cats'),
+    locs:  await all('locs'),
+    exportedAt: new Date().toISOString()
+  };
+  dlFile('inventaire.json', JSON.stringify(data, null, 2), 'application/json');
+}
+
+async function purgePhotos() {
+  if (!confirm('Supprimer toutes les photos stockées dans l\'app ?\nVos données (noms, quantités, vins…) sont conservées.\nLe fichier JSON redeviendra léger.')) return;
+  var allItems = await all('items');
+  var allWines = await all('wines');
+  for (var i = 0; i < allItems.length; i++) {
+    if (allItems[i].photo || allItems[i].locPhoto) {
+      var it = Object.assign({}, allItems[i]);
+      delete it.photo; delete it.locPhoto;
+      await put('items', it);
+    }
+  }
+  for (var j = 0; j < allWines.length; j++) {
+    if (allWines[j].photo) {
+      var wn = Object.assign({}, allWines[j]);
+      delete wn.photo;
+      await put('wines', wn);
+    }
+  }
+  alert('Photos supprimées. Vous pouvez maintenant exporter un JSON léger.');
+  renderHome();
 }
 
 async function doImport() {
@@ -2121,13 +2156,29 @@ function loadCfg() {
 // PHOTOS
 // =====================================================================
 function loadPhoto(inputId, prevId, phId) {
-  var file=document.getElementById(inputId).files[0];
+  var file = document.getElementById(inputId).files[0];
   if (!file) return;
-  var reader=new FileReader();
-  reader.onload=function(e) {
-    var img=document.getElementById(prevId);
-    img.src=e.target.result; img.style.display='';
-    document.getElementById(phId).style.display='none';
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var image = new Image();
+    image.onload = function() {
+      // Compression : max 600px, qualité 60%
+      var MAX = 600;
+      var w = image.width, h = image.height;
+      if (w > MAX || h > MAX) {
+        if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
+        else       { w = Math.round(w * MAX / h); h = MAX; }
+      }
+      var canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(image, 0, 0, w, h);
+      var compressed = canvas.toDataURL('image/jpeg', 0.60);
+      var prev = document.getElementById(prevId);
+      prev.src = compressed;
+      prev.style.display = '';
+      document.getElementById(phId).style.display = 'none';
+    };
+    image.src = e.target.result;
   };
   reader.readAsDataURL(file);
 }
