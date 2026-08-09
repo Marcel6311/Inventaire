@@ -700,7 +700,8 @@ async function renderHome() {
       h += '<div class="al al-d" style="cursor:pointer" onclick="openDetail(\''+i.id+'\')">⚠️ <b>'+i.name+'</b> — expiré le '+fDate(i.expDate)+' <b>(il y a '+d+' jour'+(d>1?'s':'')+')</b></div>';
     });
     lowStock.forEach(function(i) {
-      h += '<div class="al al-w" style="cursor:pointer" onclick="openDetail(\''+i.id+'\')">📦 <b>'+i.name+'</b> — stock faible ('+i.qty+' '+i.unit+')</div>';
+      var locLabel = (i.locs||[]).map(function(lid){ var l=locs.find(function(x){return x.id===lid;}); return l?(l.emoji||'📍')+' '+l.name:''; }).filter(Boolean).join(', ');
+      h += '<div class="al al-w" style="cursor:pointer" onclick="openDetail(\''+i.id+'\')">📦 <b>'+i.name+'</b> — stock faible ('+i.qty+' '+i.unit+')'+(locLabel?' · <span style="opacity:.75">'+locLabel+'</span>':'')+'</div>';
     });
     ha.innerHTML = h;
   }
@@ -1165,7 +1166,7 @@ function buildChips(containerId, list, selected, color) {
   box.innerHTML = list.map(function(item) {
     var on = selected.includes(item.id);
     var c  = item.color || color;
-    return '<div class="chip '+(on?'on':'')+'" style="border-color:'+c+';color:'+(on?'#fff':c)+';background:'+(on?c:'transparent')+'" onclick="toggleChip(this,\''+c+'\')">'+(item.emoji||'')+' '+item.name+'</div>';
+    return '<div class="chip '+(on?'on':'')+'" data-id="'+item.id+'" style="border-color:'+c+';color:'+(on?'#fff':c)+';background:'+(on?c:'transparent')+'" onclick="toggleChip(this,\''+c+'\')">'+(item.emoji||'')+' '+item.name+'</div>';
   }).join('');
 }
 
@@ -1229,6 +1230,7 @@ async function saveItem() {
   items = await all('items');
   renderFilters();
   renderInvList();
+  renderHome();
   refreshBadge();
 }
 
@@ -1247,12 +1249,8 @@ async function delItem() {
 function getSelectedChips(containerId) {
   var ids = [];
   document.querySelectorAll('#'+containerId+' .chip.on').forEach(function(el) {
-    var onclick = el.getAttribute('onclick');
-    // Le texte du chip contient le nom — on récupère l'id depuis la liste
-    var name = el.textContent.trim();
-    var store = containerId==='catChips' ? cats : locs;
-    var found = store.find(function(c) { return ((c.emoji||'')+' '+c.name).trim()===name || c.name===name; });
-    if (found) ids.push(found.id);
+    var id = el.getAttribute('data-id');
+    if (id) ids.push(id);
   });
   return ids;
 }
