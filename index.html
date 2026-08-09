@@ -240,7 +240,7 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
     <!-- INVENTAIRE -->
     <div class="view" id="v-inv">
       <div class="sbar">
-        <input type="text" id="invSearch" placeholder="Texte ou n° + Entrée" oninput="filterInv()" onkeydown="invSearchKeydown(event)" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+        <input type="text" id="invSearch" placeholder="Rechercher ou n°…" oninput="filterInv()" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
         <button onclick="openAddItem()">＋</button>
       </div>
       <div class="fbar" id="invFilters"></div>
@@ -799,22 +799,9 @@ function setFilter(f, el) {
 function sortInv(s) { curSort=s; curPage=0; renderInvList(); }
 function filterInv() { curPage=0; renderInvList(); }
 
-function invSearchKeydown(e) {
-  if (e.key !== 'Enter') return;
-  var val = (document.getElementById('invSearch').value||'').trim();
-  var n = parseInt(val);
-  if (val !== '' && String(n) === val && n >= 1) {
-    var list = getCurrentInvList();
-    if (n > list.length) { alert('Il n\'y a que '+list.length+' articles.'); return; }
-    document.getElementById('invSearch').value = '';
-    renderInvList();
-    editItemList = list;
-    openEditItem(list[n-1].id, list);
-  }
-}
-
 function renderInvList() {
-  var q = (document.getElementById('invSearch').value||'').toLowerCase();
+  var raw = (document.getElementById('invSearch').value||'').trim();
+  var q = raw.toLowerCase();
   var list = items.slice();
 
   if (curFilter !== 'all') {
@@ -822,7 +809,26 @@ function renderInvList() {
       return (i.cats && i.cats.includes(curFilter)) || (i.locs && i.locs.includes(curFilter));
     });
   }
-  if (q) {
+
+  // Tri appliqué avant de chercher par numéro
+  list.sort(function(a,b) {
+    if (curSort==='name')   return a.name.localeCompare(b.name,'fr');
+    if (curSort==='qty')    return b.qty - a.qty;
+    if (curSort==='date')   return (b.createdAt||0)-(a.createdAt||0);
+    if (curSort==='expiry') { if (!a.expDate) return 1; if (!b.expDate) return -1; return new Date(a.expDate)-new Date(b.expDate); }
+    return 0;
+  });
+
+  // Si c'est un nombre pur → afficher uniquement la fiche à cette position
+  var numOnly = raw !== '' && /^\d+$/.test(raw);
+  if (numOnly) {
+    var n = parseInt(raw);
+    if (n >= 1 && n <= list.length) {
+      list = [list[n-1]];
+    } else {
+      list = [];
+    }
+  } else if (q) {
     list = list.filter(function(i) {
       if (i.name.toLowerCase().includes(q)) return true;
       if ((i.notes||'').toLowerCase().includes(q)) return true;
@@ -838,17 +844,6 @@ function renderInvList() {
       return locMatch;
     });
   }
-
-  list.sort(function(a,b) {
-    if (curSort==='name')   return a.name.localeCompare(b.name,'fr');
-    if (curSort==='qty')    return b.qty - a.qty;
-    if (curSort==='date')   return (b.createdAt||0)-(a.createdAt||0);
-    if (curSort==='expiry') {
-      if (!a.expDate) return 1; if (!b.expDate) return -1;
-      return new Date(a.expDate)-new Date(b.expDate);
-    }
-    return 0;
-  });
 
   var box = document.getElementById('invList');
   if (list.length===0) { box.innerHTML='<div class="empty"><div class="ei">🔍</div><p>Aucun article trouvé.</p></div>'; return; }
