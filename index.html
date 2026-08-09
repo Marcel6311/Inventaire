@@ -1755,15 +1755,10 @@ async function expCSV() {
 }
 
 async function expJSON() {
-  // On exclut les photos du JSON (évite les fichiers de 100+ Mo)
-  function noPhoto(obj) {
-    var o = Object.assign({}, obj);
-    delete o.photo; delete o.locPhoto;
-    return o;
-  }
+  // Photos incluses (comprimées à 400px — fichier reste raisonnable)
   var data = {
-    items: (await all('items')).map(noPhoto),
-    wines: (await all('wines')).map(noPhoto),
+    items: await all('items'),
+    wines: await all('wines'),
     cats:  await all('cats'),
     locs:  await all('locs'),
     exportedAt: new Date().toISOString()
@@ -2162,8 +2157,8 @@ function loadPhoto(inputId, prevId, phId) {
   reader.onload = function(e) {
     var image = new Image();
     image.onload = function() {
-      // Compression : max 600px, qualité 60%
-      var MAX = 600;
+      // Compression : max 400px, qualité 60%
+      var MAX = 400;
       var w = image.width, h = image.height;
       if (w > MAX || h > MAX) {
         if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
