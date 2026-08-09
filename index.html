@@ -250,6 +250,11 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
         <button class="btn btn-g btn-sm" onclick="sortInv('date')">Date</button>
         <button class="btn btn-g btn-sm" onclick="sortInv('expiry')">Expiration</button>
       </div>
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px">
+        <span style="font-size:13px;color:var(--text2)">Aller au n°</span>
+        <input type="number" id="goToNum" min="1" placeholder="15" style="width:70px;padding:5px 8px;border-radius:10px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-size:13px" onkeydown="if(event.key==='Enter')goToItem()">
+        <button class="btn btn-g btn-sm" onclick="goToItem()">→</button>
+      </div>
       <div class="card" id="invList"></div>
     </div>
 
@@ -793,6 +798,17 @@ function setFilter(f, el) {
   if (el) el.classList.add('on');
   curPage = 0;
   renderInvList();
+}
+
+function goToItem() {
+  var n = parseInt(document.getElementById('goToNum').value);
+  if (!n || n < 1) return;
+  var list = getCurrentInvList();
+  if (n > list.length) { alert('Il n\'y a que '+list.length+' articles dans cette liste.'); return; }
+  var target = list[n-1];
+  document.getElementById('goToNum').value = '';
+  editItemList = list;
+  openEditItem(target.id, list);
 }
 
 function sortInv(s) { curSort=s; curPage=0; renderInvList(); }
