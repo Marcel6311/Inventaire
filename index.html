@@ -240,7 +240,7 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
     <!-- INVENTAIRE -->
     <div class="view" id="v-inv">
       <div class="sbar">
-        <input type="text" id="invSearch" placeholder="Rechercher..." oninput="filterInv()" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+        <input type="text" id="invSearch" placeholder="Texte ou n° + Entrée" oninput="filterInv()" onkeydown="invSearchKeydown(event)" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
         <button onclick="openAddItem()">＋</button>
       </div>
       <div class="fbar" id="invFilters"></div>
@@ -797,19 +797,20 @@ function setFilter(f, el) {
 
 
 function sortInv(s) { curSort=s; curPage=0; renderInvList(); }
-function filterInv() {
+function filterInv() { curPage=0; renderInvList(); }
+
+function invSearchKeydown(e) {
+  if (e.key !== 'Enter') return;
   var val = (document.getElementById('invSearch').value||'').trim();
   var n = parseInt(val);
   if (val !== '' && String(n) === val && n >= 1) {
-    // Numéro pur → ouvrir la fiche n°N
     var list = getCurrentInvList();
-    if (n > list.length) return;
+    if (n > list.length) { alert('Il n\'y a que '+list.length+' articles.'); return; }
     document.getElementById('invSearch').value = '';
+    renderInvList();
     editItemList = list;
     openEditItem(list[n-1].id, list);
-    return;
   }
-  curPage=0; renderInvList();
 }
 
 function renderInvList() {
