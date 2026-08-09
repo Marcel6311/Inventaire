@@ -1209,7 +1209,9 @@ async function openEditItem(id, navList) {
 }
 
 function getCurrentInvList() {
-  var q = (document.getElementById('invSearch') ? document.getElementById('invSearch').value||'' : '').toLowerCase();
+  var raw = (document.getElementById('invSearch') ? document.getElementById('invSearch').value||'' : '').trim();
+  var numOnly = raw !== '' && /^\d+$/.test(raw);
+  var q = numOnly ? '' : raw.toLowerCase(); // ignorer les recherches par numéro
   var list = items.slice();
   if (curFilter !== 'all') {
     list = list.filter(function(i){ return (i.cats&&i.cats.includes(curFilter))||(i.locs&&i.locs.includes(curFilter)); });
