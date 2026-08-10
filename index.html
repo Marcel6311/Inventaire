@@ -2060,10 +2060,10 @@ function dlFile(name,content,type) {
 // RECHERCHE ACCUEIL
 // =====================================================================
 async function doHomeSearch() {
-  var q = (document.getElementById('homeSearch').value||'').toLowerCase().trim();
+  var raw = (document.getElementById('homeSearch').value||'').trim();
   var res = document.getElementById('homeSearchResults');
   var content = document.getElementById('homeContent');
-  if (!q) {
+  if (!raw) {
     res.style.display = 'none';
     content.style.display = '';
     return;
@@ -2076,20 +2076,28 @@ async function doHomeSearch() {
   var allL = await all('locs');
   cats = allC; locs = allL;
 
-  var matched = allI.filter(function(i) {
-    if (i.name.toLowerCase().includes(q)) return true;
-    if ((i.notes||'').toLowerCase().includes(q)) return true;
-    var catMatch = (i.cats||[]).some(function(cid) {
-      var c = allC.find(function(x){return x.id===cid;});
-      return c && c.name.toLowerCase().includes(q);
+  var numOnly = /^\d+$/.test(raw);
+  var matched;
+  if (numOnly) {
+    var n = parseInt(raw);
+    matched = allI.filter(function(i) { return i.seq === n; });
+  } else {
+    var q = raw.toLowerCase();
+    matched = allI.filter(function(i) {
+      if (i.name.toLowerCase().includes(q)) return true;
+      if ((i.notes||'').toLowerCase().includes(q)) return true;
+      var catMatch = (i.cats||[]).some(function(cid) {
+        var c = allC.find(function(x){return x.id===cid;});
+        return c && c.name.toLowerCase().includes(q);
+      });
+      if (catMatch) return true;
+      var locMatch = (i.locs||[]).some(function(lid) {
+        var l = allL.find(function(x){return x.id===lid;});
+        return l && l.name.toLowerCase().includes(q);
+      });
+      return locMatch;
     });
-    if (catMatch) return true;
-    var locMatch = (i.locs||[]).some(function(lid) {
-      var l = allL.find(function(x){return x.id===lid;});
-      return l && l.name.toLowerCase().includes(q);
-    });
-    return locMatch;
-  });
+  }
 
   if (matched.length===0) {
     res.innerHTML = '<div class="empty"><div class="ei">🔍</div><p>Aucun résultat pour "'+q+'"</p></div>';
@@ -2126,9 +2134,10 @@ function openSearch() {
 }
 
 async function doSearch() {
-  var q = document.getElementById('gSearch').value.toLowerCase().trim();
+  var raw = document.getElementById('gSearch').value.trim();
+  var q = raw.toLowerCase();
   var box = document.getElementById('gResults');
-  if (q.length<1) { box.innerHTML=''; srResults=[]; return; }
+  if (raw.length<1) { box.innerHTML=''; srResults=[]; return; }
 
   var allI = await all('items');
   var allC = await all('cats');
@@ -2136,20 +2145,27 @@ async function doSearch() {
   var allW = await all('wines');
   cats = allC; locs = allL;
 
-  var matchItems = allI.filter(function(i) {
-    if (i.name.toLowerCase().includes(q)) return true;
-    if ((i.notes||'').toLowerCase().includes(q)) return true;
-    var catMatch = (i.cats||[]).some(function(cid) {
-      var c = allC.find(function(x){return x.id===cid;});
-      return c && c.name.toLowerCase().includes(q);
+  var numOnly = /^\d+$/.test(raw);
+  var matchItems;
+  if (numOnly) {
+    var n = parseInt(raw);
+    matchItems = allI.filter(function(i) { return i.seq === n; });
+  } else {
+    matchItems = allI.filter(function(i) {
+      if (i.name.toLowerCase().includes(q)) return true;
+      if ((i.notes||'').toLowerCase().includes(q)) return true;
+      var catMatch = (i.cats||[]).some(function(cid) {
+        var c = allC.find(function(x){return x.id===cid;});
+        return c && c.name.toLowerCase().includes(q);
+      });
+      if (catMatch) return true;
+      var locMatch = (i.locs||[]).some(function(lid) {
+        var l = allL.find(function(x){return x.id===lid;});
+        return l && l.name.toLowerCase().includes(q);
+      });
+      return locMatch;
     });
-    if (catMatch) return true;
-    var locMatch = (i.locs||[]).some(function(lid) {
-      var l = allL.find(function(x){return x.id===lid;});
-      return l && l.name.toLowerCase().includes(q);
-    });
-    return locMatch;
-  });
+  }
   var matchWines = allW.filter(function(w) {
     return w.name.toLowerCase().includes(q)||(w.producer||'').toLowerCase().includes(q)||(w.region||'').toLowerCase().includes(q);
   });
