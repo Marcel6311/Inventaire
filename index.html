@@ -117,7 +117,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .stitle{font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.7px;margin:14px 0 8px}
 
 /* PHOTO */
-.photo-prev{width:100%;max-height:260px;object-fit:contain;border-radius:10px;margin-top:7px;cursor:pointer;display:none;background:var(--bg2)}
+.photo-prev{width:100%;height:150px;object-fit:cover;border-radius:10px;margin-top:7px;cursor:pointer;display:none}
 .photo-ph{width:100%;height:110px;border:2px dashed var(--border);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:var(--text2);cursor:pointer;font-size:13px}
 
 /* FILTER BAR */
@@ -132,8 +132,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .wdet{font-size:13px;color:#f87171;margin-top:3px}
 .wpairs{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
 .wpair{background:rgba(153,27,27,.35);border:1px solid rgba(153,27,27,.6);border-radius:20px;padding:3px 9px;font-size:12px;color:var(--wine2)}
-.fchip{background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:5px 11px;font-size:13px;color:var(--text);cursor:pointer;transition:background .15s}
-.fchip:active{opacity:.7}
 .stars{color:#fbbf24;font-size:14px;letter-spacing:1px}
 
 /* SHOPPING */
@@ -240,7 +238,7 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
     <!-- INVENTAIRE -->
     <div class="view" id="v-inv">
       <div class="sbar">
-        <input type="text" id="invSearch" placeholder="Rechercher ou n°…" oninput="filterInv()" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+        <input type="text" id="invSearch" placeholder="Rechercher..." oninput="filterInv()" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
         <button onclick="openAddItem()">＋</button>
       </div>
       <div class="fbar" id="invFilters"></div>
@@ -250,7 +248,7 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
         <button class="btn btn-g btn-sm" onclick="sortInv('date')">Date</button>
         <button class="btn btn-g btn-sm" onclick="sortInv('expiry')">Expiration</button>
       </div>
-<div class="card" id="invList"></div>
+      <div class="card" id="invList"></div>
     </div>
 
     <!-- VINS -->
@@ -270,19 +268,19 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
       </div>
       <div class="stitle">🍽️ Quel plat cuisinez-vous ?</div>
       <div class="card" style="margin-bottom:12px">
-        <div id="foodBtns" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px">
-          <button class="fchip" onclick="suggestWines('viande_rouge',this)">🥩 Viande rouge</button>
-          <button class="fchip" onclick="suggestWines('gibier',this)">🦌 Gibier</button>
-          <button class="fchip" onclick="suggestWines('viande_blanche',this)">🍗 Volaille</button>
-          <button class="fchip" onclick="suggestWines('poisson',this)">🐟 Poisson</button>
-          <button class="fchip" onclick="suggestWines('foie_gras',this)">🫙 Foie gras</button>
-          <button class="fchip" onclick="suggestWines('fromage',this)">🧀 Fromage</button>
-          <button class="fchip" onclick="suggestWines('charcuterie',this)">🥓 Charcuterie</button>
-          <button class="fchip" onclick="suggestWines('risotto',this)">🍝 Risotto</button>
-          <button class="fchip" onclick="suggestWines('sushi',this)">🍣 Sushi</button>
-          <button class="fchip" onclick="suggestWines('dessert_chocolat',this)">🍫 Chocolat</button>
-          <button class="fchip" onclick="suggestWines('dessert_fruit',this)">🍓 Dessert fruité</button>
-          <button class="fchip" onclick="suggestWines('aperitif',this)">🥂 Apéritif</button>
+        <div id="foodBtns" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:4px">
+          <button class="btn btn-g btn-sm" onclick="suggestWines('viande_rouge',this)">🥩 Viande rouge</button>
+          <button class="btn btn-g btn-sm" onclick="suggestWines('gibier',this)">🦌 Gibier</button>
+          <button class="btn btn-g btn-sm" onclick="suggestWines('viande_blanche',this)">🍗 Volaille</button>
+          <button class="btn btn-g btn-sm" onclick="suggestWines('poisson',this)">🐟 Poisson</button>
+          <button class="btn btn-g btn-sm" onclick="suggestWines('foie_gras',this)">🫙 Foie gras</button>
+          <button class="btn btn-g btn-sm" onclick="suggestWines('fromage',this)">🧀 Fromage</button>
+          <button class="btn btn-g btn-sm" onclick="suggestWines('charcuterie',this)">🥓 Charcuterie</button>
+          <button class="btn btn-g btn-sm" onclick="suggestWines('risotto',this)">🍝 Risotto</button>
+          <button class="btn btn-g btn-sm" onclick="suggestWines('sushi',this)">🍣 Sushi</button>
+          <button class="btn btn-g btn-sm" onclick="suggestWines('dessert_chocolat',this)">🍫 Chocolat</button>
+          <button class="btn btn-g btn-sm" onclick="suggestWines('dessert_fruit',this)">🍓 Dessert fruité</button>
+          <button class="btn btn-g btn-sm" onclick="suggestWines('aperitif',this)">🥂 Apéritif</button>
         </div>
         <div id="wineSugg"></div>
       </div>
@@ -317,7 +315,6 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
         <button class="btn btn-g" onclick="doPrint()">🖨️ Imprimer</button>
         <button class="btn btn-g" onclick="doPrint()">📄 PDF</button>
       </div>
-      <button class="btn btn-d btn-bl" onclick="purgePhotos()">🗑️ Purger les photos (réduire le JSON)</button>
 
       <div class="stitle">📥 Importer</div>
       <div class="card">
@@ -427,14 +424,14 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
       <div id="iLpph" class="photo-ph" onclick="document.getElementById('iLocF').click()"><span>📍</span><span>Photo du rangement</span></div>
       <img id="iLprev" class="photo-prev" onclick="document.getElementById('iLocF').click()">
     </div>
+    <div id="itemNav" style="display:none;margin-top:10px;flex-direction:row;align-items:center;justify-content:space-between;border-top:1px solid var(--border);padding-top:10px">
+      <button class="btn btn-g btn-sm" id="btnNavPrev" onclick="saveAndNavItem(-1)">&#9664; Préc.</button>
+      <span id="itemNavLabel" style="font-size:12px;color:var(--text2);text-align:center"></span>
+      <button class="btn btn-g btn-sm" id="btnNavNext" onclick="saveAndNavItem(1)">Suiv. &#9654;</button>
+    </div>
     <div style="display:flex;gap:8px;margin-top:4px">
       <button class="btn btn-d btn-sm" id="btnDelItem" style="display:none" onclick="delItem()">🗑 Supprimer</button>
       <button class="btn btn-p" style="flex:1" onclick="saveItem()">💾 Enregistrer</button>
-    </div>
-    <div id="itemNav" style="display:none;margin-top:10px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);padding-top:10px">
-      <button class="btn btn-g btn-sm" id="btnNavPrev" onclick="saveAndNavItem(-1)">◀ Préc.</button>
-      <span id="itemNavLabel" style="font-size:12px;color:var(--text2);text-align:center"></span>
-      <button class="btn btn-g btn-sm" id="btnNavNext" onclick="saveAndNavItem(1)">Suiv. ▶</button>
     </div>
   </div>
 </div>
@@ -504,14 +501,14 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
       <div id="wPph" class="photo-ph" onclick="document.getElementById('wPhotoF').click()"><span>📷</span></div>
       <img id="wPrev" class="photo-prev" onclick="document.getElementById('wPhotoF').click()">
     </div>
+    <div id="wineNav" style="display:none;margin-top:10px;flex-direction:row;align-items:center;justify-content:space-between;border-top:1px solid var(--border);padding-top:10px">
+      <button class="btn btn-g btn-sm" id="btnWNavPrev" onclick="saveAndNavWine(-1)">&#9664; Préc.</button>
+      <span id="wineNavLabel" style="font-size:12px;color:var(--text2);text-align:center"></span>
+      <button class="btn btn-g btn-sm" id="btnWNavNext" onclick="saveAndNavWine(1)">Suiv. &#9654;</button>
+    </div>
     <div style="display:flex;gap:8px;margin-top:4px">
       <button class="btn btn-d btn-sm" id="btnDelWine" style="display:none" onclick="delWine()">🗑 Supprimer</button>
       <button class="btn btn-w" style="flex:1" onclick="saveWine()">💾 Enregistrer</button>
-    </div>
-    <div id="wineNav" style="display:none;margin-top:10px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);padding-top:10px">
-      <button class="btn btn-g btn-sm" id="btnNavWinePrev" onclick="saveAndNavWine(-1)">◀ Préc.</button>
-      <span id="wineNavLabel" style="font-size:12px;color:var(--text2);text-align:center"></span>
-      <button class="btn btn-g btn-sm" id="btnNavWineNext" onclick="saveAndNavWine(1)">Suiv. ▶</button>
     </div>
   </div>
 </div>
@@ -621,17 +618,12 @@ function del(store, id) {
 
 function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
 
-// =====================================================================
-// MIGRATION — numéros permanents (seq)
-// =====================================================================
 async function migrateSeq() {
   var all_items = await all('items');
   var needsSeq = all_items.filter(function(i) { return !i.seq; });
   if (needsSeq.length === 0) return;
-  // Trier par date de création pour attribuer les seq dans l'ordre chronologique
   all_items.sort(function(a,b) { return (a.createdAt||0)-(b.createdAt||0); });
-  var maxSeq = all_items.reduce(function(m,i) { return i.seq && i.seq>m ? i.seq : m; }, 0);
-  var counter = maxSeq;
+  var counter = all_items.reduce(function(m,i) { return i.seq && i.seq>m ? i.seq : m; }, 0);
   for (var i=0; i<all_items.length; i++) {
     if (!all_items[i].seq) {
       counter++;
@@ -648,8 +640,8 @@ var items=[], wines=[], cats=[], locs=[], shopList=[];
 var curSort='name', curFilter='all', curWineFilter='all';
 var curPage=0, PAGE_SIZE=50;
 var editItemId=null, editWineId=null, wineRating=0;
-var editItemList=[], editItemIdx=-1; // liste courante pour navigation entre fiches
-var editWineList=[], editWineIdx=-1; // liste courante pour navigation entre vins
+var editItemList=[], editItemIdx=-1;
+var editWineList=[], editWineIdx=-1;
 var srResults=[], srIdx=-1; // résultats de recherche pour navigation
 var cfg = { confirm:true, alerts:true };
 
@@ -732,8 +724,7 @@ async function renderHome() {
       h += '<div class="al al-d" style="cursor:pointer" onclick="openDetail(\''+i.id+'\')">⚠️ <b>'+i.name+'</b> — expiré le '+fDate(i.expDate)+' <b>(il y a '+d+' jour'+(d>1?'s':'')+')</b></div>';
     });
     lowStock.forEach(function(i) {
-      var locLabel = (i.locs||[]).map(function(lid){ var l=locs.find(function(x){return x.id===lid;}); return l?(l.emoji||'📍')+' '+l.name:''; }).filter(Boolean).join(', ');
-      h += '<div class="al al-w" style="cursor:pointer" onclick="openDetail(\''+i.id+'\')">📦 <b>'+i.name+'</b> — stock faible ('+i.qty+' '+i.unit+')'+(locLabel?' · <span style="opacity:.75">'+locLabel+'</span>':'')+'</div>';
+      h += '<div class="al al-w" style="cursor:pointer" onclick="openDetail(\''+i.id+'\')">📦 <b>'+i.name+'</b> — stock faible ('+i.qty+' '+i.unit+')</div>';
     });
     ha.innerHTML = h;
   }
@@ -815,13 +806,11 @@ function setFilter(f, el) {
   renderInvList();
 }
 
-
 function sortInv(s) { curSort=s; curPage=0; renderInvList(); }
 function filterInv() { curPage=0; renderInvList(); }
 
 function renderInvList() {
   var raw = (document.getElementById('invSearch').value||'').trim();
-  var q = raw.toLowerCase();
   var list = items.slice();
 
   if (curFilter !== 'all') {
@@ -830,21 +819,23 @@ function renderInvList() {
     });
   }
 
-  // Tri appliqué avant de chercher par numéro
   list.sort(function(a,b) {
     if (curSort==='name')   return a.name.localeCompare(b.name,'fr');
     if (curSort==='qty')    return b.qty - a.qty;
     if (curSort==='date')   return (b.createdAt||0)-(a.createdAt||0);
-    if (curSort==='expiry') { if (!a.expDate) return 1; if (!b.expDate) return -1; return new Date(a.expDate)-new Date(b.expDate); }
+    if (curSort==='expiry') {
+      if (!a.expDate) return 1; if (!b.expDate) return -1;
+      return new Date(a.expDate)-new Date(b.expDate);
+    }
     return 0;
   });
 
-  // Si c'est un nombre pur → afficher uniquement la fiche avec ce seq permanent
   var numOnly = raw !== '' && /^\d+$/.test(raw);
   if (numOnly) {
     var n = parseInt(raw);
     list = list.filter(function(i) { return i.seq === n; });
-  } else if (q) {
+  } else if (raw) {
+    var q = raw.toLowerCase();
     list = list.filter(function(i) {
       if (i.name.toLowerCase().includes(q)) return true;
       if ((i.notes||'').toLowerCase().includes(q)) return true;
@@ -867,9 +858,8 @@ function renderInvList() {
   var pages = Math.ceil(list.length/PAGE_SIZE);
   if (curPage>=pages) curPage=0;
   var page = list.slice(curPage*PAGE_SIZE, (curPage+1)*PAGE_SIZE);
-  var startIdx = curPage*PAGE_SIZE;
 
-  var h = page.map(function(i, idx) { return itemRow(i, true, startIdx+idx+1, list.length); }).join('');
+  var h = page.map(function(i) { return itemRow(i,true); }).join('');
 
   if (pages>1) {
     h += '<div class="pag">'
@@ -890,7 +880,7 @@ function flipPage(d) {
 // =====================================================================
 // RENDU D'UNE LIGNE D'ARTICLE
 // =====================================================================
-function itemRow(item, showDel, rowNum, total) {
+function itemRow(item, showDel) {
   var today = new Date(); today.setHours(0,0,0,0);
   var isExp = item.expDate && new Date(item.expDate) < today;
   var isLow = item.alertOn && item.qty <= item.alertTh;
@@ -913,7 +903,7 @@ function itemRow(item, showDel, rowNum, total) {
     ? '<button class="del-btn" onclick="quickDel(\''+item.id+'\',event)" title="Supprimer">🗑</button>'
     : '';
 
-  var numHtml = item.seq ? '<div style="font-size:10px;color:var(--text2);text-align:center;line-height:1.2;min-width:18px">'+item.seq+'</div>' : '';
+  var numHtml = item.seq ? '<div style="font-size:10px;color:var(--text2);text-align:center;min-width:20px;font-weight:600">'+item.seq+'</div>' : '';
 
   return '<div class="irow">'
     +numHtml
@@ -1047,7 +1037,7 @@ async function openDetail(id, fromSearch) {
       +'</div>';
   }
 
-  var photoHtml = item.photo ? '<img src="'+item.photo+'" style="width:100%;max-height:280px;object-fit:contain;border-radius:12px;margin-bottom:12px;background:var(--bg2)">' : '';
+  var photoHtml = item.photo ? '<img src="'+item.photo+'" style="width:100%;height:200px;object-fit:cover;border-radius:12px;margin-bottom:12px">' : '';
   var locPhotoHtml = item.locPhoto ? '<div class="stitle" style="margin-top:0">📍 Lieu de rangement</div><img src="'+item.locPhoto+'" style="width:100%;border-radius:10px;margin-bottom:12px">' : '';
 
   var priceHtml = '';
@@ -1097,7 +1087,7 @@ async function openDetail(id, fromSearch) {
     + '<button class="btn btn-s" style="flex:1" onclick="adjQty(\''+item.id+'\',1)">+ Ajouter</button>'
     + '</div>'
     + '<div style="display:flex;gap:8px;margin-top:8px">'
-    + '<button class="btn btn-g btn-sm" style="flex:1" onclick="closeM(\'mDetail\');editItemList=getCurrentInvList();openEditItem(\''+item.id+'\')">✏️ Modifier</button>'
+    + '<button class="btn btn-g btn-sm" style="flex:1" onclick="closeM(\'mDetail\');openEditItem(\''+item.id+'\')">✏️ Modifier</button>'
     + '<button class="btn btn-d btn-sm" style="flex:1" onclick="delFromDetail(\''+item.id+'\')">🗑 Supprimer</button>'
     + '</div>';
 
@@ -1171,20 +1161,18 @@ async function openAddItem() {
   openM('mItem');
 }
 
-async function openEditItem(id, navList) {
+async function openEditItem(id, list) {
   var item = items.find(function(i){return i.id===id;});
   if (!item) { items=await all('items'); item=items.find(function(i){return i.id===id;}); }
   if (!item) return;
   editItemId = id;
-
-  // Navigation : capturer la liste courante si non fournie
-  if (navList) {
-    editItemList = navList;
-  } else if (editItemList.length === 0) {
+  if (list) {
+    editItemList = list;
+    editItemIdx = list.findIndex(function(i){return i.id===id;});
+  } else {
     editItemList = getCurrentInvList();
+    editItemIdx = editItemList.findIndex(function(i){return i.id===id;});
   }
-  editItemIdx = editItemList.findIndex(function(i){ return i.id===id; });
-
   document.getElementById('mItemTitle').textContent = 'Modifier';
   document.getElementById('btnDelItem').style.display = '';
   document.getElementById('dupWarn').style.display = 'none';
@@ -1208,27 +1196,22 @@ async function openEditItem(id, navList) {
   cats = await all('cats'); locs = await all('locs');
   buildChips('catChips', cats, item.cats||[], 'var(--accent)');
   buildChips('locChips', locs, item.locs||[], 'var(--accent3)');
-
-  // Mettre à jour la barre de navigation
   var nav = document.getElementById('itemNav');
-  var total = editItemList.length;
-  if (total > 1) {
+  if (editItemList.length > 1) {
     nav.style.display = 'flex';
     document.getElementById('btnNavPrev').disabled = editItemIdx <= 0;
-    document.getElementById('btnNavNext').disabled = editItemIdx >= total-1;
-    document.getElementById('itemNavLabel').textContent = (editItemIdx+1)+' / '+total;
+    document.getElementById('btnNavNext').disabled = editItemIdx >= editItemList.length-1;
+    document.getElementById('itemNavLabel').textContent = (editItemIdx+1)+' / '+editItemList.length;
   } else {
     nav.style.display = 'none';
   }
-
   openM('mItem');
 }
 
 function getCurrentInvList() {
   var raw = (document.getElementById('invSearch') ? document.getElementById('invSearch').value||'' : '').trim();
   var numOnly = raw !== '' && /^\d+$/.test(raw);
-  var q = numOnly ? '' : raw.toLowerCase(); // ignorer les recherches par numéro
-  // Pour la navigation, on retourne TOUJOURS la liste complète (triée/filtrée sans restriction par seq)
+  var q = numOnly ? '' : raw.toLowerCase();
   var list = items.slice();
   if (curFilter !== 'all') {
     list = list.filter(function(i){ return (i.cats&&i.cats.includes(curFilter))||(i.locs&&i.locs.includes(curFilter)); });
@@ -1247,14 +1230,14 @@ function getCurrentInvList() {
 }
 
 async function saveAndNavItem(dir) {
-  await saveItem(true); // true = ne pas fermer le modal
+  await saveItem(true);
   var newIdx = editItemIdx + dir;
   if (newIdx < 0 || newIdx >= editItemList.length) return;
-  // Recharger la liste après sauvegarde
   items = await all('items');
   editItemList = getCurrentInvList();
   var target = editItemList[newIdx];
   if (!target) return;
+  editItemIdx = newIdx;
   await openEditItem(target.id, editItemList);
 }
 
@@ -1264,7 +1247,7 @@ function buildChips(containerId, list, selected, color) {
   box.innerHTML = list.map(function(item) {
     var on = selected.includes(item.id);
     var c  = item.color || color;
-    return '<div class="chip '+(on?'on':'')+'" data-id="'+item.id+'" style="border-color:'+c+';color:'+(on?'#fff':c)+';background:'+(on?c:'transparent')+'" onclick="toggleChip(this,\''+c+'\')">'+(item.emoji||'')+' '+item.name+'</div>';
+    return '<div class="chip '+(on?'on':'')+'" style="border-color:'+c+';color:'+(on?'#fff':c)+';background:'+(on?c:'transparent')+'" data-id=\''+item.id+'\' onclick="toggleChip(this,\''+c+'\')">'+(item.emoji||'')+' '+item.name+'</div>';
   }).join('');
 }
 
@@ -1345,7 +1328,6 @@ async function delItem() {
   await del('items', editItemId);
   closeM('mItem');
   items = await all('items');
-  renderFilters();
   renderInvList();
   refreshBadge();
 }
@@ -1419,9 +1401,7 @@ function renderWineList() {
   if (list.length===0) { box.innerHTML='<div class="empty"><div class="ei">🍷</div><p>Aucun vin trouvé.</p></div>'; return; }
 
   var emoji = {rouge:'🍷',blanc:'🥂',rosé:'🌸',champagne:'✨',liqueur:'🥃','eaux-de-vie':'🍶',autre:'🍾'};
-  box.innerHTML = list.map(function(w, idx) {
-    var rowNum = idx+1;
-    var total = list.length;
+  box.innerHTML = list.map(function(w) {
     var stars = '★'.repeat(w.rating||0)+'☆'.repeat(5-(w.rating||0));
     var ds = w.acqDate ? Math.floor((Date.now()-new Date(w.acqDate))/864e5) : null;
     var pairs = (WINE_PAIRS[w.type]||{}).pairs||[];
@@ -1431,10 +1411,9 @@ function renderWineList() {
       return k ? '<span class="wpair" style="cursor:pointer" onclick="event.stopPropagation();scrollToFood(\''+k+'\')">'+p+'</span>'
                : '<span class="wpair">'+p+'</span>';
     }).join('');
-    return '<div class="wcard" onclick="editWineList=getCurrentWineList();openEditWine(\''+w.id+'\')">'
-      +(w.photo?'<img src="'+w.photo+'" style="width:100%;max-height:180px;object-fit:contain;border-radius:9px;margin-bottom:8px;background:var(--bg2)">':'')
+    return '<div class="wcard" onclick="openEditWine(\''+w.id+'\',list)">'
+      +(w.photo?'<img src="'+w.photo+'" style="width:100%;height:110px;object-fit:cover;border-radius:9px;margin-bottom:8px">':'')
       +'<div style="display:flex;gap:10px"><div style="font-size:30px">'+(emoji[w.type]||'🍷')+'</div><div style="flex:1">'
-      +'<div style="font-size:10px;color:var(--text2);margin-bottom:2px">'+rowNum+' / '+total+'</div>'
       +'<div class="wname">'+w.name+'</div>'
       +'<div class="wdet">'+[w.producer,w.region,w.vintage].filter(Boolean).join(' · ')+'</div>'
       +(w.grape?'<div class="wdet">'+w.grape+'</div>':'')
@@ -1562,11 +1541,8 @@ async function fillWineFromGM(idx) {
   var box = document.getElementById('gmResults');
   box.innerHTML = '<div style="padding:12px;color:var(--text2);text-align:center">⏳ Chargement des détails...</div>';
   // Remplissage rapide depuis le résultat de recherche
-  // display_name = "Chateau Margaux, Pavillon Blanc" → on sépare
   var colorMap = {red:'rouge', white:'blanc', rose:'rosé', rosé:'rosé', sparkling:'champagne'};
-  var displayParts = (w.display_name || '').split(', ');
-  var wineName = displayParts.length > 1 ? displayParts.slice(1).join(', ') : displayParts[0];
-  document.getElementById('wName').value = wineName;
+  document.getElementById('wName').value = w.display_name || '';
   document.getElementById('wProd').value = w.producer_display_name || w.producer_name || '';
   if (w.color && colorMap[w.color]) document.getElementById('wType').value = colorMap[w.color];
   // Appel détail pour grapes, région, notes
@@ -1598,19 +1574,18 @@ async function openAddWine() {
   openM('mWine');
 }
 
-async function openEditWine(id, navList) {
+async function openEditWine(id, list) {
   var w = wines.find(function(x){return x.id===id;});
   if (!w) return;
   gmResetSearch();
   editWineId=id; wineRating=w.rating||0;
-
-  if (navList) {
-    editWineList = navList;
-  } else if (editWineList.length === 0) {
-    editWineList = getCurrentWineList();
+  if (list) {
+    editWineList = list;
+    editWineIdx = list.findIndex(function(x){return x.id===id;});
+  } else {
+    editWineList = wines.slice();
+    editWineIdx = editWineList.findIndex(function(x){return x.id===id;});
   }
-  editWineIdx = editWineList.findIndex(function(x){ return x.id===id; });
-
   document.getElementById('mWineTitle').textContent='Modifier';
   document.getElementById('btnDelWine').style.display='';
   document.getElementById('wType').value   = w.type||'rouge';
@@ -1627,40 +1602,16 @@ async function openEditWine(id, navList) {
   updateWineStars(w.rating||0);
   if (w.photo) { document.getElementById('wPrev').src=w.photo; document.getElementById('wPrev').style.display=''; document.getElementById('wPph').style.display='none'; }
   else resetPhoto('wPhotoF','wPrev','wPph');
-
-  var nav = document.getElementById('wineNav');
-  var total = editWineList.length;
-  if (total > 1) {
-    nav.style.display = 'flex';
-    document.getElementById('btnNavWinePrev').disabled = editWineIdx <= 0;
-    document.getElementById('btnNavWineNext').disabled = editWineIdx >= total-1;
-    document.getElementById('wineNavLabel').textContent = (editWineIdx+1)+' / '+total;
+  var wnav = document.getElementById('wineNav');
+  if (editWineList.length > 1) {
+    wnav.style.display = 'flex';
+    document.getElementById('btnWNavPrev').disabled = editWineIdx <= 0;
+    document.getElementById('btnWNavNext').disabled = editWineIdx >= editWineList.length-1;
+    document.getElementById('wineNavLabel').textContent = (editWineIdx+1)+' / '+editWineList.length;
   } else {
-    nav.style.display = 'none';
+    wnav.style.display = 'none';
   }
-
   openM('mWine');
-}
-
-function getCurrentWineList() {
-  var q = (document.getElementById('wSearch') ? document.getElementById('wSearch').value||'' : '').toLowerCase();
-  var list = wines.slice();
-  if (curWineFilter!=='all') list = list.filter(function(w){ return w.type===curWineFilter; });
-  if (q) list = list.filter(function(w){
-    return w.name.toLowerCase().includes(q)||(w.producer||'').toLowerCase().includes(q)||(w.region||'').toLowerCase().includes(q);
-  });
-  return list;
-}
-
-async function saveAndNavWine(dir) {
-  await saveWine(true);
-  var newIdx = editWineIdx + dir;
-  if (newIdx < 0 || newIdx >= editWineList.length) return;
-  wines = await all('wines');
-  editWineList = getCurrentWineList();
-  var target = editWineList[newIdx];
-  if (!target) return;
-  await openEditWine(target.id, editWineList);
 }
 
 function setWineRating(n) { wineRating=n; updateWineStars(n); }
@@ -1688,6 +1639,18 @@ async function saveWine(keepOpen) {
   if (!keepOpen) closeM('mWine');
   wines = await all('wines');
   renderWineList();
+}
+
+async function saveAndNavWine(dir) {
+  await saveWine(true);
+  var newIdx = editWineIdx + dir;
+  if (newIdx < 0 || newIdx >= editWineList.length) return;
+  wines = await all('wines');
+  editWineList = wines.slice();
+  var target = editWineList[newIdx];
+  if (!target) return;
+  editWineIdx = newIdx;
+  await openEditWine(target.id, editWineList);
 }
 
 async function delWine() {
@@ -1907,37 +1870,8 @@ async function expCSV() {
 }
 
 async function expJSON() {
-  // Photos incluses (comprimées à 400px — fichier reste raisonnable)
-  var data = {
-    items: await all('items'),
-    wines: await all('wines'),
-    cats:  await all('cats'),
-    locs:  await all('locs'),
-    exportedAt: new Date().toISOString()
-  };
-  dlFile('inventaire.json', JSON.stringify(data, null, 2), 'application/json');
-}
-
-async function purgePhotos() {
-  if (!confirm('Supprimer toutes les photos stockées dans l\'app ?\nVos données (noms, quantités, vins…) sont conservées.\nLe fichier JSON redeviendra léger.')) return;
-  var allItems = await all('items');
-  var allWines = await all('wines');
-  for (var i = 0; i < allItems.length; i++) {
-    if (allItems[i].photo || allItems[i].locPhoto) {
-      var it = Object.assign({}, allItems[i]);
-      delete it.photo; delete it.locPhoto;
-      await put('items', it);
-    }
-  }
-  for (var j = 0; j < allWines.length; j++) {
-    if (allWines[j].photo) {
-      var wn = Object.assign({}, allWines[j]);
-      delete wn.photo;
-      await put('wines', wn);
-    }
-  }
-  alert('Photos supprimées. Vous pouvez maintenant exporter un JSON léger.');
-  renderHome();
+  var data={items:await all('items'),wines:await all('wines'),cats:await all('cats'),locs:await all('locs'),exportedAt:new Date().toISOString()};
+  dlFile('inventaire.json',JSON.stringify(data,null,2),'application/json');
 }
 
 async function doImport() {
@@ -2186,7 +2120,6 @@ async function doSearch() {
       var locTags = (i.locs||[]).map(function(lid){var l=allL.find(function(x){return x.id===lid;});return l?'<span class="tag" style="font-size:10px;background:var(--accent3)20;color:var(--accent3)">📍&nbsp;'+hlText(l.name,q)+'</span>':'';}).join('');
       var tagsHtml = (catTags||locTags) ? '<div style="margin-top:3px">'+catTags+locTags+'</div>' : '';
       h+='<div class="irow">'
-        +'<div style="font-size:10px;color:var(--text2);text-align:center;min-width:18px">'+(idx+1)+'<br><span style="opacity:.5">/'+matchItems.length+'</span></div>'
         +'<div class="iico" onclick="openSR('+idx+')">'+(i.emoji||itemEmoji(i))+'</div>'
         +'<div class="iinfo" onclick="openSR('+idx+')">'
         +'<div class="iname">'+hlText(i.name,q)+'</div>'
@@ -2203,7 +2136,6 @@ async function doSearch() {
     h+='<div class="stitle">'+matchWines.length+' vin(s)</div>';
     matchWines.forEach(function(w,idx) {
       h+='<div class="wcard" onclick="openSR('+(matchItems.length+idx)+')">'
-        +'<div style="font-size:10px;color:var(--text2);margin-bottom:2px">'+(idx+1)+' / '+matchWines.length+'</div>'
         +'<div class="wname">'+hlText(w.name,q)+'</div>'
         +'<div class="wdet">'+[w.vintage,w.producer,w.region].filter(Boolean).join(' · ')+'</div>'
         +'</div>';
@@ -2321,29 +2253,13 @@ function loadCfg() {
 // PHOTOS
 // =====================================================================
 function loadPhoto(inputId, prevId, phId) {
-  var file = document.getElementById(inputId).files[0];
+  var file=document.getElementById(inputId).files[0];
   if (!file) return;
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    var image = new Image();
-    image.onload = function() {
-      // Compression : max 400px, qualité 60%
-      var MAX = 400;
-      var w = image.width, h = image.height;
-      if (w > MAX || h > MAX) {
-        if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
-        else       { w = Math.round(w * MAX / h); h = MAX; }
-      }
-      var canvas = document.createElement('canvas');
-      canvas.width = w; canvas.height = h;
-      canvas.getContext('2d').drawImage(image, 0, 0, w, h);
-      var compressed = canvas.toDataURL('image/jpeg', 0.60);
-      var prev = document.getElementById(prevId);
-      prev.src = compressed;
-      prev.style.display = '';
-      document.getElementById(phId).style.display = 'none';
-    };
-    image.src = e.target.result;
+  var reader=new FileReader();
+  reader.onload=function(e) {
+    var img=document.getElementById(prevId);
+    img.src=e.target.result; img.style.display='';
+    document.getElementById(phId).style.display='none';
   };
   reader.readAsDataURL(file);
 }
