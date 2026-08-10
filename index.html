@@ -93,9 +93,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .chip.on{color:#fff!important}
 
 /* MODAL */
-.ov{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:200;display:none;align-items:flex-end}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:200;display:none;flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .ov.open{display:flex}
-.modal{background:var(--bg2);border-radius:20px 20px 0 0;width:100%;max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px 16px;padding-bottom:calc(20px + var(--safe))}
+.modal{background:var(--bg2);border-radius:20px 20px 0 0;width:100%;padding:20px 16px;padding-bottom:calc(20px + var(--safe))}
 .mhdr{display:flex;align-items:center;margin-bottom:16px}
 .mhdr h2{flex:1;font-size:18px;font-weight:700}
 .mclose{background:var(--bg3);border:none;border-radius:8px;padding:6px 12px;color:var(--text2);cursor:pointer;font-size:14px}
@@ -340,7 +340,7 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
         <div class="sw"><label>Alertes activées</label><div class="tog on" id="tAlerts" onclick="togSet('alerts')"></div></div>
       </div>
       <div class="stitle">ℹ️ Application</div>
-      <div class="card"><p style="font-size:13px;color:var(--text2)">Mon Inventaire v3.1 — 100% hors ligne, données stockées sur votre appareil. Capacité : 50 000+ articles.</p></div>
+      <div class="card"><p style="font-size:13px;color:var(--text2)">Mon Inventaire v3.2 — 100% hors ligne, données stockées sur votre appareil. Capacité : 50 000+ articles.</p></div>
     </div>
 
   </div><!-- /content -->
@@ -371,6 +371,7 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
 
 <!-- MODAL: ARTICLE -->
 <div class="ov" id="mItem">
+  <div style="flex:1;min-height:50px"></div>
   <div class="modal">
     <div class="mhdr">
       <h2 id="mItemTitle">Ajouter un article</h2>
@@ -441,6 +442,7 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
 
 <!-- MODAL: DETAIL ARTICLE -->
 <div class="ov" id="mDetail">
+  <div style="flex:1;min-height:50px"></div>
   <div class="modal">
     <div class="mhdr">
       <h2 id="detTitle">Détail</h2>
@@ -452,6 +454,7 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
 
 <!-- MODAL: VIN -->
 <div class="ov" id="mWine">
+  <div style="flex:1;min-height:50px"></div>
   <div class="modal">
     <div class="mhdr">
       <h2 id="mWineTitle">Ajouter un vin</h2>
@@ -518,6 +521,7 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
 
 <!-- MODAL: ALERTES -->
 <div class="ov" id="mAlerts">
+  <div style="flex:1;min-height:50px"></div>
   <div class="modal">
     <div class="mhdr"><h2>🔴 Alertes</h2><button class="mclose" onclick="closeM('mAlerts')">Fermer</button></div>
     <div id="alertContent"></div>
@@ -526,6 +530,7 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
 
 <!-- MODAL: RECHERCHE GLOBALE -->
 <div class="ov" id="mSearch">
+  <div style="flex:1;min-height:50px"></div>
   <div class="modal" style="max-height:95vh">
     <div class="mhdr"><h2>🔍 Recherche</h2><button class="mclose" onclick="closeM('mSearch')">Fermer</button></div>
     <div class="sbar" style="margin-bottom:12px">
@@ -537,6 +542,7 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
 
 <!-- MODAL: CATÉGORIE -->
 <div class="ov" id="mCat">
+  <div style="flex:1;min-height:50px"></div>
   <div class="modal">
     <div class="mhdr"><h2>Nouvelle catégorie</h2><button class="mclose" onclick="closeM('mCat')">Fermer</button></div>
     <div class="fg"><label>Nom</label><input type="text" id="catName" placeholder="Ex: Congélateur" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false" data-dashlane-ignore="true" data-lpignore="true" data-1p-ignore="true"></div>
@@ -555,6 +561,7 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
 
 <!-- MODAL: EMPLACEMENT -->
 <div class="ov" id="mLoc">
+  <div style="flex:1;min-height:50px"></div>
   <div class="modal">
     <div class="mhdr"><h2>Nouvel emplacement</h2><button class="mclose" onclick="closeM('mLoc')">Fermer</button></div>
     <div class="fg"><label>Nom</label><input type="text" id="locName" placeholder="Ex: Placard cuisine" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false" data-dashlane-ignore="true" data-lpignore="true" data-1p-ignore="true"></div>
@@ -699,7 +706,7 @@ function closeM(id) {
 
 document.addEventListener('DOMContentLoaded', function() {
   document.querySelectorAll('.ov').forEach(function(ov) {
-    ov.addEventListener('click', function(e) { if (e.target===ov) closeM(ov.id); });
+    ov.addEventListener('click', function(e) { if (!e.target.closest('.modal')) closeM(ov.id); });
   });
 });
 
