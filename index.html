@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr"><!-- v2.1 -->
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -93,7 +93,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .chip.on{color:#fff!important}
 
 /* MODAL */
-.ov{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:200;display:none;align-items:flex-end}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:200;display:none;align-items:flex-end;overflow:auto;-webkit-overflow-scrolling:touch}
 .ov.open{display:flex}
 .modal{background:var(--bg2);border-radius:20px 20px 0 0;width:100%;max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px 16px;padding-bottom:calc(20px + var(--safe))}
 .mhdr{display:flex;align-items:center;margin-bottom:16px}
@@ -457,10 +457,10 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
       <h2 id="mWineTitle">Ajouter un vin</h2>
       <button class="mclose" onclick="closeM('mWine')">Fermer</button>
     </div>
-    <div class="fg" style="margin-bottom:10px">
+    <div id="gmBlock" class="fg" style="margin-bottom:10px">
       <label>🔍 Recherche Grapeminds (optionnel)</label>
       <div style="display:flex;gap:8px">
-        <input type="text" id="gmSearch" placeholder="Ex: Margaux, Barolo, Sancerre..." autocomplete="off" autocorrect="off" spellcheck="false" style="flex:1" onkeydown="if(event.key==='Enter'){event.preventDefault();searchGrapeminds();}">
+        <input type="text" id="gmSearch" placeholder="Ex: Margaux, Barolo, Sancerre..." autocomplete="off" autocorrect="off" spellcheck="false" style="flex:1" tabindex="-1" onkeydown="if(event.key==='Enter'){event.preventDefault();searchGrapeminds();}">
         <button class="btn btn-w btn-sm" onclick="searchGrapeminds()">Chercher</button>
       </div>
       <div id="gmResults" style="margin-top:8px;max-height:200px;overflow-y:auto"></div>
@@ -685,8 +685,17 @@ function goTo(v, btn) {
 // =====================================================================
 // MODALS
 // =====================================================================
-function openM(id)  { document.getElementById(id).classList.add('open'); }
-function closeM(id) { document.getElementById(id).classList.remove('open'); }
+function openM(id) {
+  document.getElementById(id).classList.add('open');
+  // Fix iOS: permet au clavier d'apparaitre dans les modals
+  document.body.style.overflow = 'hidden';
+}
+function closeM(id) {
+  document.getElementById(id).classList.remove('open');
+  // Vérifier si d'autres modals sont encore ouverts
+  var anyOpen = document.querySelectorAll('.ov.open').length > 0;
+  if (!anyOpen) document.body.style.overflow = '';
+}
 
 document.addEventListener('DOMContentLoaded', function() {
   document.querySelectorAll('.ov').forEach(function(ov) {
@@ -1587,6 +1596,9 @@ async function openAddWine() {
   gmResetSearch();
   document.getElementById('mWineTitle').textContent='Ajouter un vin';
   document.getElementById('btnDelWine').style.display='none';
+  // Afficher Grapeminds en mode ajout
+  var gmBlock = document.getElementById('gmBlock');
+  if (gmBlock) gmBlock.style.display='';
   ['wName','wProd','wReg','wGrape','wTasting','wLoc'].forEach(function(id){document.getElementById(id).value='';});
   document.getElementById('wType').value='rouge';
   document.getElementById('wQty').value=1;
@@ -1613,6 +1625,9 @@ async function openEditWine(id, navList) {
 
   document.getElementById('mWineTitle').textContent='Modifier';
   document.getElementById('btnDelWine').style.display='';
+  // Masquer Grapeminds en mode édition
+  var gmBlock = document.getElementById('gmBlock');
+  if (gmBlock) gmBlock.style.display='none';
   document.getElementById('wType').value   = w.type||'rouge';
   document.getElementById('wName').value   = w.name||'';
   document.getElementById('wProd').value   = w.producer||'';
