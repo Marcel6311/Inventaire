@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr"><!-- v2.1 -->
+<html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -47,7 +47,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 
 /* SEARCH BAR */
 .sbar{display:flex;gap:8px;margin-bottom:12px}
-.sbar input{flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:16px;outline:none}
+.sbar input{flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:15px;outline:none}
 .sbar input:focus{border-color:var(--accent)}
 .sbar button{background:var(--accent);border:none;border-radius:10px;padding:10px 14px;color:#fff;cursor:pointer;font-size:15px;font-weight:600}
 
@@ -81,7 +81,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 /* FORMS */
 .fg{margin-bottom:13px}
 .fg label{display:block;font-size:13px;color:var(--text2);margin-bottom:4px;font-weight:500}
-.fg input,.fg select,.fg textarea{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:11px 13px;color:var(--text);font-size:16px;outline:none;appearance:none;touch-action:manipulation;-webkit-user-select:text;user-select:text}
+.fg input,.fg select,.fg textarea{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:11px 13px;color:var(--text);font-size:16px;outline:none;appearance:none;touch-action:manipulation}
 .fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--accent)}
 .fg textarea{min-height:76px;resize:vertical}
 .fg select option{background:var(--bg2)}
@@ -340,7 +340,7 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
         <div class="sw"><label>Alertes activées</label><div class="tog on" id="tAlerts" onclick="togSet('alerts')"></div></div>
       </div>
       <div class="stitle">ℹ️ Application</div>
-      <div class="card"><p style="font-size:13px;color:var(--text2)">Mon Inventaire v3.2 — 100% hors ligne, données stockées sur votre appareil. Capacité : 50 000+ articles.</p></div>
+      <div class="card"><p style="font-size:13px;color:var(--text2)">Mon Inventaire v4.0 — 100% hors ligne, données stockées sur votre appareil. Capacité : 50 000+ articles.</p></div>
     </div>
 
   </div><!-- /content -->
@@ -432,7 +432,7 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
       <button class="btn btn-d btn-sm" id="btnDelItem" style="display:none" onclick="delItem()">🗑 Supprimer</button>
       <button class="btn btn-p" style="flex:1" onclick="saveItem()">💾 Enregistrer</button>
     </div>
-    <div id="itemNav" style="display:none;margin-top:10px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);padding-top:10px">
+    <div id="itemNav" style="display:none;margin-top:10px;align-items:center;justify-content:space-between;border-top:1px solid var(--border);padding-top:10px">
       <button class="btn btn-g btn-sm" id="btnNavPrev" onclick="saveAndNavItem(-1)">◀ Préc.</button>
       <span id="itemNavLabel" style="font-size:12px;color:var(--text2);text-align:center"></span>
       <button class="btn btn-g btn-sm" id="btnNavNext" onclick="saveAndNavItem(1)">Suiv. ▶</button>
@@ -463,7 +463,7 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
     <div id="gmBlock" class="fg" style="margin-bottom:10px">
       <label>🔍 Recherche Grapeminds (optionnel)</label>
       <div style="display:flex;gap:8px">
-        <input type="text" id="gmSearch" placeholder="Ex: Margaux, Barolo, Sancerre..." autocomplete="off" autocorrect="off" spellcheck="false" style="flex:1" tabindex="-1" onkeydown="if(event.key==='Enter'){event.preventDefault();searchGrapeminds();}">
+        <input type="text" id="gmSearch" placeholder="Ex: Margaux, Barolo, Sancerre..." autocomplete="off" autocorrect="off" spellcheck="false" style="flex:1" onkeydown="if(event.key==='Enter'){event.preventDefault();searchGrapeminds();}">
         <button class="btn btn-w btn-sm" onclick="searchGrapeminds()">Chercher</button>
       </div>
       <div id="gmResults" style="margin-top:8px;max-height:200px;overflow-y:auto"></div>
@@ -511,7 +511,7 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
       <button class="btn btn-d btn-sm" id="btnDelWine" style="display:none" onclick="delWine()">🗑 Supprimer</button>
       <button class="btn btn-w" style="flex:1" onclick="saveWine()">💾 Enregistrer</button>
     </div>
-    <div id="wineNav" style="display:none;margin-top:10px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);padding-top:10px">
+    <div id="wineNav" style="display:none;margin-top:10px;align-items:center;justify-content:space-between;border-top:1px solid var(--border);padding-top:10px">
       <button class="btn btn-g btn-sm" id="btnNavWinePrev" onclick="saveAndNavWine(-1)">◀ Préc.</button>
       <span id="wineNavLabel" style="font-size:12px;color:var(--text2);text-align:center"></span>
       <button class="btn btn-g btn-sm" id="btnNavWineNext" onclick="saveAndNavWine(1)">Suiv. ▶</button>
@@ -692,17 +692,8 @@ function goTo(v, btn) {
 // =====================================================================
 // MODALS
 // =====================================================================
-function openM(id) {
-  document.getElementById(id).classList.add('open');
-  // Fix iOS: permet au clavier d'apparaitre dans les modals
-  document.body.style.overflow = 'hidden';
-}
-function closeM(id) {
-  document.getElementById(id).classList.remove('open');
-  // Vérifier si d'autres modals sont encore ouverts
-  var anyOpen = document.querySelectorAll('.ov.open').length > 0;
-  if (!anyOpen) document.body.style.overflow = '';
-}
+function openM(id){document.getElementById(id).classList.add('open');document.body.style.overflow='hidden';}
+function closeM(id){document.getElementById(id).classList.remove('open');if(!document.querySelectorAll('.ov.open').length)document.body.style.overflow='';}
 
 document.addEventListener('DOMContentLoaded', function() {
   document.querySelectorAll('.ov').forEach(function(ov) {
@@ -1603,9 +1594,7 @@ async function openAddWine() {
   gmResetSearch();
   document.getElementById('mWineTitle').textContent='Ajouter un vin';
   document.getElementById('btnDelWine').style.display='none';
-  // Afficher Grapeminds en mode ajout
-  var gmBlock = document.getElementById('gmBlock');
-  if (gmBlock) gmBlock.style.display='';
+  var _gb=document.getElementById('gmBlock');if(_gb)_gb.style.display='';
   ['wName','wProd','wReg','wGrape','wTasting','wLoc'].forEach(function(id){document.getElementById(id).value='';});
   document.getElementById('wType').value='rouge';
   document.getElementById('wQty').value=1;
@@ -1632,9 +1621,7 @@ async function openEditWine(id, navList) {
 
   document.getElementById('mWineTitle').textContent='Modifier';
   document.getElementById('btnDelWine').style.display='';
-  // Masquer Grapeminds en mode édition
-  var gmBlock = document.getElementById('gmBlock');
-  if (gmBlock) gmBlock.style.display='none';
+  var _gb=document.getElementById('gmBlock');if(_gb)_gb.style.display='none';
   document.getElementById('wType').value   = w.type||'rouge';
   document.getElementById('wName').value   = w.name||'';
   document.getElementById('wProd').value   = w.producer||'';
@@ -2084,30 +2071,27 @@ function dlFile(name,content,type) {
 async function doHomeSearch() {
   var raw = (document.getElementById('homeSearch').value||'').trim();
   var res = document.getElementById('homeSearchResults');
-  var hcont = document.getElementById('homeContent');
+  var content = document.getElementById('homeContent');
   if (!raw) {
     res.style.display = 'none';
-    hcont.style.display = '';
+    content.style.display = '';
     return;
   }
-  hcont.style.display = 'none';
+  content.style.display = 'none';
   res.style.display = '';
 
   var allI = await all('items');
   var allC = await all('cats');
   var allL = await all('locs');
-  var allW = await all('wines');
   cats = allC; locs = allL;
 
   var numOnly = /^\d+$/.test(raw);
-  var q = numOnly ? '' : raw.toLowerCase();
-  var matched = [];
-  var matchedWines = [];
-
+  var matched;
   if (numOnly) {
     var n = parseInt(raw);
     matched = allI.filter(function(i) { return i.seq === n; });
   } else {
+    var q = raw.toLowerCase();
     matched = allI.filter(function(i) {
       if (i.name.toLowerCase().includes(q)) return true;
       if ((i.notes||'').toLowerCase().includes(q)) return true;
@@ -2122,57 +2106,28 @@ async function doHomeSearch() {
       });
       return locMatch;
     });
-    matchedWines = allW.filter(function(w) {
-      return w.name.toLowerCase().includes(q)
-        || (w.producer||'').toLowerCase().includes(q)
-        || (w.region||'').toLowerCase().includes(q)
-        || (w.grape||'').toLowerCase().includes(q)
-        || String(w.vintage||'').includes(q);
-    });
   }
 
-  if (matched.length===0 && matchedWines.length===0) {
-    res.innerHTML = '<div class="empty"><div class="ei">🔍</div><p>Aucun résultat pour "'+raw+'"</p></div>';
+  if (matched.length===0) {
+    res.innerHTML = '<div class="empty"><div class="ei">🔍</div><p>Aucun résultat pour "'+q+'"</p></div>';
     return;
   }
 
-  var h = '';
-  if (matched.length > 0) {
-    h += '<div class="stitle">'+matched.length+' article(s)</div><div class="card">';
-    matched.sort(function(a,b){return a.name.localeCompare(b.name,'fr');});
-    matched.forEach(function(i) {
-      var catTags = (i.cats||[]).map(function(cid){var c=allC.find(function(x){return x.id===cid;});return c?'<span class="tag" style="font-size:10px">'+(c.emoji||'')+' '+c.name+'</span>':'';}).join('');
-      var locTags = (i.locs||[]).map(function(lid){var l=allL.find(function(x){return x.id===lid;});return l?'<span class="tag" style="font-size:10px;background:var(--accent3)20;color:var(--accent3)">📍 '+l.name+'</span>':'';}).join('');
-      var seqBadge = i.seq ? '<div style="font-size:10px;color:var(--text2);min-width:20px;text-align:center;font-weight:600">'+i.seq+'</div>' : '';
-      h += '<div class="irow" onclick="openDetail(\''+i.id+'\',false)">'
-        +seqBadge
-        +'<div class="iico">'+(i.emoji||itemEmoji(i))+'</div>'
-        +'<div class="iinfo">'
-        +'<div class="iname">'+i.name+'</div>'
-        +'<div class="imeta">'+i.qty+' '+i.unit+'</div>'
-        +(catTags||locTags?'<div style="margin-top:3px">'+catTags+locTags+'</div>':'')
-        +'</div>'
-        +'</div>';
-    });
-    h += '</div>';
-  }
-  if (matchedWines.length > 0) {
-    var wEmoji = {rouge:'🍷',blanc:'🥂',rosé:'🌸',champagne:'✨',liqueur:'🥃','eaux-de-vie':'🍶',autre:'🍾'};
-    h += '<div class="stitle">'+matchedWines.length+' vin(s)</div><div class="card">';
-    matchedWines.sort(function(a,b){return a.name.localeCompare(b.name,'fr');});
-    matchedWines.forEach(function(w) {
-      var stars = '★'.repeat(w.rating||0)+'☆'.repeat(5-(w.rating||0));
-      h += '<div class="irow" onclick="openEditWine(\''+w.id+'\')">'
-        +'<div class="iico">'+(wEmoji[w.type]||'🍾')+'</div>'
-        +'<div class="iinfo">'
-        +'<div class="iname">'+w.name+'</div>'
-        +'<div class="imeta">'+(w.producer||'')+(w.vintage?' · '+w.vintage:'')+(w.qty?' · '+w.qty+' btl':'')+'</div>'
-        +'<div style="font-size:12px;color:#f59e0b">'+stars+'</div>'
-        +'</div>'
-        +'</div>';
-    });
-    h += '</div>';
-  }
+  var h = '<div class="stitle">'+matched.length+' résultat(s)</div><div class="card">';
+  matched.sort(function(a,b){return a.name.localeCompare(b.name,'fr');});
+  matched.forEach(function(i) {
+    var catTags = (i.cats||[]).map(function(cid){var c=allC.find(function(x){return x.id===cid;});return c?'<span class="tag" style="font-size:10px">'+(c.emoji||'')+' '+c.name+'</span>':'';}).join('');
+    var locTags = (i.locs||[]).map(function(lid){var l=allL.find(function(x){return x.id===lid;});return l?'<span class="tag" style="font-size:10px;background:var(--accent3)20;color:var(--accent3)">📍 '+l.name+'</span>':'';}).join('');
+    h += '<div class="irow" onclick="openDetail(\''+i.id+'\',false)">'
+      +'<div class="iico">'+(i.emoji||itemEmoji(i))+'</div>'
+      +'<div class="iinfo">'
+      +'<div class="iname">'+i.name+'</div>'
+      +'<div class="imeta">'+i.qty+' '+i.unit+'</div>'
+      +(catTags||locTags?'<div style="margin-top:3px">'+catTags+locTags+'</div>':'')
+      +'</div>'
+      +'</div>';
+  });
+  h += '</div>';
   res.innerHTML = h;
 }
 
@@ -2444,48 +2399,45 @@ function pickColor(palId, hiddenId, color) {
 // DONNÉES PAR DÉFAUT (premier lancement)
 // =====================================================================
 async function seedDefaults() {
-  var existingCats = await all('cats');
-  var existingLocs = await all('locs');
-  var existingNames = existingCats.map(function(c){return c.name.toLowerCase();});
-  var existingLocNames = existingLocs.map(function(l){return l.name.toLowerCase();});
-
+  var existingCats=await all('cats');
+  var existingNames=existingCats.map(function(c){return c.name.toLowerCase();});
   var defCats=[
-    {name:'Réfrigérateur',emoji:'🧊',color:'#3b82f6'},
-    {name:'Congélateur',emoji:'❄️',color:'#60a5fa'},
-    {name:'Épicerie',emoji:'🛒',color:'#f97316'},
-    {name:'Fruits & Légumes',emoji:'🥦',color:'#22c55e'},
-    {name:'Viandes',emoji:'🥩',color:'#ef4444'},
+    {name:'Viande & Charcuterie',emoji:'🥩',color:'#ef4444'},
     {name:'Poissons & Fruits de mer',emoji:'🐟',color:'#0ea5e9'},
-    {name:'Produits laitiers',emoji:'🥛',color:'#eab308'},
+    {name:'Volaille',emoji:'🍗',color:'#f59e0b'},
+    {name:'Légumes & Fruits',emoji:'🥦',color:'#22c55e'},
+    {name:'Produits laitiers',emoji:'🧀',color:'#fbbf24'},
     {name:'Boulangerie & Viennoiserie',emoji:'🥖',color:'#d97706'},
-    {name:'Boissons',emoji:'🥤',color:'#a855f7'},
-    {name:'Surgelés',emoji:'🧊',color:'#38bdf8'},
+    {name:'Surgelés',emoji:'❄️',color:'#38bdf8'},
     {name:'Conserves & Épicerie sèche',emoji:'🥫',color:'#84cc16'},
-    {name:'Hygiène',emoji:'🧴',color:'#14b8a6'},
+    {name:'Boissons',emoji:'🥤',color:'#8b5cf6'},
+    {name:'Épices & Condiments',emoji:'🧂',color:'#f97316'},
+    {name:'Œufs',emoji:'🥚',color:'#eab308'},
+    {name:'Hygiène & Entretien',emoji:'🧴',color:'#6b7280'},
+    {name:'Réfrigérateur',emoji:'🧊',color:'#3b82f6'},
+    {name:'Congélateur',emoji:'🧊',color:'#60a5fa'},
+    {name:'Épicerie',emoji:'🛒',color:'#f97316'},
     {name:'Ménage',emoji:'🧹',color:'#6366f1'},
-    {name:'Divers',emoji:'📦',color:'#6b7280'}
+    {name:'Autre',emoji:'📦',color:'#9ca3af'}
   ];
-  var defLocs=[
-    {name:'Réfrigérateur',emoji:'🧊'},
-    {name:'Congélateur',emoji:'❄️'},
-    {name:'Placard cuisine',emoji:'🚪'},
-    {name:'Garde-manger',emoji:'🏠'},
-    {name:'Cave',emoji:'🍷'}
-  ];
-
-  // Ajouter seulement les catégories qui n'existent pas encore (par nom)
-  for (var i=0;i<defCats.length;i++) {
-    if (!existingNames.includes(defCats[i].name.toLowerCase())) {
-      await put('cats', {id:uid(), name:defCats[i].name, emoji:defCats[i].emoji, color:defCats[i].color});
+  for(var _di=0;_di<defCats.length;_di++){
+    if(!existingNames.includes(defCats[_di].name.toLowerCase())){
+      await put('cats',{id:uid(),name:defCats[_di].name,emoji:defCats[_di].emoji,color:defCats[_di].color});
     }
   }
-  // Ajouter seulement les emplacements manquants
-  for (var i=0;i<defLocs.length;i++) {
-    if (!existingLocNames.includes(defLocs[i].name.toLowerCase())) {
-      await put('locs', {id:uid(), name:defLocs[i].name, emoji:defLocs[i].emoji});
-    }
+  var defLocs=[
+    {id:uid(),name:'Réfrigérateur',emoji:'🧊'},
+    {id:uid(),name:'Congélateur',emoji:'❄️'},
+    {id:uid(),name:'Placard cuisine',emoji:'🚪'},
+    {id:uid(),name:'Garde-manger',emoji:'🏠'},
+    {id:uid(),name:'Cave',emoji:'🍷'}
+  ];
+  var existingLocs=await all('locs');
+  if(!existingLocs.length){
+    for(var _li=0;_li<defLocs.length;_li++) await put('locs',defLocs[_li]);
   }
 }
+
 
 // =====================================================================
 // INITIALISATION
