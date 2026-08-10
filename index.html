@@ -131,6 +131,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .wname{font-size:16px;font-weight:700;color:var(--wine2)}
 .wdet{font-size:13px;color:#f87171;margin-top:3px}
 .wpairs{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.wpchip{border-radius:20px;padding:5px 12px;font-size:13px;border:1.5px solid var(--border);cursor:pointer;background:var(--bg3);color:var(--text2);display:inline-block;touch-action:manipulation}
+.wpchip.on{background:var(--accent);color:#fff;border-color:var(--accent)}
 .wpair{background:rgba(153,27,27,.35);border:1px solid rgba(153,27,27,.6);border-radius:20px;padding:3px 9px;font-size:12px;color:var(--wine2)}
 .fchip{background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:5px 11px;font-size:13px;color:var(--text);cursor:pointer;transition:background .15s}
 .fchip:active{opacity:.7}
@@ -506,6 +508,23 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
       <input type="file" id="wPhotoF" accept="image/*" capture="environment" style="display:none" onchange="loadPhoto('wPhotoF','wPrev','wPph')">
       <div id="wPph" class="photo-ph" onclick="document.getElementById('wPhotoF').click()"><span>📷</span></div>
       <img id="wPrev" class="photo-prev" onclick="document.getElementById('wPhotoF').click()">
+    </div>
+    <div class="fg"><label>🍽️ Accords mets-vins</label>
+      <div id="wPairChips" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px">
+        <span class="wpchip" data-pair="Viande rouge" onclick="togglePairChip(this)">🥩 Viande rouge</span>
+        <span class="wpchip" data-pair="Agneau" onclick="togglePairChip(this)">🐑 Agneau</span>
+        <span class="wpchip" data-pair="Gibier" onclick="togglePairChip(this)">🦌 Gibier</span>
+        <span class="wpchip" data-pair="Volaille" onclick="togglePairChip(this)">🍗 Volaille</span>
+        <span class="wpchip" data-pair="Poisson" onclick="togglePairChip(this)">🐟 Poisson</span>
+        <span class="wpchip" data-pair="Foie gras" onclick="togglePairChip(this)">🫙 Foie gras</span>
+        <span class="wpchip" data-pair="Fromage affiné" onclick="togglePairChip(this)">🧀 Fromage affiné</span>
+        <span class="wpchip" data-pair="Charcuterie" onclick="togglePairChip(this)">🥓 Charcuterie</span>
+        <span class="wpchip" data-pair="Risotto" onclick="togglePairChip(this)">🍝 Risotto</span>
+        <span class="wpchip" data-pair="Sushi" onclick="togglePairChip(this)">🍣 Sushi</span>
+        <span class="wpchip" data-pair="Chocolat" onclick="togglePairChip(this)">🍫 Chocolat</span>
+        <span class="wpchip" data-pair="Dessert fruité" onclick="togglePairChip(this)">🍓 Dessert fruité</span>
+        <span class="wpchip" data-pair="Apéritif" onclick="togglePairChip(this)">🥂 Apéritif</span>
+      </div>
     </div>
     <div style="display:flex;gap:8px;margin-top:4px">
       <button class="btn btn-d btn-sm" id="btnDelWine" style="display:none" onclick="delWine()">🗑 Supprimer</button>
@@ -1574,6 +1593,7 @@ async function fillWineFromGM(idx) {
   var displayParts = (w.display_name || '').split(', ');
   var wineName = displayParts.length > 1 ? displayParts.slice(1).join(', ') : displayParts[0];
   document.getElementById('wName').value = wineName;
+  if (w.pairings && w.pairings.length) setPairChips(w.pairings);
   document.getElementById('wProd').value = w.producer_display_name || w.producer_name || '';
   if (w.color && colorMap[w.color]) document.getElementById('wType').value = colorMap[w.color];
   // Appel détail pour grapes, région, notes
@@ -1597,6 +1617,7 @@ async function openAddWine() {
   var _gb=document.getElementById('gmBlock');if(_gb)_gb.style.display='';
   ['wName','wProd','wReg','wGrape','wTasting','wLoc'].forEach(function(id){document.getElementById(id).value='';});
   document.getElementById('wType').value='rouge';
+  setPairChips([]);
   document.getElementById('wQty').value=1;
   document.getElementById('wPrice').value='';
   document.getElementById('wVint').value='';
@@ -1633,6 +1654,7 @@ async function openEditWine(id, navList) {
   document.getElementById('wTasting').value= w.tasting||'';
   document.getElementById('wAcq').value    = w.acqDate||'';
   document.getElementById('wLoc').value    = w.location||'';
+  setPairChips(w.pairings||[]);
   updateWineStars(w.rating||0);
   if (w.photo) { document.getElementById('wPrev').src=w.photo; document.getElementById('wPrev').style.display=''; document.getElementById('wPph').style.display='none'; }
   else resetPhoto('wPhotoF','wPrev','wPph');
@@ -1672,6 +1694,21 @@ async function saveAndNavWine(dir) {
   await openEditWine(target.id, editWineList);
 }
 
+function togglePairChip(el) {
+  el.classList.toggle('on');
+}
+function getSelectedPairs() {
+  var pairs = [];
+  document.querySelectorAll('#wPairChips .wpchip.on').forEach(function(el) {
+    pairs.push(el.getAttribute('data-pair'));
+  });
+  return pairs;
+}
+function setPairChips(pairings) {
+  document.querySelectorAll('#wPairChips .wpchip').forEach(function(el) {
+    el.classList.toggle('on', pairings && pairings.indexOf(el.getAttribute('data-pair')) >= 0);
+  });
+}
 function setWineRating(n) { wineRating=n; updateWineStars(n); }
 function updateWineStars(n) {
   document.querySelectorAll('#wStars .rstar').forEach(function(s,i) { s.classList.toggle('on',i<n); });
@@ -1688,7 +1725,7 @@ async function saveWine(keepOpen) {
     vintage:parseInt(document.getElementById('wVint').value)||null,
     qty:parseInt(document.getElementById('wQty').value)||0,
     price:parseFloat(document.getElementById('wPrice').value)||null,
-    rating:wineRating, tasting:document.getElementById('wTasting').value.trim(),
+    rating:wineRating, pairings:getSelectedPairs(), tasting:document.getElementById('wTasting').value.trim(),
     acqDate:document.getElementById('wAcq').value||null, location:document.getElementById('wLoc').value.trim(),
     photo:photo, createdAt:editWineId?((wines.find(function(w){return w.id===editWineId;})||{}).createdAt||Date.now()):Date.now(),
     updatedAt:Date.now()
