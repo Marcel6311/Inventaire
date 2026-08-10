@@ -2062,27 +2062,30 @@ function dlFile(name,content,type) {
 async function doHomeSearch() {
   var raw = (document.getElementById('homeSearch').value||'').trim();
   var res = document.getElementById('homeSearchResults');
-  var content = document.getElementById('homeContent');
+  var hcont = document.getElementById('homeContent');
   if (!raw) {
     res.style.display = 'none';
-    content.style.display = '';
+    hcont.style.display = '';
     return;
   }
-  content.style.display = 'none';
+  hcont.style.display = 'none';
   res.style.display = '';
 
   var allI = await all('items');
   var allC = await all('cats');
   var allL = await all('locs');
+  var allW = await all('wines');
   cats = allC; locs = allL;
 
   var numOnly = /^\d+$/.test(raw);
-  var matched;
+  var q = numOnly ? '' : raw.toLowerCase();
+  var matched = [];
+  var matchedWines = [];
+
   if (numOnly) {
     var n = parseInt(raw);
     matched = allI.filter(function(i) { return i.seq === n; });
   } else {
-    var q = raw.toLowerCase();
     matched = allI.filter(function(i) {
       if (i.name.toLowerCase().includes(q)) return true;
       if ((i.notes||'').toLowerCase().includes(q)) return true;
@@ -2097,28 +2100,57 @@ async function doHomeSearch() {
       });
       return locMatch;
     });
+    matchedWines = allW.filter(function(w) {
+      return w.name.toLowerCase().includes(q)
+        || (w.producer||'').toLowerCase().includes(q)
+        || (w.region||'').toLowerCase().includes(q)
+        || (w.grape||'').toLowerCase().includes(q)
+        || String(w.vintage||'').includes(q);
+    });
   }
 
-  if (matched.length===0) {
-    res.innerHTML = '<div class="empty"><div class="ei">🔍</div><p>Aucun résultat pour "'+q+'"</p></div>';
+  if (matched.length===0 && matchedWines.length===0) {
+    res.innerHTML = '<div class="empty"><div class="ei">\u{1F50D}</div><p>Aucun résultat pour "'+raw+'"</p></div>';
     return;
   }
 
-  var h = '<div class="stitle">'+matched.length+' résultat(s)</div><div class="card">';
-  matched.sort(function(a,b){return a.name.localeCompare(b.name,'fr');});
-  matched.forEach(function(i) {
-    var catTags = (i.cats||[]).map(function(cid){var c=allC.find(function(x){return x.id===cid;});return c?'<span class="tag" style="font-size:10px">'+(c.emoji||'')+' '+c.name+'</span>':'';}).join('');
-    var locTags = (i.locs||[]).map(function(lid){var l=allL.find(function(x){return x.id===lid;});return l?'<span class="tag" style="font-size:10px;background:var(--accent3)20;color:var(--accent3)">📍 '+l.name+'</span>':'';}).join('');
-    h += '<div class="irow" onclick="openDetail(\''+i.id+'\',false)">'
-      +'<div class="iico">'+(i.emoji||itemEmoji(i))+'</div>'
-      +'<div class="iinfo">'
-      +'<div class="iname">'+i.name+'</div>'
-      +'<div class="imeta">'+i.qty+' '+i.unit+'</div>'
-      +(catTags||locTags?'<div style="margin-top:3px">'+catTags+locTags+'</div>':'')
-      +'</div>'
-      +'</div>';
-  });
-  h += '</div>';
+  var h = '';
+  if (matched.length > 0) {
+    h += '<div class="stitle">'+matched.length+' article(s)</div><div class="card">';
+    matched.sort(function(a,b){return a.name.localeCompare(b.name,'fr');});
+    matched.forEach(function(i) {
+      var catTags = (i.cats||[]).map(function(cid){var c=allC.find(function(x){return x.id===cid;});return c?'<span class="tag" style="font-size:10px">'+(c.emoji||'')+' '+c.name+'</span>':'';}).join('');
+      var locTags = (i.locs||[]).map(function(lid){var l=allL.find(function(x){return x.id===lid;});return l?'<span class="tag" style="font-size:10px;background:var(--accent3)20;color:var(--accent3)">\u{1F4CD} '+l.name+'</span>':'';}).join('');
+      var seqBadge = i.seq ? '<div style="font-size:10px;color:var(--text2);min-width:20px;text-align:center;font-weight:600">'+i.seq+'</div>' : '';
+      h += '<div class="irow" onclick="openDetail(''+i.id+'',false)">'
+        +seqBadge
+        +'<div class="iico">'+(i.emoji||itemEmoji(i))+'</div>'
+        +'<div class="iinfo">'
+        +'<div class="iname">'+i.name+'</div>'
+        +'<div class="imeta">'+i.qty+' '+i.unit+'</div>'
+        +(catTags||locTags?'<div style="margin-top:3px">'+catTags+locTags+'</div>':'')
+        +'</div>'
+        +'</div>';
+    });
+    h += '</div>';
+  }
+  if (matchedWines.length > 0) {
+    var wEmoji = {rouge:'\u{1F377}',blanc:'\u{1F942}',rosé:'\u{1F338}',champagne:'\u{2728}',liqueur:'\u{1F943}','eaux-de-vie':'\u{1F376}',autre:'\u{1F37E}'};
+    h += '<div class="stitle">'+matchedWines.length+' vin(s)</div><div class="card">';
+    matchedWines.sort(function(a,b){return a.name.localeCompare(b.name,'fr');});
+    matchedWines.forEach(function(w) {
+      var stars = '\u2605'.repeat(w.rating||0)+'\u2606'.repeat(5-(w.rating||0));
+      h += '<div class="irow" onclick="openEditWine(''+w.id+'')">'
+        +'<div class="iico">'+(wEmoji[w.type]||'\u{1F37E}')+'</div>'
+        +'<div class="iinfo">'
+        +'<div class="iname">'+w.name+'</div>'
+        +'<div class="imeta">'+(w.producer||'')+(w.vintage?' · '+w.vintage:'')+(w.qty?' · '+w.qty+' btl':'')+'</div>'
+        +'<div style="font-size:12px;color:#f59e0b">'+stars+'</div>'
+        +'</div>'
+        +'</div>';
+    });
+    h += '</div>';
+  }
   res.innerHTML = h;
 }
 
