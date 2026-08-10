@@ -1123,7 +1123,7 @@ async function openDetail(id, fromSearch) {
     + '<button class="btn btn-s" style="flex:1" onclick="adjQty(\''+item.id+'\',1)">+ Ajouter</button>'
     + '</div>'
     + '<div style="display:flex;gap:8px;margin-top:8px">'
-    + '<button class="btn btn-g btn-sm" style="flex:1" onclick="closeM(\'mDetail\');editItemList=(homeItemList.find(function(x){return x.id===\''+item.id+'\';}))?homeItemList:getCurrentInvList();openEditItem(\''+item.id+'\')">✏️ Modifier</button>'
+    + '<button class="btn btn-g btn-sm" style="flex:1" onclick="closeM(\'mDetail\');editItemList=getCurrentInvList();openEditItem(\''+item.id+'\')">✏️ Modifier</button>'
     + '<button class="btn btn-d btn-sm" style="flex:1" onclick="delFromDetail(\''+item.id+'\')">🗑 Supprimer</button>'
     + '</div>';
 
