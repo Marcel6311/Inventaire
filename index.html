@@ -1123,7 +1123,7 @@ async function openDetail(id, fromSearch) {
     + '<button class="btn btn-s" style="flex:1" onclick="adjQty(\''+item.id+'\',1)">+ Ajouter</button>'
     + '</div>'
     + '<div style="display:flex;gap:8px;margin-top:8px">'
-    + '<button class="btn btn-g btn-sm" style="flex:1" onclick="closeM(\'mDetail\');editItemList=getCurrentInvList();openEditItem(\''+item.id+'\')">✏️ Modifier</button>'
+    + '<button class="btn btn-g btn-sm" style="flex:1" onclick="closeM(\'mDetail\');editItemList=(homeItemList.find(function(x){return x.id===\''+item.id+'\';}))?homeItemList:getCurrentInvList();openEditItem(\''+item.id+'\')">✏️ Modifier</button>'
     + '<button class="btn btn-d btn-sm" style="flex:1" onclick="delFromDetail(\''+item.id+'\')">🗑 Supprimer</button>'
     + '</div>';
 
@@ -1194,9 +1194,9 @@ async function openAddItem() {
   cats = await all('cats'); locs = await all('locs');
   buildChips('catChips', cats, [], 'var(--accent)');
   buildChips('locChips', locs, [], 'var(--accent3)');
+  document.getElementById('itemNav').style.display='none';
   openM('mItem');
 }
-
 async function openEditItem(id, navList) {
   var item = items.find(function(i){return i.id===id;});
   if (!item) { items=await all('items'); item=items.find(function(i){return i.id===id;}); }
@@ -1253,22 +1253,29 @@ async function openEditItem(id, navList) {
 function getCurrentInvList() {
   var raw = (document.getElementById('invSearch') ? document.getElementById('invSearch').value||'' : '').trim();
   var numOnly = raw !== '' && /^\d+$/.test(raw);
-  var q = numOnly ? '' : raw.toLowerCase(); // ignorer les recherches par numéro
-  // Pour la navigation, on retourne TOUJOURS la liste complète (triée/filtrée sans restriction par seq)
+  var q = numOnly ? '' : raw.toLowerCase();
   var list = items.slice();
+  // Appliquer le filtre catégorie/emplacement actif
   if (curFilter !== 'all') {
     list = list.filter(function(i){ return (i.cats&&i.cats.includes(curFilter))||(i.locs&&i.locs.includes(curFilter)); });
   }
+  // Appliquer la recherche texte
   if (q) {
     list = list.filter(function(i){ return i.name.toLowerCase().includes(q)||(i.notes||'').toLowerCase().includes(q); });
   }
-  list.sort(function(a,b){
-    if (curSort==='name')   return a.name.localeCompare(b.name,'fr');
-    if (curSort==='qty')    return b.qty-a.qty;
-    if (curSort==='date')   return (b.createdAt||0)-(a.createdAt||0);
-    if (curSort==='expiry') { if (!a.expDate) return 1; if (!b.expDate) return -1; return new Date(a.expDate)-new Date(b.expDate); }
-    return 0;
-  });
+  // Tri : par numéro seq si recherche numérique (ex: 103 → navigue 102/103/104)
+  // par filtre catégorie uniquement la catégorie filtrée
+  if (numOnly) {
+    list.sort(function(a,b){ return (a.seq||0)-(b.seq||0); });
+  } else {
+    list.sort(function(a,b){
+      if (curSort==='name')   return a.name.localeCompare(b.name,'fr');
+      if (curSort==='qty')    return b.qty-a.qty;
+      if (curSort==='date')   return (b.createdAt||0)-(a.createdAt||0);
+      if (curSort==='expiry') { if (!a.expDate) return 1; if (!b.expDate) return -1; return new Date(a.expDate)-new Date(b.expDate); }
+      return 0;
+    });
+  }
   return list;
 }
 
@@ -1615,6 +1622,7 @@ async function openAddWine() {
   document.getElementById('mWineTitle').textContent='Ajouter un vin';
   document.getElementById('btnDelWine').style.display='none';
   var _gb=document.getElementById('gmBlock');if(_gb)_gb.style.display='';
+  document.getElementById('wineNav').style.display='none';
   ['wName','wProd','wReg','wGrape','wTasting','wLoc'].forEach(function(id){document.getElementById(id).value='';});
   document.getElementById('wType').value='rouge';
   setPairChips([]);
