@@ -622,6 +622,26 @@ function del(store, id) {
 function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
 
 // =====================================================================
+// MIGRATION — numéros permanents (seq)
+// =====================================================================
+async function migrateSeq() {
+  var all_items = await all('items');
+  var needsSeq = all_items.filter(function(i) { return !i.seq; });
+  if (needsSeq.length === 0) return;
+  // Trier par date de création pour attribuer les seq dans l'ordre chronologique
+  all_items.sort(function(a,b) { return (a.createdAt||0)-(b.createdAt||0); });
+  var maxSeq = all_items.reduce(function(m,i) { return i.seq && i.seq>m ? i.seq : m; }, 0);
+  var counter = maxSeq;
+  for (var i=0; i<all_items.length; i++) {
+    if (!all_items[i].seq) {
+      counter++;
+      all_items[i].seq = counter;
+      await put('items', all_items[i]);
+    }
+  }
+}
+
+// =====================================================================
 // ÉTAT GLOBAL
 // =====================================================================
 var items=[], wines=[], cats=[], locs=[], shopList=[];
@@ -819,15 +839,11 @@ function renderInvList() {
     return 0;
   });
 
-  // Si c'est un nombre pur → afficher uniquement la fiche à cette position
+  // Si c'est un nombre pur → afficher uniquement la fiche avec ce seq permanent
   var numOnly = raw !== '' && /^\d+$/.test(raw);
   if (numOnly) {
     var n = parseInt(raw);
-    if (n >= 1 && n <= list.length) {
-      list = [list[n-1]];
-    } else {
-      list = [];
-    }
+    list = list.filter(function(i) { return i.seq === n; });
   } else if (q) {
     list = list.filter(function(i) {
       if (i.name.toLowerCase().includes(q)) return true;
@@ -897,7 +913,7 @@ function itemRow(item, showDel, rowNum, total) {
     ? '<button class="del-btn" onclick="quickDel(\''+item.id+'\',event)" title="Supprimer">🗑</button>'
     : '';
 
-  var numHtml = rowNum ? '<div style="font-size:10px;color:var(--text2);text-align:center;line-height:1.2;min-width:18px">'+rowNum+'<br><span style="opacity:.5">/'+total+'</span></div>' : '';
+  var numHtml = item.seq ? '<div style="font-size:10px;color:var(--text2);text-align:center;line-height:1.2;min-width:18px">'+item.seq+'</div>' : '';
 
   return '<div class="irow">'
     +numHtml
@@ -1212,6 +1228,7 @@ function getCurrentInvList() {
   var raw = (document.getElementById('invSearch') ? document.getElementById('invSearch').value||'' : '').trim();
   var numOnly = raw !== '' && /^\d+$/.test(raw);
   var q = numOnly ? '' : raw.toLowerCase(); // ignorer les recherches par numéro
+  // Pour la navigation, on retourne TOUJOURS la liste complète (triée/filtrée sans restriction par seq)
   var list = items.slice();
   if (curFilter !== 'all') {
     list = list.filter(function(i){ return (i.cats&&i.cats.includes(curFilter))||(i.locs&&i.locs.includes(curFilter)); });
@@ -1285,8 +1302,14 @@ async function saveItem(keepOpen) {
   var photo    = getPhoto('iPrev');
   var locPhoto = getPhoto('iLprev');
 
+  var existingItem = editItemId ? items.find(function(i){return i.id===editItemId;}) : null;
+  var newSeq = existingItem && existingItem.seq
+    ? existingItem.seq
+    : (items.reduce(function(m,i){ return i.seq && i.seq>m ? i.seq : m; }, 0) + 1);
+
   var obj = {
     id:        editItemId || uid(),
+    seq:       newSeq,
     name:      name,
     emoji:     document.getElementById('iEmoji').value.trim() || null,
     qty:       parseFloat(document.getElementById('iQty').value)||0,
@@ -2381,6 +2404,7 @@ async function seedDefaults() {
 async function init() {
   await openDB();
   await seedDefaults();
+  await migrateSeq();
   loadCfg();
   cats = await all('cats');
   locs = await all('locs');
