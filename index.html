@@ -1446,6 +1446,11 @@ function renderWineList() {
       (w.grape||'').toLowerCase().includes(q)||
       String(w.vintage||'').includes(q);
   });
+  if (curWineSort==='millesime') {
+    list.sort(function(a,b){ return (b.vintage||0)-(a.vintage||0); });
+  } else {
+    list.sort(function(a,b){ return (a.name||'').localeCompare(b.name||'','fr'); });
+  }
 
   var box = document.getElementById('wineList');
   if (list.length===0) { box.innerHTML='<div class="empty"><div class="ei">🍷</div><p>Aucun vin trouvé.</p></div>'; return; }
@@ -1685,7 +1690,7 @@ async function openEditWine(id, navList) {
 function setWineSort(s) {
   curWineSort = (curWineSort===s) ? 'type' : s;
   document.getElementById('btnSortVin').classList.toggle('on', curWineSort==='millesime');
-  renderWines();
+  renderWineList();
 }
 
 function getCurrentWineList() {
