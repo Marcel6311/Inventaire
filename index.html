@@ -246,11 +246,9 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
         <button onclick="openAddItem()">＋</button>
       </div>
       <div class="fbar" id="invFilters"></div>
-      <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
-        <button class="btn btn-g btn-sm" onclick="sortInv('name')">A→Z</button>
-        <button class="btn btn-g btn-sm" onclick="sortInv('qty')">Quantité</button>
-        <button class="btn btn-g btn-sm" onclick="sortInv('date')">Date</button>
-        <button class="btn btn-g btn-sm" onclick="sortInv('expiry')">Expiration</button>
+      <div class="fbar" id="invSortBar" style="margin-bottom:10px">
+        <div class="fc on" id="btnSortName" onclick="sortInv('name')">🔤 A→Z</div>
+        <div class="fc" id="btnSortDate" onclick="sortInv('date')">📅 Création</div>
       </div>
 <div class="card" id="invList"></div>
     </div>
@@ -846,7 +844,14 @@ function setFilter(f, el) {
 }
 
 
-function sortInv(s) { curSort=s; curPage=0; renderInvList(); }
+function sortInv(s) {
+  curSort = s;
+  curPage = 0;
+  document.querySelectorAll('#invSortBar .fc').forEach(function(el){ el.classList.remove('on'); });
+  var map = {name:'btnSortName', date:'btnSortDate'};
+  if (map[s]) document.getElementById(map[s]).classList.add('on');
+  renderInvList();
+}
 function filterInv() { curPage=0; renderInvList(); }
 
 function renderInvList() {
