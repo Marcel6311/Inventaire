@@ -46,7 +46,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .card{background:var(--card);border-radius:var(--r);padding:14px;margin-bottom:12px;border:1px solid var(--border)}
 
 /* SEARCH BAR */
-.sbar{display:flex;gap:8px;margin-bottom:12px}
+.sbar{display:flex;gap:8px;margin-bottom:12px;position:relative}
+.sclear{background:none;border:none;font-size:16px;color:var(--text3);cursor:pointer;padding:0 2px;line-height:1;display:none;touch-action:manipulation;flex-shrink:0}
+.sbar input:not(:placeholder-shown) ~ .sclear{display:block}
 .sbar input{flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:15px;outline:none}
 .sbar input:focus{border-color:var(--accent)}
 .sbar button{background:var(--accent);border:none;border-radius:10px;padding:10px 14px;color:#fff;cursor:pointer;font-size:15px;font-weight:600}
@@ -223,7 +225,7 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
     <!-- ACCUEIL -->
     <div class="view active" id="v-home">
       <div class="sbar" style="margin-bottom:14px">
-        <input type="text" id="homeSearch" placeholder="Rechercher articles, catégories, emplacements..." oninput="doHomeSearch()" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+        <input type="text" id="homeSearch" placeholder="Rechercher articles, catégories, emplacements..." oninput="doHomeSearch()" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"><button class="sclear" onclick="clearSearch('homeSearch',doHomeSearch)">✕</button>
       </div>
       <div id="homeSearchResults" style="display:none"></div>
       <div id="homeContent">
@@ -242,7 +244,7 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
     <!-- INVENTAIRE -->
     <div class="view" id="v-inv">
       <div class="sbar">
-        <input type="text" id="invSearch" placeholder="Rechercher ou n°…" oninput="filterInv()" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+        <input type="text" id="invSearch" placeholder="Rechercher ou n°…" oninput="filterInv()" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"><button class="sclear" onclick="clearSearch('invSearch',filterInv)">✕</button>
         <button onclick="openAddItem()">＋</button>
       </div>
       <div class="fbar" id="invFilters"></div>
@@ -256,7 +258,7 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
     <!-- VINS -->
     <div class="view" id="v-wine">
       <div class="sbar">
-        <input type="text" id="wSearch" placeholder="Cépage, région, millésime..." oninput="filterWines()">
+        <input type="text" id="wSearch" placeholder="Cépage, région, millésime..." oninput="filterWines()"><button class="sclear" onclick="clearSearch('wSearch',filterWines)">✕</button>
         <button onclick="openAddWine()">＋</button>
       </div>
       <div class="fbar">
@@ -851,6 +853,12 @@ function sortInv(s) {
   var map = {name:'btnSortName', date:'btnSortDate'};
   if (map[s]) document.getElementById(map[s]).classList.add('on');
   renderInvList();
+}
+
+function clearSearch(id, cb) {
+  var el = document.getElementById(id);
+  if (el) { el.value = ''; el.focus(); }
+  if (cb) cb();
 }
 function filterInv() { curPage=0; renderInvList(); }
 
