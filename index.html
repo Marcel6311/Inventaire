@@ -95,7 +95,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 /* MODAL */
 .ov{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:200;display:none;flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .ov.open{display:flex}
-.modal{background:var(--bg2);border-radius:20px 20px 0 0;width:100%;padding:20px 16px;padding-bottom:calc(20px + var(--safe))}
+.modal{background:var(--bg2);border-radius:20px 20px 0 0;width:100%;padding:20px 16px;padding-bottom:calc(20px + var(--safe));}
 .mhdr{display:flex;align-items:center;margin-bottom:16px}
 .mhdr h2{flex:1;font-size:18px;font-weight:700}
 .mclose{background:var(--bg3);border:none;border-radius:8px;padding:6px 12px;color:var(--text2);cursor:pointer;font-size:14px}
@@ -263,6 +263,7 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
       </div>
       <div class="fbar">
         <div class="fc on" onclick="wFilter('all',this)">Tous</div>
+        <div class="fc" id="btnSortVin" onclick="setWineSort('millesime')" style="">📅 Millésime</div>
         <div class="fc" onclick="wFilter('rouge',this)">🍷 Rouge</div>
         <div class="fc" onclick="wFilter('blanc',this)">🥂 Blanc</div>
         <div class="fc" onclick="wFilter('rosé',this)">🌸 Rosé</div>
@@ -342,7 +343,7 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
         <div class="sw"><label>Alertes activées</label><div class="tog on" id="tAlerts" onclick="togSet('alerts')"></div></div>
       </div>
       <div class="stitle">ℹ️ Application</div>
-      <div class="card"><p style="font-size:13px;color:var(--text2)">Mon Inventaire v4.0 — 100% hors ligne, données stockées sur votre appareil. Capacité : 50 000+ articles.</p></div>
+      <div class="card"><p style="font-size:13px;color:var(--text2)">Mon Inventaire v5.0 — 100% hors ligne, données stockées sur votre appareil. Capacité : 50 000+ articles.</p></div>
     </div>
 
   </div><!-- /content -->
@@ -677,7 +678,8 @@ var curSort='name', curFilter='all', curWineFilter='all';
 var curPage=0, PAGE_SIZE=50;
 var editItemId=null, editWineId=null, wineRating=0;
 var editItemList=[], editItemIdx=-1; // liste courante pour navigation entre fiches
-var editWineList=[], editWineIdx=-1; // liste courante pour navigation entre vins
+var editWineList=[], editWineIdx=-1;
+var curWineSort='type'; // liste courante pour navigation entre vins
 var srResults=[], srIdx=-1; // résultats de recherche pour navigation
 var cfg = { confirm:true, alerts:true };
 
@@ -1196,9 +1198,9 @@ async function openAddItem() {
   cats = await all('cats'); locs = await all('locs');
   buildChips('catChips', cats, [], 'var(--accent)');
   buildChips('locChips', locs, [], 'var(--accent3)');
-  document.getElementById('itemNav').style.display='none';
   openM('mItem');
 }
+
 async function openEditItem(id, navList) {
   var item = items.find(function(i){return i.id===id;});
   if (!item) { items=await all('items'); item=items.find(function(i){return i.id===id;}); }
@@ -1255,42 +1257,37 @@ async function openEditItem(id, navList) {
 function getCurrentInvList() {
   var raw = (document.getElementById('invSearch') ? document.getElementById('invSearch').value||'' : '').trim();
   var numOnly = raw !== '' && /^\d+$/.test(raw);
-  var q = numOnly ? '' : raw.toLowerCase();
+  var q = numOnly ? '' : raw.toLowerCase(); // ignorer les recherches par numéro
+  // Pour la navigation, on retourne TOUJOURS la liste complète (triée/filtrée sans restriction par seq)
   var list = items.slice();
-  // Appliquer le filtre catégorie/emplacement actif
   if (curFilter !== 'all') {
     list = list.filter(function(i){ return (i.cats&&i.cats.includes(curFilter))||(i.locs&&i.locs.includes(curFilter)); });
   }
-  // Appliquer la recherche texte
   if (q) {
     list = list.filter(function(i){ return i.name.toLowerCase().includes(q)||(i.notes||'').toLowerCase().includes(q); });
   }
-  // Tri : par numéro seq si recherche numérique (ex: 103 → navigue 102/103/104)
-  // par filtre catégorie uniquement la catégorie filtrée
-  if (numOnly) {
-    list.sort(function(a,b){ return (a.seq||0)-(b.seq||0); });
-  } else {
-    list.sort(function(a,b){
-      if (curSort==='name')   return a.name.localeCompare(b.name,'fr');
-      if (curSort==='qty')    return b.qty-a.qty;
-      if (curSort==='date')   return (b.createdAt||0)-(a.createdAt||0);
-      if (curSort==='expiry') { if (!a.expDate) return 1; if (!b.expDate) return -1; return new Date(a.expDate)-new Date(b.expDate); }
-      return 0;
-    });
-  }
+  list.sort(function(a,b){
+    if (curSort==='name')   return a.name.localeCompare(b.name,'fr');
+    if (curSort==='qty')    return b.qty-a.qty;
+    if (curSort==='date')   return (b.createdAt||0)-(a.createdAt||0);
+    if (curSort==='expiry') { if (!a.expDate) return 1; if (!b.expDate) return -1; return new Date(a.expDate)-new Date(b.expDate); }
+    return 0;
+  });
   return list;
 }
 
 async function saveAndNavItem(dir) {
-  await saveItem(true); // true = ne pas fermer le modal
   var newIdx = editItemIdx + dir;
   if (newIdx < 0 || newIdx >= editItemList.length) return;
-  // Recharger la liste après sauvegarde
+  var targetId = editItemList[newIdx].id;
+  await saveItem(true);
   items = await all('items');
   editItemList = getCurrentInvList();
-  var target = editItemList[newIdx];
-  if (!target) return;
-  await openEditItem(target.id, editItemList);
+  var foundIdx = editItemList.findIndex(function(i){return i.id===targetId;});
+  if (foundIdx < 0) foundIdx = Math.min(newIdx, editItemList.length-1);
+  if (foundIdx < 0) return;
+  editItemIdx = foundIdx;
+  await openEditItem(editItemList[foundIdx].id, editItemList);
 }
 
 function buildChips(containerId, list, selected, color) {
@@ -1602,7 +1599,7 @@ async function fillWineFromGM(idx) {
   var displayParts = (w.display_name || '').split(', ');
   var wineName = displayParts.length > 1 ? displayParts.slice(1).join(', ') : displayParts[0];
   document.getElementById('wName').value = wineName;
-  if (w.pairings && w.pairings.length) setPairChips(w.pairings);
+  if(w.pairings&&w.pairings.length)setPairChips(w.pairings);
   document.getElementById('wProd').value = w.producer_display_name || w.producer_name || '';
   if (w.color && colorMap[w.color]) document.getElementById('wType').value = colorMap[w.color];
   // Appel détail pour grapes, région, notes
@@ -1673,6 +1670,7 @@ async function openEditWine(id, navList) {
   var total = editWineList.length;
   if (total > 1) {
     nav.style.display = 'flex';
+    document.getElementById('wineNav').style.display='flex';
     document.getElementById('btnNavWinePrev').disabled = editWineIdx <= 0;
     document.getElementById('btnNavWineNext').disabled = editWineIdx >= total-1;
     document.getElementById('wineNavLabel').textContent = (editWineIdx+1)+' / '+total;
@@ -1681,6 +1679,13 @@ async function openEditWine(id, navList) {
   }
 
   openM('mWine');
+}
+
+
+function setWineSort(s) {
+  curWineSort = (curWineSort===s) ? 'type' : s;
+  document.getElementById('btnSortMillesime').classList.toggle('on', curWineSort==='millesime');
+  renderWines();
 }
 
 function getCurrentWineList() {
@@ -1694,31 +1699,22 @@ function getCurrentWineList() {
 }
 
 async function saveAndNavWine(dir) {
-  await saveWine(true);
   var newIdx = editWineIdx + dir;
   if (newIdx < 0 || newIdx >= editWineList.length) return;
+  var targetId = editWineList[newIdx].id;
+  await saveWine(true);
   wines = await all('wines');
   editWineList = getCurrentWineList();
-  var target = editWineList[newIdx];
-  if (!target) return;
-  await openEditWine(target.id, editWineList);
+  var foundIdx = editWineList.findIndex(function(w){return w.id===targetId;});
+  if (foundIdx < 0) foundIdx = Math.min(newIdx, editWineList.length-1);
+  if (foundIdx < 0) return;
+  editWineIdx = foundIdx;
+  await openEditWine(editWineList[foundIdx].id, editWineList);
 }
 
-function togglePairChip(el) {
-  el.classList.toggle('on');
-}
-function getSelectedPairs() {
-  var pairs = [];
-  document.querySelectorAll('#wPairChips .wpchip.on').forEach(function(el) {
-    pairs.push(el.getAttribute('data-pair'));
-  });
-  return pairs;
-}
-function setPairChips(pairings) {
-  document.querySelectorAll('#wPairChips .wpchip').forEach(function(el) {
-    el.classList.toggle('on', pairings && pairings.indexOf(el.getAttribute('data-pair')) >= 0);
-  });
-}
+function togglePairChip(el){el.classList.toggle('on');}
+function getSelectedPairs(){var p=[];document.querySelectorAll('#wPairChips .wpchip.on').forEach(function(el){p.push(el.getAttribute('data-pair'));});return p;}
+function setPairChips(pa){document.querySelectorAll('#wPairChips .wpchip').forEach(function(el){el.classList.toggle('on',pa&&pa.indexOf(el.getAttribute('data-pair'))>=0);});}
 function setWineRating(n) { wineRating=n; updateWineStars(n); }
 function updateWineStars(n) {
   document.querySelectorAll('#wStars .rstar').forEach(function(s,i) { s.classList.toggle('on',i<n); });
@@ -2472,17 +2468,9 @@ async function seedDefaults() {
       await put('cats',{id:uid(),name:defCats[_di].name,emoji:defCats[_di].emoji,color:defCats[_di].color});
     }
   }
-  var defLocs=[
-    {id:uid(),name:'Réfrigérateur',emoji:'🧊'},
-    {id:uid(),name:'Congélateur',emoji:'❄️'},
-    {id:uid(),name:'Placard cuisine',emoji:'🚪'},
-    {id:uid(),name:'Garde-manger',emoji:'🏠'},
-    {id:uid(),name:'Cave',emoji:'🍷'}
-  ];
+  var defLocs=[{id:uid(),name:'Réfrigérateur',emoji:'🧊'},{id:uid(),name:'Congélateur',emoji:'❄️'},{id:uid(),name:'Placard cuisine',emoji:'🚪'},{id:uid(),name:'Garde-manger',emoji:'🏠'},{id:uid(),name:'Cave',emoji:'🍷'}];
   var existingLocs=await all('locs');
-  if(!existingLocs.length){
-    for(var _li=0;_li<defLocs.length;_li++) await put('locs',defLocs[_li]);
-  }
+  if(!existingLocs.length){for(var _li=0;_li<defLocs.length;_li++) await put('locs',defLocs[_li]);}
 }
 
 
