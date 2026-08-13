@@ -715,7 +715,7 @@ function goTo(v, btn) {
 // =====================================================================
 // MODALS
 // =====================================================================
-function openM(id){document.getElementById(id).classList.add('open');document.body.style.overflow='hidden';}
+function openM(id){var el=document.getElementById(id);el.classList.add('open');el.scrollTop=0;document.body.style.overflow='hidden';}
 function closeM(id){document.getElementById(id).classList.remove('open');if(!document.querySelectorAll('.ov.open').length)document.body.style.overflow='';}
 
 document.addEventListener('DOMContentLoaded', function() {
