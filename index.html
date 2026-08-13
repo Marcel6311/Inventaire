@@ -702,8 +702,8 @@ function goTo(v, btn) {
     if (hc) hc.style.display='';
     renderHome();
   }
-  if (v==='inv')  renderInv();
-  if (v==='wine') renderWineView();
+  if (v==='inv')  { document.getElementById('v-inv').scrollTop=0; renderInv(); }
+  if (v==='wine') { document.getElementById('v-wine').scrollTop=0; renderWineView(); }
   if (v==='shop') renderShop();
   if (v==='more') {
     renderMore();
