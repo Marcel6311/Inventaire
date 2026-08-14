@@ -408,8 +408,8 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
       </div>
     </div>
     <div class="frow">
-      <div class="fg"><label>💰 Prix d'achat (€)</label><input type="number" id="iPold" placeholder="0.00" step="0.01" min="0" oninput="calcPrice()" autocomplete="off" data-dashlane-ignore="true" data-lpignore="true"></div>
-      <div class="fg"><label>🆕 Nouveau prix (€)</label><input type="number" id="iPnew" placeholder="0.00" step="0.01" min="0" oninput="calcPrice()" autocomplete="off" data-dashlane-ignore="true" data-lpignore="true"></div>
+      <div class="fg"><label>💰 Prix d'achat (CHF)</label><input type="number" id="iPold" placeholder="0.00" step="0.01" min="0" oninput="calcPrice()" autocomplete="off" data-dashlane-ignore="true" data-lpignore="true"></div>
+      <div class="fg"><label>🆕 Nouveau prix (CHF)</label><input type="number" id="iPnew" placeholder="0.00" step="0.01" min="0" oninput="calcPrice()" autocomplete="off" data-dashlane-ignore="true" data-lpignore="true"></div>
     </div>
     <div id="priceDiff" style="display:none;margin-bottom:12px"></div>
     <div class="fg"><label>Remarques</label><textarea id="iNotes" placeholder="Origine, notes..." autocomplete="off" autocorrect="off" spellcheck="false" data-dashlane-ignore="true" data-lpignore="true"></textarea></div>
@@ -491,7 +491,7 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
     </div>
     <div class="frow">
       <div class="fg"><label>Bouteilles</label><input type="number" id="wQty" value="1" min="0" autocomplete="off" data-dashlane-ignore="true"></div>
-      <div class="fg"><label>Prix (€)</label><input type="number" id="wPrice" placeholder="0.00" step="0.01" autocomplete="off" data-dashlane-ignore="true"></div>
+      <div class="fg"><label>Prix (CHF)</label><input type="number" id="wPrice" placeholder="0.00" step="0.01" autocomplete="off" data-dashlane-ignore="true"></div>
     </div>
     <div class="fg"><label>Ma note</label>
       <div style="display:flex;gap:6px" id="wStars">
@@ -1078,8 +1078,8 @@ async function openDetail(id, fromSearch) {
   var priceHtml = '';
   if (item.priceOld || item.priceNew) {
     priceHtml = '<div class="card" style="margin-bottom:10px"><div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px">💰 PRIX</div><div class="pblock">';
-    if (item.priceOld) priceHtml += '<div class="pval"><div class="pl">Prix d\'achat</div><div class="pv">'+item.priceOld.toFixed(2)+' €</div></div>';
-    if (item.priceNew) priceHtml += '<div class="pval"><div class="pl">Nouveau prix</div><div class="pv">'+item.priceNew.toFixed(2)+' €</div></div>';
+    if (item.priceOld) priceHtml += '<div class="pval"><div class="pl">Prix d\'achat</div><div class="pv">'+item.priceOld.toFixed(2)+' CHF</div></div>';
+    if (item.priceNew) priceHtml += '<div class="pval"><div class="pl">Nouveau prix</div><div class="pv">'+item.priceNew.toFixed(2)+' CHF</div></div>';
     if (item.priceOld && item.priceNew) {
       var diff = item.priceNew - item.priceOld;
       var pct2 = ((diff/item.priceOld)*100).toFixed(1);
@@ -1087,7 +1087,7 @@ async function openDetail(id, fromSearch) {
       var clr2 = diff>0?'var(--danger)':'var(--success)';
       priceHtml += '<div class="pval" style="border-left:2px solid var(--border);padding-left:12px">'
         +'<div class="pl">Évolution</div>'
-        +'<div class="pv" style="color:'+clr2+'">'+sign+diff.toFixed(2)+' €</div>'
+        +'<div class="pv" style="color:'+clr2+'">'+sign+diff.toFixed(2)+' CHF</div>'
         +'<div style="font-size:13px;font-weight:700;color:'+clr2+'">'+sign+pct2+' %</div>'
         +'</div>';
     }
@@ -1406,7 +1406,7 @@ function calcPrice() {
   var sign = up?'+':'';
   box.style.display = '';
   box.innerHTML = '<div class="al" style="background:rgba(0,0,0,.2);border:1px solid '+clr+';color:'+clr+'">'
-    +(up?'📈':'📉')+' Différence : <b>'+sign+diff.toFixed(2)+' €</b> — <b>'+sign+pct+' %</b>'+(up?' ↑ plus cher':' ↓ moins cher')+'</div>';
+    +(up?'📈':'📉')+' Différence : <b>'+sign+diff.toFixed(2)+' CHF</b> — <b>'+sign+pct+' %</b>'+(up?' ↑ plus cher':' ↓ moins cher')+'</div>';
 }
 
 // =====================================================================
@@ -1478,7 +1478,7 @@ function renderWineList() {
       +(w.grape?'<div class="wdet">'+w.grape+'</div>':'')
       +'<div style="display:flex;align-items:center;gap:10px;margin-top:4px">'
       +'<div class="stars">'+stars+'</div>'
-      +'<div style="font-size:13px;color:#f87171">'+w.qty+' btl'+(w.price?' · '+w.price+'€':'')+'</div>'
+      +'<div style="font-size:13px;color:#f87171">'+w.qty+' btl'+(w.price?' · '+w.price+'CHF':'')+'</div>'
       +'</div>'
       +(ds!==null?'<div style="font-size:11px;color:#f87171;margin-top:2px">il y a '+ds+'j</div>':'')
       +'</div></div>'
