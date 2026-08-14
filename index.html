@@ -466,7 +466,10 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
       <button class="mclose" onclick="closeM('mWine')">Fermer</button>
     </div>
     <div id="btnCellarTracker" style="display:none;margin-bottom:10px">
-      <button class="btn btn-g" onclick="openCellarTracker()" style="width:100%;font-size:14px">🍇 Rechercher sur CellarTracker</button>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-g" onclick="openCellarTracker()" style="flex:1;font-size:14px">🔍 Rechercher</button>
+        <button class="btn btn-g" onclick="openGoogleLens()" style="flex:1;font-size:14px">📷 Scanner étiquette</button>
+      </div>
     </div>
     <div id="gmBlock" class="fg" style="margin-bottom:10px">
       <label>🔍 Recherche Grapeminds (optionnel)</label>
@@ -1746,6 +1749,16 @@ function setPairChips(pa){document.querySelectorAll('#wPairChips .wpchip').forEa
 function setWineRating(n) { wineRating=n; updateWineStars(n); }
 function updateWineStars(n) {
   document.querySelectorAll('#wStars .rstar').forEach(function(s,i) { s.classList.toggle('on',i<n); });
+}
+
+function openGoogleLens() {
+  var a = document.createElement('a');
+  a.href = 'https://lens.google.com/';
+  a.target = '_blank';
+  a.rel = 'noopener';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
 }
 
 function openCellarTracker() {
