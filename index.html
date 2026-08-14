@@ -281,6 +281,7 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
         </div>
         <div id="wineSugg"></div>
       </div>
+      <div id="wineTotals" style="font-size:13px;color:var(--text2);padding:4px 4px 8px;text-align:right"></div>
       <div id="wineList"></div>
     </div>
 
@@ -1447,6 +1448,12 @@ function renderWineList() {
   }
 
   var box = document.getElementById('wineList');
+  // Totaux
+  var totalBtl = list.reduce(function(s,w){ return s + (parseFloat(w.qty)||0); }, 0);
+  var totDiv = document.getElementById('wineTotals');
+  if (totDiv) {
+    totDiv.textContent = list.length + ' référence' + (list.length>1?'s':'') + ' · ' + totalBtl + ' bouteille' + (totalBtl>1?'s':'');
+  }
   if (list.length===0) { box.innerHTML='<div class="empty"><div class="ei">🍷</div><p>Aucun vin trouvé.</p></div>'; return; }
 
   var emoji = {rouge:'🍷',blanc:'🥂',rosé:'🌸',champagne:'✨',liqueur:'🥃','eaux-de-vie':'🍶',autre:'🍾'};
