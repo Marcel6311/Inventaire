@@ -1751,11 +1751,10 @@ function updateWineStars(n) {
 function openCellarTracker() {
   var name = (document.getElementById('wName').value||'').trim();
   var vintage = (document.getElementById('wVint').value||'').trim();
-  // On utilise uniquement le nom + millésime pour une recherche précise dans la BDD vins
   var q = [name, vintage].filter(Boolean).join(' ');
   if (!q) return;
   var a = document.createElement('a');
-  a.href = 'https://www.cellartracker.com/wine.asp?szSearch=' + escape(q);
+  a.href = 'https://www.google.com/search?q=' + encodeURIComponent('site:cellartracker.com ' + q);
   a.target = '_blank';
   a.rel = 'noopener';
   document.body.appendChild(a);
