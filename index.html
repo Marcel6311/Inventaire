@@ -133,7 +133,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .wname{font-size:16px;font-weight:700;color:var(--wine2)}
 .wdet{font-size:13px;color:#f87171;margin-top:3px}
 .wpairs{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
-.wpchip{border-radius:20px;padding:5px 12px;font-size:13px;border:1.5px solid var(--border);cursor:pointer;background:var(--bg3);color:var(--text2);display:inline-block;touch-action:manipulation}
+.wpchip{border-radius:20px;padding:5px 12px;font-size:13px;border:1.5px solid var(--border);cursor:pointer;background:var(--bg3);color:var(--text2);display:inline-flex;align-items:center;touch-action:manipulation;-webkit-appearance:none;font-family:inherit;line-height:1.2}
 .wpchip.on{background:var(--accent);color:#fff;border-color:var(--accent)}
 .wpair{background:rgba(153,27,27,.35);border:1px solid rgba(153,27,27,.6);border-radius:20px;padding:3px 9px;font-size:12px;color:var(--wine2)}
 .fchip{background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:5px 11px;font-size:13px;color:var(--text);cursor:pointer;transition:background .15s}
@@ -520,19 +520,19 @@ mark{background:rgba(99,102,241,.4);border-radius:3px;padding:0 2px;color:inheri
     </div>
     <div class="fg"><label>🍽️ Accords mets-vins</label>
       <div id="wPairChips" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px">
-        <span class="wpchip" data-pair="Viande rouge" onclick="togglePairChip(this)">🥩 Viande rouge</span>
-        <span class="wpchip" data-pair="Agneau" onclick="togglePairChip(this)">🐑 Agneau</span>
-        <span class="wpchip" data-pair="Gibier" onclick="togglePairChip(this)">🦌 Gibier</span>
-        <span class="wpchip" data-pair="Volaille" onclick="togglePairChip(this)">🍗 Volaille</span>
-        <span class="wpchip" data-pair="Poisson" onclick="togglePairChip(this)">🐟 Poisson</span>
-        <span class="wpchip" data-pair="Foie gras" onclick="togglePairChip(this)">🫙 Foie gras</span>
-        <span class="wpchip" data-pair="Fromage affiné" onclick="togglePairChip(this)">🧀 Fromage affiné</span>
-        <span class="wpchip" data-pair="Charcuterie" onclick="togglePairChip(this)">🥓 Charcuterie</span>
-        <span class="wpchip" data-pair="Risotto" onclick="togglePairChip(this)">🍝 Risotto</span>
-        <span class="wpchip" data-pair="Sushi" onclick="togglePairChip(this)">🍣 Sushi</span>
-        <span class="wpchip" data-pair="Chocolat" onclick="togglePairChip(this)">🍫 Chocolat</span>
-        <span class="wpchip" data-pair="Dessert fruité" onclick="togglePairChip(this)">🍓 Dessert fruité</span>
-        <span class="wpchip" data-pair="Apéritif" onclick="togglePairChip(this)">🥂 Apéritif</span>
+        <button type="button" class="wpchip" data-pair="Viande rouge" onclick="togglePairChip(this)">🥩 Viande rouge</button>
+        <button type="button" class="wpchip" data-pair="Agneau" onclick="togglePairChip(this)">🐑 Agneau</button>
+        <button type="button" class="wpchip" data-pair="Gibier" onclick="togglePairChip(this)">🦌 Gibier</button>
+        <button type="button" class="wpchip" data-pair="Porc" onclick="togglePairChip(this)">🐷 Porc</button>
+        <button type="button" class="wpchip" data-pair="Poisson" onclick="togglePairChip(this)">🐟 Poisson</button>
+        <button type="button" class="wpchip" data-pair="Fruits de mer" onclick="togglePairChip(this)">🦞 Fruits de mer</button>
+        <button type="button" class="wpchip" data-pair="Volaille" onclick="togglePairChip(this)">🐓 Volaille</button>
+        <button type="button" class="wpchip" data-pair="Fromage" onclick="togglePairChip(this)">🧀 Fromage</button>
+        <button type="button" class="wpchip" data-pair="Végétarien" onclick="togglePairChip(this)">🍄 Végétarien</button>
+        <button type="button" class="wpchip" data-pair="Pâtes & Riz" onclick="togglePairChip(this)">🍝 Pâtes & Riz</button>
+        <button type="button" class="wpchip" data-pair="Épicé" onclick="togglePairChip(this)">🌶️ Épicé</button>
+        <button type="button" class="wpchip" data-pair="Dessert" onclick="togglePairChip(this)">🍫 Dessert</button>
+        <button type="button" class="wpchip" data-pair="Apéritif" onclick="togglePairChip(this)">🥗 Apéritif</button>
       </div>
     </div>
     <div style="display:flex;gap:8px;margin-top:4px">
