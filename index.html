@@ -1754,7 +1754,7 @@ function openCellarTracker() {
   var q = [name, vintage].filter(Boolean).join(' ');
   if (!q) return;
   var a = document.createElement('a');
-  a.href = 'https://www.google.com/search?q=' + encodeURIComponent('site:cellartracker.com ' + q);
+  a.href = 'https://www.google.com/search?q=' + encodeURIComponent(q + ' vin avis');
   a.target = '_blank';
   a.rel = 'noopener';
   document.body.appendChild(a);
