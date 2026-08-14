@@ -1750,11 +1750,17 @@ function updateWineStars(n) {
 
 function openCellarTracker() {
   var name = (document.getElementById('wName').value||'').trim();
-  var producer = (document.getElementById('wProducer').value||'').trim();
-  var vintage = (document.getElementById('wVintage').value||'').trim();
+  var producer = (document.getElementById('wProd').value||'').trim();
+  var vintage = (document.getElementById('wVint').value||'').trim();
   var q = [vintage, producer, name].filter(Boolean).join(' ');
   if (!q) return;
-  window.open('https://www.cellartracker.com/list.asp?Table=List&szSearch=' + encodeURIComponent(q), '_blank');
+  var a = document.createElement('a');
+  a.href = 'https://www.cellartracker.com/list.asp?Table=List&iUserOverride=0&szSearch=' + q;
+  a.target = '_blank';
+  a.rel = 'noopener';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
 }
 async function saveWine(keepOpen) {
   var name = document.getElementById('wName').value.trim();
