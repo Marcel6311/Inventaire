@@ -936,7 +936,8 @@ function itemRow(item, showDel, rowNum, total) {
   }).join('');
   var locTags = (item.locs||[]).map(function(id) {
     var l = locs.find(function(x) { return x.id===id; });
-    return l ? '<span class="tag" style="background:var(--accent3)20;color:var(--accent3);border-color:var(--accent3)40">'+(l.emoji||'📍')+' '+l.name+'</span>' : '';
+    var lc = (l && l.color) ? l.color : '#10b981';
+    return l ? '<span class="tag" style="background:'+lc+'20;color:'+lc+';border-color:'+lc+'40">'+(l.emoji||'📍')+' '+l.name+'</span>' : '';
   }).join('');
 
   var delbtn = showDel
@@ -1062,7 +1063,7 @@ async function openDetail(id, fromSearch) {
   var isExp = item.expDate && new Date(item.expDate) < today;
   var daysSince = item.acqDate ? Math.floor((Date.now()-new Date(item.acqDate))/864e5) : null;
   var catNames = (item.cats||[]).map(function(id) { var c=cats.find(function(x){return x.id===id;}); return c?'<span class="tag">'+(c.emoji||'')+' '+c.name+'</span>':''; }).join('');
-  var locNames = (item.locs||[]).map(function(id) { var l=locs.find(function(x){return x.id===id;}); return l?'<span class="tag">📍 '+l.name+'</span>':''; }).join('');
+  var locNames = (item.locs||[]).map(function(id) { var l=locs.find(function(x){return x.id===id;}); var lc=(l&&l.color)?l.color:'#10b981'; return l?'<span class="tag" style="background:'+lc+'20;color:'+lc+';border-color:'+lc+'40">'+(l.emoji||'📍')+' '+l.name+'</span>':''; }).join('');
 
   var pct   = item.alertTh>0 ? Math.min(100,item.qty/(item.alertTh*3)*100) : 100;
   var pclr  = item.qty<=item.alertTh ? 'var(--danger)' : item.qty<=item.alertTh*2 ? 'var(--warn)' : 'var(--success)';
@@ -2204,7 +2205,7 @@ async function doHomeSearch() {
   matched.sort(function(a,b){return a.name.localeCompare(b.name,'fr');});
   matched.forEach(function(i) {
     var catTags = (i.cats||[]).map(function(cid){var c=allC.find(function(x){return x.id===cid;});return c?'<span class="tag" style="font-size:10px">'+(c.emoji||'')+' '+c.name+'</span>':'';}).join('');
-    var locTags = (i.locs||[]).map(function(lid){var l=allL.find(function(x){return x.id===lid;});return l?'<span class="tag" style="font-size:10px;background:var(--accent3)20;color:var(--accent3)">📍 '+l.name+'</span>':'';}).join('');
+    var locTags = (i.locs||[]).map(function(lid){var l=allL.find(function(x){return x.id===lid;});var lc=(l&&l.color)?l.color:'#10b981';return l?'<span class="tag" style="font-size:10px;background:'+lc+'20;color:'+lc+';border-color:'+lc+'40">'+(l.emoji||'📍')+' '+l.name+'</span>':'';}).join('');
     h += '<div class="irow" onclick="openDetail(\''+i.id+'\',false)">'
       +'<div class="iico">'+(i.emoji||itemEmoji(i))+'</div>'
       +'<div class="iinfo">'
@@ -2279,7 +2280,7 @@ async function doSearch() {
     h+='<div class="stitle">'+matchItems.length+' article(s)</div><div class="card">';
     matchItems.forEach(function(i,idx) {
       var catTags = (i.cats||[]).map(function(cid){var c=allC.find(function(x){return x.id===cid;});return c?'<span class="tag" style="font-size:10px">'+(c.emoji||'')+'&nbsp;'+hlText(c.name,q)+'</span>':'';}).join('');
-      var locTags = (i.locs||[]).map(function(lid){var l=allL.find(function(x){return x.id===lid;});return l?'<span class="tag" style="font-size:10px;background:var(--accent3)20;color:var(--accent3)">📍&nbsp;'+hlText(l.name,q)+'</span>':'';}).join('');
+      var locTags = (i.locs||[]).map(function(lid){var l=allL.find(function(x){return x.id===lid;});var lc=(l&&l.color)?l.color:'#10b981';return l?'<span class="tag" style="font-size:10px;background:'+lc+'20;color:'+lc+';border-color:'+lc+'40">'+(l.emoji||'📍')+'&nbsp;'+hlText(l.name,q)+'</span>':'';}).join('');
       var tagsHtml = (catTags||locTags) ? '<div style="margin-top:3px">'+catTags+locTags+'</div>' : '';
       h+='<div class="irow">'
         +'<div style="font-size:10px;color:var(--text2);text-align:center;min-width:18px">'+(idx+1)+'<br><span style="opacity:.5">/'+matchItems.length+'</span></div>'
