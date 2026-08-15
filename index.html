@@ -1909,8 +1909,10 @@ async function renderMore() {
   var ll = document.getElementById('locList');
   ll.innerHTML = locs.length===0 ? '<p style="color:var(--text2);font-size:13px">Aucun emplacement.</p>'
     : locs.map(function(l) {
+        var clr = l.color||'#10b981';
         return '<div style="display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--border)">'
           +'<span style="font-size:26px;width:36px;text-align:center">'+(l.emoji||'📍')+'</span>'
+          +'<div style="width:14px;height:14px;border-radius:50%;background:'+clr+';flex-shrink:0"></div>'
           +'<span style="flex:1;font-weight:500;font-size:15px">'+l.name+'</span>'
           +'<button class="btn btn-g btn-sm" onclick="openEditLoc(\''+l.id+'\')" style="margin-right:4px">✏️</button>'
           +'<button class="btn btn-d btn-sm" onclick="delLoc(\''+l.id+'\')">🗑</button>'
@@ -2471,13 +2473,15 @@ function buildColorPal(palId, hiddenId, selected) {
   var box = document.getElementById(palId);
   if (!box) return;
   box.innerHTML = CAT_COLORS.map(function(c) {
-    return '<div class="cpick'+(c===selected?' sel':'')+'" style="background:'+c+'" onclick="pickColor(\''+palId+'\',\''+hiddenId+'\',\''+c+'\')"></div>';
+    return '<div class="cpick'+(c===selected?' sel':'')+'" data-color="'+c+'" style="background:'+c+'" onclick="pickColor(\''+palId+'\',\''+hiddenId+'\',\''+c+'\')"></div>';
   }).join('');
 }
 
 function pickColor(palId, hiddenId, color) {
   document.getElementById(hiddenId).value = color;
-  document.querySelectorAll('#'+palId+' .cpick').forEach(function(d){d.classList.toggle('sel',d.style.background===color||d.style.backgroundColor===color);});
+  document.querySelectorAll('#'+palId+' .cpick').forEach(function(d){
+    d.classList.toggle('sel', d.getAttribute('data-color')===color);
+  });
 }
 
 // =====================================================================
